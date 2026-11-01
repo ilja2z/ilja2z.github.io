@@ -71,7 +71,8 @@
     var cap = g.querySelector('.g-cap'), count = g.querySelector('.g-count');
     var prev = g.querySelector('[data-prev]'), next = g.querySelector('[data-next]'), thumbs = g.querySelector('.thumbs');
     var video = g.querySelector('[data-video]'), current = 0, vIdx = -1;
-    if (video && reelUrl) { video.src = reelUrl; video.preload = 'metadata'; }
+    if (video) { var vs = video.dataset.src || reelUrl; if (vs) { video.src = vs; if (!video.controls) video.preload = 'metadata'; } }
+    var autoVid = video && !video.controls;
     if (video) vIdx = slides.indexOf(video.closest('.slide'));
 
     slides.forEach(function(s, i){
@@ -98,7 +99,7 @@
       prev.disabled = i === 0; next.disabled = i === slides.length-1;
       tbtns.forEach(function(b, j){ b.setAttribute('aria-current', j === i ? 'true' : 'false'); });
       var tb = tbtns[i]; thumbs.scrollTo({left: tb.offsetLeft - thumbs.clientWidth/2 + tb.clientWidth/2, behavior: reduce ? 'auto' : 'smooth'});
-      if (video) { if (i === vIdx && !reduce) { var pr = video.play(); if (pr && pr.catch) pr.catch(function(){}); } else { video.pause(); } }
+      if (video) { if (i === vIdx && !reduce && autoVid) { var pr = video.play(); if (pr && pr.catch) pr.catch(function(){}); } else { video.pause(); } }
     }
     current = -1; update(0);
     if (video && reduce) { video.controls = true; }
@@ -117,7 +118,7 @@
     window.addEventListener('resize', function(){ go(current); });
 
     // autoplay video only when visible
-    if (video && 'IntersectionObserver' in window && !reduce) {
+    if (video && autoVid && 'IntersectionObserver' in window && !reduce) {
       new IntersectionObserver(function(es){ es.forEach(function(e){ if (!e.isIntersecting) video.pause(); else if (current === vIdx) { var pr = video.play(); if (pr && pr.catch) pr.catch(function(){}); } }); }, {threshold:.4}).observe(video);
     }
 
