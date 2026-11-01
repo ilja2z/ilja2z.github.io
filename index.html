@@ -594,14 +594,14 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 
         <div class="case-body">
           <h3 class="case-title" id="uride-h">Uride</h3>
-          <p class="case-sub">Rider and Driver apps for a Canadian intercity ride-share network where drivers work in shifts. Designed almost from scratch to replace a web service.</p>
+          <p class="case-sub">Rider and Driver apps for a Canadian intercity ride-share network where drivers work in shifts. Designed from zero to replace a web service; 1M+ rides across Ontario and BC.</p>
           <dl class="facts">
             <dt>Role</dt><dd>Product Designer, later the sole designer</dd>
-            <dt>Team</dt><dd>Product owners, a former Uber PM and the VP of Technology</dd>
+            <dt>Team</dt><dd>Product owners, an ex-Uber project manager and company leadership</dd>
             <dt>Platforms</dt><dd>iOS and Android, 320+ screens across two apps</dd>
           </dl>
           <div class="kpis" role="list" aria-label="Results">
-            <div class="kpi" role="listitem"><b>31% → 64%</b><span>completed driver registrations</span></div>
+            <div class="kpi" role="listitem"><b>2×</b><span>completed driver sign-ups</span></div>
             <div class="kpi" role="listitem"><b>2:40 → 0:55</b><span>time to book an intercity ride</span></div>
             <div class="kpi" role="listitem"><b>+38%</b><span>active drivers in 6 months</span></div>
             <div class="kpi" role="listitem"><b>35 → 9 min</b><span>to submit driver documents</span></div>
@@ -611,12 +611,14 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
             <div class="acc-item">
               <h4 style="margin:0"><button class="acc-trigger" aria-expanded="true"><span><span class="acc-label">The challenge</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
               <div class="acc-panel open"><div class="acc-inner"><div class="acc-body">
-                <p>Uride runs intercity rides across Ontario and British Columbia. Unlike gig platforms, its drivers are part of the fleet and work in shifts, so supply can be planned ahead. Everything ran through a web service.</p>
+                <p>Uride focuses on trips between cities. Unlike typical gig platforms, its drivers are part of the fleet and work scheduled shifts. Backed by private investment and Canadian government grants, it ran on the web: riders booked there and every driver signed up through a long web form.</p>
+                <p>Driver supply was the real bottleneck. Interviews and funnel data showed where it broke:</p>
                 <ul>
-                  <li>Driver sign-up was an 8-step web form: everything typed by hand, no save and resume, and an unclear status after submitting.</li>
-                  <li>Shift no-shows and last-minute changes made intercity supply hard to plan.</li>
-                  <li>Pay questions were one of the biggest sources of support tickets.</li>
-                  <li>Riders needed to book a trip to another city as quickly as a ride across town.</li>
+                  <li>An 8-step web sign-up with 40+ typed fields and 8 document uploads.</li>
+                  <li>Licence, work eligibility, driver’s abstract, background check, vehicle ownership, insurance and safety, with rules that differ by province.</li>
+                  <li>No save and resume, so most drop-offs happened at document upload.</li>
+                  <li>Drivers work planned shifts, so one no-show breaks a trip between cities.</li>
+                  <li>Pay questions were the top support topic.</li>
                 </ul>
               </div></div></div>
             </div>
@@ -624,67 +626,78 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
               <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">My role and the team</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
               <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
                 <ul>
-                  <li>Product Designer on the Rider and Driver apps, designed <strong>almost from scratch</strong>: every flow from sign-up to payout, designed, prototyped and handed off.</li>
-                  <li>One of two designers at the start; later the <strong>sole designer</strong> on the product.</li>
-                  <li>Worked with product owners, a former Uber PM and the VP of Technology, and presented design directly to the executive team.</li>
+                  <li>One of two product designers who shaped the product from zero, and later the <strong>only designer owning design end to end</strong>.</li>
+                  <li>Drove the driver side from the start: onboarding with OCR and automated checks, shifts and earnings. Co-created the Rider app and the shared design system.</li>
+                  <li>Worked directly with product owners, a project manager who had previously managed product at Uber, and company leadership, turning business goals into flows, prototypes and specs that engineering could ship.</li>
+                  <li>Cross-functional team: product owners, the project manager, two product designers, iOS, Android and backend engineers, and QA.</li>
                 </ul>
+              </div></div></div>
+            </div>
+            <div class="acc-item">
+              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Two apps, one network</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
+              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
+                <p>Riders book, track and pay. Drivers onboard, plan shifts, take rides and get paid. Both apps share one system and one ride model, so every state a rider sees (searching, driver on the way, arrived, finished) has its pair on the driver side.</p>
               </div></div></div>
             </div>
             <div class="acc-item">
               <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Driver onboarding: scan, don’t type</span><span class="acc-hint">4 steps</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
               <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
                 <ol class="steps">
-                  <li><span><b>One checklist</b>Every mandatory document in one place, with progress saved.</span></li>
+                  <li><span><b>One checklist</b>The web form became a document checklist, with progress saved after every step.</span></li>
                   <li><span><b>Scan, don’t type</b>Drivers photograph their licence and documents.</span></li>
-                  <li><span><b>Data pre-filled</b>OCR and public registries fill in the fields; the driver only checks and confirms.</span></li>
-                  <li><span><b>Clear review status</b>No more “we’ll email you”: drivers see where their application is.</span></li>
+                  <li><span><b>Data pre-filled</b>OCR and public registries fill in the data; the driver only checks and confirms.</span></li>
+                  <li><span><b>Clear review status</b>A visible status replaced “we’ll email you”.</span></li>
                 </ol>
-                <p>Manual input fields <strong>−70%</strong>, time to submit documents <strong>35 → 9 min</strong>, completed registrations <strong>31% → 64%</strong>.</p>
               </div></div></div>
             </div>
             <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Shifts, not random gigs</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
+              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Shifts, not gigs</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
               <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>Drivers choose shifts, track hours against a daily goal and tell dispatch why plans change, instead of simply not showing up.</p>
-                <p>Shift no-shows <strong>−32%</strong>, hours online per driver <strong>+21%</strong>, <strong>94%</strong> of shifts covered on time.</p>
+                <ul>
+                  <li>A daily goal in hours, with progress for every shift.</li>
+                  <li>Own availability: preferred, unavailable and flexible time slots.</li>
+                  <li>“Can’t make it?” with a reason, so dispatch can re-plan supply instead of discovering a no-show.</li>
+                  <li>Personal goals with a guaranteed bonus for reliability: hours online, shift completion, acceptance rate.</li>
+                </ul>
               </div></div></div>
             </div>
             <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Transparent pay</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
+              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Transparent earnings</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
               <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>Weekly payouts, withdraw anytime, goals with guaranteed bonuses, achievements and the fare shown upfront turned retention from a support problem into a product feature.</p>
-                <p>Active drivers <strong>+38%</strong> in 6 months, 90-day driver churn <strong>−24%</strong>, pay-related support tickets <strong>−41%</strong>.</p>
+                <p>Weekly earnings, instant withdraw, auto payouts and achievements made pay easy to understand and turned retention into a product feature.</p>
               </div></div></div>
             </div>
             <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Rider app: booking in under a minute</span><span class="acc-hint">5 steps</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
+              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Rider journey</span><span class="acc-hint">5 steps</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
               <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
                 <ol class="steps">
                   <li><span><b>Route and fixed price</b>The fare is clear before booking.</span></li>
                   <li><span><b>Live matching</b>Riders see the search and estimated pickup time.</span></li>
                   <li><span><b>Driver on the way</b>Car, plate and driver details with live ETA.</span></li>
                   <li><span><b>One-tap tip</b>Preset amounts or a custom tip.</span></li>
-                  <li><span><b>Scheduled trips</b>Book intercity rides ahead of time.</span></li>
+                  <li><span><b>Scheduled trips</b>Book longer rides between cities ahead of time.</span></li>
                 </ol>
-                <p>Average booking time <strong>2:40 → 0:55</strong>; <strong>+18%</strong> more ride requests end in a completed trip.</p>
               </div></div></div>
             </div>
             <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">One system, two apps</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
+              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Design system from scratch</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
               <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>Rider and Driver share one design system: a Google Sans type scale, a Flame Red palette with <strong>30 colour styles</strong>, <strong>170+ icons</strong> and components with every state across <strong>320+ screens</strong>.</p>
+                <p>One visual language for both apps: a Google Sans type scale, a Flame Red core palette with <strong>30 colour styles</strong>, <strong>170+ icons</strong> and components with every state. <strong>320+ screens</strong> across <strong>80+ feature flows</strong>, from sign-up to payout.</p>
               </div></div></div>
             </div>
             <div class="acc-item">
               <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Results</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
               <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
+                <p>First 6 months after launch:</p>
                 <ul>
-                  <li>Completed driver registrations: <strong>31% → 64%</strong>, twice as many finished sign-ups.</li>
-                  <li>Ride booking: <strong>2:40 → 0:55</strong>.</li>
-                  <li>Active drivers <strong>+38%</strong> in 6 months, pay tickets <strong>−41%</strong>, no-shows <strong>−32%</strong>.</li>
-                  <li><strong>1M+ rides</strong> on the platform across 12 cities; the service later expanded to South America.</li>
-                  <li>Uride ranked <strong>#34 in Deloitte Technology Fast 50 Canada 2025</strong>, with 883% growth in four years.</li>
+                  <li><strong>2×</strong> completed driver sign-ups (31% → 64%), with <strong>70% less</strong> manual input.</li>
+                  <li>Time to submit documents: <strong>35 → 9 minutes</strong>.</li>
+                  <li><strong>+38%</strong> active drivers, <strong>−24%</strong> driver churn over 90 days.</li>
+                  <li>Shift no-shows <strong>−32%</strong>, with <strong>94%</strong> of shifts covered on time.</li>
+                  <li>Average time to book a ride: <strong>2:40 → 0:55</strong>, and <strong>+18%</strong> more requests turned into completed rides.</li>
+                  <li><strong>−41%</strong> pay-related support tickets.</li>
                 </ul>
+                <p>Uride moved from a web-only service to native apps in both stores. The shared design system let the team ship new flows without new UI and supported the expansion to South America. In 2025 Uride ranked <strong>#34 in the Deloitte Technology Fast 50 Canada</strong>, with 883% growth over four years.</p>
                 <ul class="chips" aria-label="Focus areas"><li>Rider app</li><li>Driver app</li><li>iOS and Android</li><li>AI-assisted onboarding</li><li>Design system</li></ul>
               </div></div></div>
             </div>
