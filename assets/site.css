@@ -259,3 +259,16 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 
 .contact h2 .br-m{display:none}
 @media (max-width:640px){.contact h2 .br-d{display:none}.contact h2 .br-m{display:inline}}
+
+/* articles */
+.art-head{margin-top:20px;color:var(--text);font-weight:600}
+.acc-body ul.articles{list-style:none;padding:0;margin:0 0 12px;border-top:1px solid var(--line)}
+.articles li{margin:0;border-bottom:1px solid var(--line)}
+.articles a{display:block;padding:14px 28px 14px 0;text-decoration:none;color:var(--text);position:relative}
+.articles a::after{content:"↗";position:absolute;right:4px;top:14px;color:var(--soft);transition:color .15s}
+.articles a:hover b{color:var(--accent)}
+.articles a:hover::after{color:var(--accent)}
+.articles b{display:block;font-weight:600;line-height:1.4;transition:color .15s}
+.articles span{display:block;font-size:.875rem;color:var(--soft);margin-top:4px}
+.acc-body a.more-link{color:var(--muted);font-weight:500}
+.acc-body a.more-link:hover{color:var(--accent)}
