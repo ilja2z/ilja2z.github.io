@@ -43,11 +43,6 @@ p{margin:0 0 1em}
 .site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(10,26,20,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
 .site-header.scrolled{border-bottom-color:var(--line)}
 .site-header .wrap{display:flex;align-items:center;justify-content:space-between;height:var(--header-h);gap:16px}
-.brand{display:flex;align-items:center;gap:10px;font-size:.875rem;font-weight:500;color:var(--muted);text-decoration:none;white-space:nowrap;min-width:0;overflow:hidden}
-.brand b{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--emerald);color:var(--accent);display:grid;place-items:center;font:700 .8125rem/1 var(--display);letter-spacing:0}
-.brand .tags{overflow:hidden;text-overflow:ellipsis}
-.brand .short{display:none}
-.brand:hover .tags{color:var(--text)}
 .nav{display:flex;align-items:center;gap:clamp(12px,2.4vw,28px)}
 .nav a{text-decoration:none;color:var(--muted);font-size:.9375rem;font-weight:500;padding:8px 0}
 .nav a:hover{color:var(--text)}
@@ -56,14 +51,17 @@ p{margin:0 0 1em}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .btn.primary:hover{background:#7BEBBA;border-color:#7BEBBA;color:var(--accent-ink)}
 .nav .btn{min-height:40px;padding:0 16px;color:var(--accent-ink)}
-@media (max-width:640px){.nav .hide-sm{display:none}.brand .long{display:none}.brand .short{display:inline}}
+@media (max-width:640px){.nav .hide-sm{display:none}.status .long{display:none}.status .short{display:inline}}
 @media (max-width:480px){.nav .hide-xs{display:none}.nav{gap:16px}}
 
 /* hero */
 .hero{padding-top:clamp(56px,10vw,128px);padding-bottom:clamp(48px,7vw,88px)}
-.status{display:inline-flex;align-items:center;gap:10px;font-size:.9375rem;color:var(--muted);margin-bottom:28px}
+.status{display:inline-flex;align-items:center;gap:10px;font-size:.9375rem;font-weight:500;color:var(--muted);margin:0;white-space:nowrap}
+.status .short{display:none}
+@media (max-width:640px){.status .long{display:none}.status .short{display:inline}}
 .status i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(82,224,161,.18)}
 .hero h1{font-size:clamp(3.25rem,11.5vw,9.5rem);font-weight:800;letter-spacing:-.02em;line-height:.9}
+.hero h1 .last{font-weight:200;letter-spacing:-.025em}
 .hero h1 .role{display:block;color:var(--accent);font-weight:300;font-size:.42em;letter-spacing:-.01em;line-height:1.1;margin-top:.35em}
 .lede{max-width:40em;font-size:clamp(1.0625rem,1.6vw,1.25rem);color:var(--muted);margin:32px 0 36px}
 .lede strong{color:var(--text);font-weight:500}
@@ -252,7 +250,7 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 
 <header class="site-header" id="top">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="Back to top"><b aria-hidden="true">IV</b><span class="tags long">B2B, B2C and SaaS · Web and mobile · Design systems · AI-native workflows</span><span class="tags short">B2B · B2C · SaaS</span></a>
+    <p class="status"><i aria-hidden="true"></i><span class="long">Open to Head of Design roles · Spain, remote (CET)</span><span class="short">Open to new roles</span></p>
     <nav class="nav" aria-label="Main">
       <a href="#work">Work</a>
       <a href="#leadership" class="hide-xs">Leadership</a>
@@ -264,8 +262,7 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 
 <main id="main">
   <div class="wrap hero">
-    <p class="status"><i aria-hidden="true"></i>Open to Head of Design roles · Spain, remote (CET)</p>
-    <h1>Illia Vostrikov<span class="role">Head of Design</span></h1>
+    <h1>Illia <span class="last">Vostrikov</span><span class="role">Head of Design</span></h1>
     <p class="lede"><strong>I build and run design teams that ship B2B, B2C and SaaS products for web and mobile.</strong> 11+ years in product design, 7 of them leading teams: hiring, DesignOps, design systems and research that ties design decisions to product metrics.</p>
     <div class="hero-actions">
       <a class="btn primary" href="#work">See case studies</a>
