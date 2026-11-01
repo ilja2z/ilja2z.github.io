@@ -256,3 +256,6 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 .next-case b{font-family:var(--display);font-size:clamp(1.75rem,4vw,2.75rem);font-weight:700;letter-spacing:-.02em;line-height:1.05}
 .next-case span.d{display:block;color:var(--muted);margin-top:8px;max-width:40em}
 .next-case svg{width:28px;height:28px;color:var(--accent)}
+
+.contact h2 .br-m{display:none}
+@media (max-width:640px){.contact h2 .br-d{display:none}.contact h2 .br-m{display:inline}}
