@@ -6,9 +6,9 @@
 <title>Illia Vostrikov · Head of Design</title>
 <meta name="description" content="Head of Design with 11+ years in product design and 7 years leading design teams. Case studies, leadership approach and experience.">
 <meta name="theme-color" content="#0A1A14">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="canonical" href="https://ilja2z.github.io/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ilja2z.github.io/">
@@ -22,241 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  color-scheme: dark;
-  --bg:#0A1A14; --surface:#10251D; --surface-2:#163228; --line:#25473B;
-  --emerald:#1C4A3A; --accent:#52E0A1; --accent-ink:#06130E;
-  --text:#EDF5F1; --muted:#A6BEB4; --soft:#7F988E;
-  --display:"Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
-  --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --wrap:1200px; --pad:clamp(20px,4vw,48px);
-  --header-h:64px;
-  box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
-}
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#0A1A14; --text:#EDF5F1; } }
-:root[data-theme="dark"]{ --bg:#0A1A14; --text:#EDF5F1; }
-*,*::before,*::after{box-sizing:inherit}
-html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + var(--header-h) + 12px);-webkit-text-size-adjust:100%}
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
-body{margin:0;background:var(--bg);color:var(--text);font:400 1.0625rem/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:rgba(10,26,20,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-img,video{max-width:100%;display:block}
-a{color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
-.wrap{max-width:var(--wrap);margin:0 auto;padding:0 var(--pad)}
-.skip{position:absolute;left:12px;top:-60px;background:var(--accent);color:var(--accent-ink);padding:10px 14px;border-radius:8px;z-index:100;font-weight:600;text-decoration:none}
-.skip:focus{top:calc(env(safe-area-inset-top,0px) + 12px)}
-h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.05;margin:0}
-p{margin:0 0 1em}
-
-/* header */
-.site-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(10,26,20,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
-.site-header.scrolled{border-bottom-color:var(--line)}
-.site-header .wrap{display:flex;align-items:center;justify-content:space-between;height:var(--header-h);gap:16px}
-.nav{display:flex;align-items:center;gap:clamp(12px,2.4vw,28px)}
-.nav a{text-decoration:none;color:var(--muted);font-size:.9375rem;font-weight:500;padding:8px 0}
-.nav a:hover{color:var(--text)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:999px;font:600 .9375rem/1 var(--body);text-decoration:none;border:1px solid var(--line);color:var(--text);background:transparent;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
-.btn:hover{border-color:var(--accent);color:var(--accent)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn.primary:hover{background:#7BEBBA;border-color:#7BEBBA;color:var(--accent-ink)}
-.nav .btn{min-height:40px;padding:0 16px;color:var(--accent-ink)}
-@media (max-width:640px){.nav .hide-sm{display:none}.status .long{display:none}.status .short{display:inline}}
-@media (max-width:480px){.nav .hide-xs{display:none}.nav{gap:16px}}
-
-/* hero */
-.hero{padding-top:clamp(56px,10vw,128px);padding-bottom:clamp(48px,7vw,88px)}
-.status{display:inline-flex;align-items:center;gap:10px;font-size:.9375rem;font-weight:500;color:var(--muted);margin:0;white-space:nowrap}
-.status .short{display:none}
-@media (max-width:640px){.status .long{display:none}.status .short{display:inline}}
-.status i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(82,224,161,.18)}
-.hero h1{font-size:clamp(3.25rem,11.5vw,9.5rem);font-weight:800;letter-spacing:-.02em;line-height:.9}
-.hero h1 .last{font-weight:200;letter-spacing:-.025em}
-.hero h1 .role{display:block;color:var(--accent);font-weight:300;font-size:.42em;letter-spacing:-.01em;line-height:1.1;margin-top:.35em}
-.lede{max-width:40em;font-size:clamp(1.0625rem,1.6vw,1.25rem);color:var(--muted);margin:32px 0 36px}
-.lede strong{color:var(--text);font-weight:500}
-.hero-actions{display:flex;flex-wrap:wrap;gap:12px}
-.clients{margin-top:clamp(56px,8vw,96px);border-top:1px solid var(--line);padding-top:24px}
-.clients p{color:var(--soft);font-size:.9375rem;margin-bottom:12px}
-.logos{--logo-0:url("assets/wfp.svg");--logo-1:url("assets/img-0126eccaa0.svg");--logo-2:url("assets/asi-mark.svg");--logo-3:url("assets/img-f113862a0d.svg");--logo-4:url("assets/uride-horizontal.png");--logo-5:url("assets/img-830ba48914.svg");--logo-6:url("assets/breethe.svg");--logo-7:url("assets/img-426e41ec9a.svg");--logo-8:url("assets/goal-tracker.svg");list-style:none;margin:0;padding:8px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:16px 20px}
-.logo{height:64px;display:flex;align-items:center;justify-content:center}
-.logo::before{content:"";transform:translateY(var(--dy,0));width:min(100%,calc(var(--h) * var(--r)));aspect-ratio:var(--r);background:#C9DAD2;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}
-@media (max-width:640px){.logos{grid-template-columns:repeat(3,1fr);gap:12px 20px}.logo::before{width:min(100%,calc(var(--h) * var(--r) * .85))}}
-
-/* stats */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:20px;background:var(--surface);overflow:hidden}
-.stat{text-align:center;padding:28px 16px;border-left:1px solid var(--line)}
-.stat:first-child{border-left:0}
-.stat b{display:block;font-family:var(--display);font-weight:700;font-size:clamp(2rem,4.2vw,3.25rem);letter-spacing:-.03em;line-height:1;color:var(--accent);margin-bottom:10px}
-.stat span{display:block;color:var(--muted);font-size:.9375rem;line-height:1.4;max-width:15em;margin:0 auto;text-wrap:balance}
-@media (max-width:760px){.stat{padding:22px 12px}.stat span{font-size:.875rem}.stats{grid-template-columns:1fr 1fr}.stat:nth-child(3){border-left:0}.stat:nth-child(n+3){border-top:1px solid var(--line)}}
-
-/* sections */
-section{padding:clamp(64px,9vw,120px) 0}
-.sec-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:clamp(32px,5vw,56px)}
-.sec-head h2{font-size:clamp(2.25rem,5.5vw,4rem)}
-.sec-head p{color:var(--muted);max-width:30em;margin:0}
-
-/* case */
-.case + .case{margin-top:clamp(72px,9vw,128px);padding-top:clamp(56px,7vw,96px);border-top:1px solid var(--line)}
-.case{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(28px,4vw,56px);align-items:start}
-.case-media{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--header-h) + 20px)}
-@media (max-width:980px){.case{grid-template-columns:minmax(0,1fr)}.case-media{position:static}}
-.case-title{font-size:clamp(2rem,4vw,3rem);margin-bottom:12px}
-.case-sub{color:var(--muted);font-size:1.125rem;margin-bottom:24px;max-width:32em}
-.facts{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;margin:0 0 28px;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:.9375rem}
-.facts dt{color:var(--soft)}
-.facts dd{margin:0}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:28px}
-.kpi{background:var(--surface);text-align:center;padding:20px 12px}
-.kpi b{display:block;font-family:var(--display);font-size:1.75rem;font-weight:700;letter-spacing:-.02em;color:var(--accent);line-height:1.1;margin-bottom:6px}
-.kpi span{font-size:.875rem;color:var(--muted);line-height:1.35;display:block}
-
-/* gallery */
-.gallery{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:12px}
-.track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:12px;overscroll-behavior-x:contain}
-.track::-webkit-scrollbar{display:none}
-.slide{flex:0 0 100%;scroll-snap-align:center;margin:0;position:relative}
-.frame{aspect-ratio:2048/1170;background:#050D0A;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.frame img,.frame video{width:100%;height:100%;object-fit:contain}
-.frame button{all:unset;cursor:zoom-in;display:block;width:100%;height:100%}
-.frame button:focus-visible{outline:2px solid var(--accent);outline-offset:-4px;border-radius:12px}
-.g-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 4px 6px}
-.g-cap{font-size:.9375rem;color:var(--muted);min-height:2.8em;flex:1}
-.g-cap b{color:var(--text);font-weight:600;display:block}
-.g-ctrl{display:flex;align-items:center;gap:8px}
-.g-count{font-variant-numeric:tabular-nums;font-size:.875rem;color:var(--soft);min-width:3.6em;text-align:center}
-.icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface-2);color:var(--text);display:grid;place-items:center;cursor:pointer;transition:border-color .15s,color .15s}
-.icon-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
-.icon-btn:disabled{opacity:.35;cursor:default}
-.icon-btn svg{width:18px;height:18px}
-.thumbs{display:flex;gap:8px;overflow-x:auto;padding:8px 2px 4px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
-.thumbs button{flex:0 0 auto;width:84px;aspect-ratio:2048/1170;border-radius:8px;border:2px solid transparent;padding:0;overflow:hidden;background:#050D0A;cursor:pointer;opacity:.6;transition:opacity .15s,border-color .15s;position:relative}
-.thumbs button img{width:100%;height:100%;object-fit:cover}
-.thumbs button[aria-current="true"]{border-color:var(--accent);opacity:1}
-.thumbs button:hover{opacity:1}
-.thumbs .play{position:absolute;inset:0;display:grid;place-items:center;color:#fff}
-.thumbs .play svg{width:20px;height:20px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6))}
-@media (max-width:640px){.kpi b{font-size:1.4rem}.gallery{padding:8px;border-radius:16px;margin:0 calc(var(--pad) * -0.5)}.thumbs button{width:64px}}
-
-/* accordion */
-.acc{border-top:1px solid var(--line)}
-.acc-item{border-bottom:1px solid var(--line)}
-.acc-item h3{font-family:var(--body);font-size:1.0625rem;font-weight:600;letter-spacing:0;line-height:1.3}
-.acc-trigger{all:unset;box-sizing:border-box;display:flex;width:100%;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;cursor:pointer;min-height:44px}
-.acc-trigger:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
-.acc-trigger:hover .acc-label{color:var(--accent)}
-.acc-label{transition:color .15s}
-.acc-hint{display:block;font-weight:400;font-size:.875rem;color:var(--soft);margin-top:4px}
-.acc-icon{flex:0 0 auto;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:transform .25s,background .2s,border-color .2s}
-.acc-icon svg{width:14px;height:14px}
-.acc-trigger[aria-expanded="true"] .acc-icon{transform:rotate(45deg);background:var(--emerald);border-color:var(--emerald)}
-.acc-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease,visibility .3s;visibility:hidden}
-.acc-panel.open{grid-template-rows:1fr;visibility:visible}
-.acc-inner{overflow:hidden}
-.acc-body{padding:0 0 24px;color:var(--muted);font-size:1rem;max-width:62ch}
-.acc-body strong{color:var(--text);font-weight:600}
-.acc-body a{color:var(--accent);text-underline-offset:3px}
-.acc-body ul{margin:0;padding-left:1.1em}
-.acc-body li{margin-bottom:.5em}
-.acc-body li::marker{color:var(--accent)}
-.steps{list-style:none;margin:0;padding:0;counter-reset:s}
-.steps li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:12px;margin-bottom:16px}
-.steps li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--emerald);color:var(--accent);font:600 .8125rem/28px var(--body);text-align:center}
-.steps b{color:var(--text);font-weight:600;display:block}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding:0;list-style:none}
-.chips li{font-size:.875rem;padding:6px 12px;border:1px solid var(--line);border-radius:999px;color:var(--text);margin:0}
-
-/* more work */
-.more{margin-top:clamp(64px,8vw,104px)}
-.more h3{font-size:clamp(1.5rem,2.6vw,2rem);margin-bottom:8px}
-.more > p{color:var(--muted);margin-bottom:24px}
-.work-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.work-list li{border-bottom:1px solid var(--line)}
-.work-list a{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.6fr) minmax(0,1fr) 24px;gap:20px;align-items:center;padding:22px 4px;text-decoration:none;transition:background .15s}
-.work-list a:hover{background:var(--surface)}
-.work-list a:hover .w-name{color:var(--accent)}
-.w-name{font-family:var(--display);font-weight:700;font-size:1.375rem;letter-spacing:-.02em;transition:color .15s}
-.w-role{display:block;font-family:var(--body);font-weight:400;font-size:.875rem;color:var(--soft);letter-spacing:0;margin-top:2px}
-.w-desc{color:var(--muted);font-size:.9375rem}
-.w-metric{font-size:.9375rem;color:var(--text)}
-.w-metric em{font-style:normal;color:var(--accent);font-weight:600}
-.w-arrow svg{width:18px;height:18px;color:var(--soft)}
-@media (max-width:820px){.work-list a{grid-template-columns:1fr 24px;gap:6px 16px}.w-desc,.w-metric{grid-column:1}.w-arrow{grid-row:1;grid-column:2}}
-
-/* leadership */
-.lead-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,80px);align-items:start}
-.lead-intro{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--header-h) + 24px)}
-.lead-intro h2{font-size:clamp(2.25rem,5.5vw,4rem);margin-bottom:20px}
-.lead-intro p{color:var(--muted);font-size:1.125rem;max-width:26em}
-.lead-grid .acc-item h3{font-size:1.25rem}
-@media (max-width:900px){.lead-grid{grid-template-columns:minmax(0,1fr)}.lead-intro{position:static}}
-
-/* experience */
-.band{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.timeline{list-style:none;margin:0;padding:0}
-.timeline > li{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:24px;padding:28px 0;border-top:1px solid var(--line)}
-.timeline > li:first-child{border-top:0;padding-top:0}
-.t-org{font-family:var(--display);font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
-.t-org small{display:block;font-family:var(--body);font-size:.9375rem;font-weight:400;color:var(--soft);letter-spacing:0;margin-top:4px}
-.roles{list-style:none;margin:0;padding:0}
-.roles li{display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px dashed var(--line)}
-.roles li:last-child{border-bottom:0}
-.roles span{color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap}
-.t-note{color:var(--muted);font-size:.9375rem;margin-top:12px}
-@media (max-width:760px){.timeline > li{grid-template-columns:1fr;gap:12px}}
-
-.recs{margin-top:clamp(56px,7vw,88px)}
-.recs-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}
-.recs-head h3{font-size:clamp(1.5rem,2.6vw,2rem)}
-.rec-track{list-style:none;margin:0;padding:0 0 8px;display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;align-items:stretch;overscroll-behavior-x:contain}
-.rec-track::-webkit-scrollbar{display:none}
-.rec{flex:0 0 calc((100% - 40px) / 3);scroll-snap-align:start;display:flex;flex-direction:column;gap:16px;padding:28px;border-radius:20px;background:var(--surface);border:1px solid var(--line)}
-@media (max-width:1100px){.rec{flex-basis:calc((100% - 20px) / 2)}}
-@media (max-width:700px){.rec{flex-basis:88%;padding:24px}}
-.rec-rel{align-self:flex-start;font-size:.8125rem;font-weight:600;color:var(--accent);background:rgba(82,224,161,.1);border:1px solid rgba(82,224,161,.25);padding:4px 10px;border-radius:999px}
-.rec-pull{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;line-clamp:5;overflow:hidden;min-height:calc(1.3em * 5);margin:0;font-family:var(--display);font-size:clamp(1.25rem,1.8vw,1.45rem);font-weight:500;line-height:1.3;letter-spacing:-.01em}
-.rec-more{all:unset;cursor:pointer;color:var(--muted);font-size:.9375rem;font-weight:500;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:4px;min-height:32px;align-self:flex-start}
-.rec-more:hover{color:var(--accent);text-decoration-color:var(--accent)}
-.rec-more:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
-.rec-full{display:none}
-.rec-text{color:var(--muted);font-size:.9375rem;line-height:1.6}
-.rec-text p{margin:0 0 .8em}
-.rec-by{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:16px;min-height:76px;border-top:1px solid var(--line);font-size:.9375rem}
-.rec-by a{font-weight:600;text-decoration:none;color:var(--text)}
-.rec-by a:hover{color:var(--accent);text-decoration:underline}
-.rec-by small{display:block;color:var(--soft);font-size:.875rem}
-.avatar{flex:0 0 44px;width:44px;height:44px;border-radius:50%;background:var(--emerald);color:var(--accent);display:grid;place-items:center;font-weight:600;font-size:.9375rem;object-fit:cover}
-.recs-all{display:inline-block;margin-top:20px;color:var(--muted);font-weight:500;text-underline-offset:4px}
-.recs-all:hover{color:var(--accent)}
-
-/* contact */
-.contact{text-align:left}
-.contact h2{font-size:clamp(2.5rem,8vw,6.5rem);font-weight:800;letter-spacing:-.03em;line-height:1;max-width:12em;margin-bottom:28px}
-.contact h2 .thin{font-weight:200;letter-spacing:-.02em}
-.contact h2 .hl{color:var(--accent)}
-.contact p{color:var(--muted);font-size:1.125rem;max-width:34em;margin-bottom:32px}
-.links{display:flex;flex-wrap:wrap;gap:12px}
-footer{border-top:1px solid var(--line);padding:28px 0;color:var(--soft);font-size:.875rem}
-footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
-
-/* lightbox */
-dialog.rec-dlg{border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--text);padding:0;width:min(640px,calc(100vw - 24px));max-height:min(85dvh,760px);overflow:auto}
-dialog.rec-dlg::backdrop{background:rgba(3,10,7,.8)}
-.rd-close{position:sticky;top:12px;float:right;margin:12px 12px 0 0;z-index:1}
-.rd-inner{padding:28px 28px 24px;display:flex;flex-direction:column;gap:16px}
-.rd-inner .rec-text{font-size:1rem}
-.rd-inner .rec-by{margin-top:8px}
-dialog.lb{border:0;padding:0;background:transparent;max-width:none;max-height:none;width:100vw;height:100dvh;color:var(--text)}
-dialog.lb::backdrop{background:rgba(3,10,7,.94)}
-.lb-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 64px) 12px calc(env(safe-area-inset-bottom,0px) + 72px)}
-.lb-inner img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
-.lb-close{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);right:12px}
-.lb-nav{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);left:0;right:0;display:flex;justify-content:center;align-items:center;gap:16px}
-</style>
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -285,15 +51,15 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
     <div class="clients">
       <p>Products I’ve designed or led design for</p>
       <ul class="logos">
-        <li class="logo" role="img" aria-label="UN World Food Programme" style="--m:var(--logo-0);--h:46px;--r:1.1791"></li>
-        <li class="logo" role="img" aria-label="SAP" style="--m:var(--logo-1);--h:34px;--r:2.0000"></li>
-        <li class="logo" role="img" aria-label="ASI Central" style="--m:var(--logo-2);--h:30px;--r:1.7699"></li>
-        <li class="logo" role="img" aria-label="Mabrook" style="--m:var(--logo-3);--h:30px;--r:3.9029"></li>
-        <li class="logo" role="img" aria-label="Uride" style="--dy:-4px;--m:var(--logo-4);--h:30px;--r:2.7643"></li>
-        <li class="logo" role="img" aria-label="Studytube" style="--m:var(--logo-5);--h:15px;--r:8.5556"></li>
-        <li class="logo" role="img" aria-label="Breethe" style="--m:var(--logo-6);--h:22px;--r:4.0860"></li>
-        <li class="logo" role="img" aria-label="SalesGig" style="--m:var(--logo-7);--h:26px;--r:3.5000"></li>
-        <li class="logo" role="img" aria-label="Goal Tracker by Data Act Lab" style="--m:var(--logo-8);--h:44px;--r:1.5476"></li>
+        <li class="logo is-link" style="--m:var(--logo-0);--h:46px;--r:1.1791"><a href="https://dribbble.com/shots/27828950-Logistics-Cluster" target="_blank" rel="noopener" aria-label="UN World Food Programme on Dribbble"></a></li>
+        <li class="logo is-link" style="--m:var(--logo-1);--h:34px;--r:2.0000"><a href="https://dribbble.com/shots/26765030" target="_blank" rel="noopener" aria-label="SAP on Dribbble"></a></li>
+        <li class="logo is-link" style="--m:var(--logo-2);--h:30px;--r:1.7699"><a href="/work/asi-esp/" aria-label="ASI Central case study"></a></li>
+        <li class="logo is-link" style="--m:var(--logo-3);--h:30px;--r:3.9029"><a href="/work/mabrook/" aria-label="Mabrook case study"></a></li>
+        <li class="logo is-link" style="--dy:-4px;--m:var(--logo-4);--h:30px;--r:2.7643"><a href="/work/uride/" aria-label="Uride case study"></a></li>
+        <li class="logo is-link" style="--m:var(--logo-5);--h:15px;--r:8.5556"><a href="https://dribbble.com/shots/27823439" target="_blank" rel="noopener" aria-label="Studytube on Dribbble"></a></li>
+        <li class="logo is-link" style="--m:var(--logo-6);--h:22px;--r:4.0860"><a href="https://dribbble.com/shots/23851888" target="_blank" rel="noopener" aria-label="Breethe on Dribbble"></a></li>
+        <li class="logo is-link" style="--m:var(--logo-7);--h:26px;--r:3.5000"><a href="https://dribbble.com/shots/23834659-SalesGig-B2B-lead-generation-platform" target="_blank" rel="noopener" aria-label="SalesGig on Dribbble"></a></li>
+        <li class="logo is-link" style="--m:var(--logo-8);--h:44px;--r:1.5476"><a href="https://dribbble.com/shots/23858411" target="_blank" rel="noopener" aria-label="Goal Tracker by Data Act Lab on Dribbble"></a></li>
       </ul>
     </div>
   </div>
@@ -311,7 +77,7 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
     <div class="wrap">
       <div class="sec-head">
         <h2 id="work-h">Selected work</h2>
-        <p>Each case shows the product, what I owned and what changed. Open the sections you care about.</p>
+        <p>Two cases that show the range: leading design for a B2C super app, and B2B platform work with AI in the process.</p>
       </div>
 
       <article class="case" aria-labelledby="mabrook-h">
@@ -319,34 +85,34 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
           <div class="gallery" data-gallery aria-roledescription="carousel" aria-label="Mabrook screens">
             <div class="track" tabindex="0" aria-label="Slides, use arrow keys to move">
               <figure class="slide" data-cap="One app for all of it" data-desc="Video, live, games, music, shopping and AI behind one login.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: One app for all of it"><img src="assets/img-5c8ddb16c2.webp" alt="Mabrook cover: hotel booking in the video feed, Explorer screen, and team numbers: 32 people in the product team, 3 senior product designers, 2 stores." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: One app for all of it"><img src="/assets/img-5c8ddb16c2.webp" alt="Mabrook cover: hotel booking in the video feed, Explorer screen, and team numbers: 32 people in the product team, 3 senior product designers, 2 stores." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="One feed. Every vertical." data-desc="14 top tabs on one feed pattern, one global search, one contextual CTA.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: One feed. Every vertical."><img src="assets/img-6418eebf98.webp" alt="Three phones showing the same full-screen feed for food, shop and hotels, with Order now, Book now, Buy and Subscribe buttons." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: One feed. Every vertical."><img src="/assets/img-6418eebf98.webp" alt="Three phones showing the same full-screen feed for food, shop and hotels, with Order now, Book now, Buy and Subscribe buttons." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="Scroll. Tap. Booked." data-desc="One checkout for goods, food and stays, with a 15-minute booking hold.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Scroll. Tap. Booked."><img src="assets/img-a3ad60c649.webp" alt="Shoppable video feed and checkout screen, payment states for Apple Pay, card and Stripe." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Scroll. Tap. Booked."><img src="/assets/img-a3ad60c649.webp" alt="Shoppable video feed and checkout screen, payment states for Apple Pay, card and Stripe." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="See the world. Live." data-desc="Local explorers stream walking tours; join live or book by the hour.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: See the world. Live."><img src="assets/img-007c3393ca.webp" alt="Explorer screens: filters, most viewed and live-now places, and the create menu." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: See the world. Live."><img src="/assets/img-007c3393ca.webp" alt="Explorer screens: filters, most viewed and live-now places, and the create menu." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="7 days. Top 10. Repeat." data-desc="Weekly music battles: launch a sound, collect covers, rank the Top 10.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: 7 days. Top 10. Repeat."><img src="assets/img-f61074b074.webp" alt="Music battle flow with leaderboard notification and the weekly top 10." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: 7 days. Top 10. Repeat."><img src="/assets/img-f61074b074.webp" alt="Music battle flow with leaderboard notification and the weekly top 10." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="Just ask your AI" data-desc="An assistant in the centre of the tab bar; voice or text, read aloud.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Just ask your AI"><img src="assets/img-96c42f460c.webp" alt="AI assistant chat and its settings, with prompt suggestions and the planned safety layer: 3 age modes, 3-hour daily feed limit, 18+ for DMs and live." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Just ask your AI"><img src="/assets/img-96c42f460c.webp" alt="AI assistant chat and its settings, with prompt suggestions and the planned safety layer: 3 age modes, 3-hour daily feed limit, 18+ for DMs and live." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="One tap. Every format." data-desc="Five content formats share one short path from + to publish.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: One tap. Every format."><img src="assets/img-14ce21f809.webp" alt="Design-stage flow map of the creation path, from tap plus to publish, with a branch to go live." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: One tap. Every format."><img src="/assets/img-14ce21f809.webp" alt="Design-stage flow map of the creation path, from tap plus to publish, with a branch to go live." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="Play. Invite. Earn." data-desc="Leaderboards, referral codes and in-app rewards to lift retention.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Play. Invite. Earn."><img src="assets/img-d629a8be71.webp" alt="Gamification screens: leaderboards, referral invites and in-app games." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Play. Invite. Earn."><img src="/assets/img-d629a8be71.webp" alt="Gamification screens: leaderboards, referral invites and in-app games." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="Built to scale" data-desc="Many vendors’ styles became one dark, orange-accented design system.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Built to scale"><img src="assets/img-fc0cafb998.webp" alt="Design system overview: buttons in 5 states, colour tokens, inputs, controls, typography and 160+ icons; 25 component sets, 470 variants and states." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Built to scale"><img src="/assets/img-fc0cafb998.webp" alt="Design system overview: buttons in 5 states, colour tokens, inputs, controls, typography and 160+ icons; 25 component sets, 470 variants and states." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="App overview" data-desc="15-second walkthrough of the app.">
-                <div class="frame"><video muted loop playsinline preload="none" poster="assets/img-e2c0109741.webp" data-video aria-label="Mabrook app overview video"></video></div>
+                <div class="frame"><video muted loop playsinline preload="none" poster="/assets/img-e2c0109741.webp" data-video aria-label="Mabrook app overview video"></video></div>
               </figure>
             </div>
             <div class="g-bar">
@@ -375,58 +141,7 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
             <div class="kpi" role="listitem"><b>11% → 19%</b><span>of monthly users open the app daily</span></div>
             <div class="kpi" role="listitem"><b>10 → 4 days</b><span>feature release with AI-assisted design</span></div>
           </div>
-
-          <div class="acc" data-acc>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="true"><span><span class="acc-label">The challenge</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel open"><div class="acc-inner"><div class="acc-body">
-                <p>Before my team joined, Mabrook had spent a year in slow development. Much of the UI was AI-generated and inconsistent, and every new vertical arrived with its own patterns.</p>
-                <p>With food, hotels, shopping, music, games and live streams in one app, the real problem was <strong>navigation and a design system that could keep scaling</strong> as features kept coming.</p>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">My role and the team</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <ul>
-                  <li>Set up the design process from scratch: critique, reviews and handoff to Flutter engineers.</li>
-                  <li>Led 3 product designers plus marketing graphic and motion designers; personally hired a senior product designer.</li>
-                  <li>Joined strategy and roadmap meetings with the C-level team while the product team grew from 15 to 32 people.</li>
-                </ul>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">How we rebuilt it</span><span class="acc-hint">6 stages</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <ol class="steps">
-                  <li><span><b>Reset the foundation</b>Rebuilt the visual style and many core features almost from scratch instead of patching the AI-generated UI.</span></li>
-                  <li><span><b>One feed for every vertical</b>A single full-screen feed with 14 top tabs, one global search and one contextual action: Order now, Book now, Buy or Subscribe.</span></li>
-                  <li><span><b>One checkout</b>Goods, food and stays share one flow, with a 15-minute booking hold and three ways to pay.</span></li>
-                  <li><span><b>One creation path</b>Post, reel, podcast, story and live start from the same + button and share one short path to publish.</span></li>
-                  <li><span><b>Retention through play</b>Coins for opening the app, an in-app currency, leaderboards, referral codes and weekly music battles.</span></li>
-                  <li><span><b>A system that scales</b>25 component sets, 470 variants and states, 160 icons, with AI-assisted design cutting feature releases from 10 to 4 days.</span></li>
-                </ol>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">AI in the product and the process</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>The AI assistant sits in the centre of the tab bar: voice or text, in the user’s language, with answers read aloud. A safety layer is on the roadmap: 3 age modes, a 3-hour daily feed limit and 18+ for DMs and live.</p>
-                <p>Inside the team, AI-assisted design took a feature from brief to release in 4 days instead of 10.</p>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Results</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <ul>
-                  <li>Monthly active users grew <strong>4×</strong>.</li>
-                  <li>Day-7 retention rose from <strong>9% to 14%</strong>, day-30 from <strong>3% to 5%</strong>.</li>
-                  <li>Daily stickiness (DAU/MAU) rose from <strong>11% to 19%</strong>: almost one in five monthly users now opens the app every day.</li>
-                  <li><strong>14+ verticals</strong> run on one navigation pattern and one checkout.</li>
-                </ul>
-                <ul class="chips" aria-label="Inside the app"><li>Video feed</li><li>Live</li><li>Music battles</li><li>Games</li><li>Shop</li><li>Food</li><li>Hotels</li><li>Explorers</li><li>AI assistant</li></ul>
-              </div></div></div>
-            </div>
-          </div>
+          <div class="case-cta"><a class="btn primary" href="/work/mabrook/">Read the case study <span class="arr" aria-hidden="true">→</span></a></div>
         </div>
       </article>
 
@@ -435,19 +150,19 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
           <div class="gallery" data-gallery aria-roledescription="carousel" aria-label="ASI ESP+ screens">
             <div class="track" tabindex="0" aria-label="Slides, use arrow keys to move">
               <figure class="slide" data-cap="The platform behind a $27.7B industry" data-desc="ESP+ search on web and Collections on mobile; 1.2M+ products, 2.5M searches a month.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: The platform behind a $27.7B industry"><img src="assets/img-3de690c160.webp" alt="ESP+ product search results on desktop with a mobile Collections screen; stats: 1.2M+ brandable products, 2.5M product searches every month, 3 in 4 promo product searches run through ESP." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: The platform behind a $27.7B industry"><img src="/assets/img-3de690c160.webp" alt="ESP+ product search results on desktop with a mobile Collections screen; stats: 1.2M+ brandable products, 2.5M product searches every month, 3 in 4 promo product searches run through ESP." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="A team that tested before it built" data-desc="14 product master files, 1,300+ screens and one loop for every new feature.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: A team that tested before it built"><img src="assets/img-a2554cfc29.webp" alt="Grid of 12 ESP+ product areas from Search to Stores, stats: 14 product master files, 1,300+ screens, 2 brands on 1 design system, and the six-step loop from research to ship." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: A team that tested before it built"><img src="/assets/img-a2554cfc29.webp" alt="Grid of 12 ESP+ product areas from Search to Stores, stats: 14 product master files, 1,300+ screens, 2 brands on 1 design system, and the six-step loop from research to ship." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="One system, two brands" data-desc="Cosmos 1.2: 290+ component sets, 5,300+ variants and states, 500+ tokens.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: One system, two brands"><img src="assets/img-c74731b200.webp" alt="Cosmos design system overview: ESP+ and ASI Central colour tokens, product card states, AI Tools component docs, button states and search results pattern." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: One system, two brands"><img src="/assets/img-c74731b200.webp" alt="Cosmos design system overview: ESP+ and ASI Central colour tokens, product card states, AI Tools component docs, button states and search results pattern." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="Custom print, without leaving ESP+" data-desc="POD Studio: artwork, decoration method, colours and margin in one guided flow.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Custom print, without leaving ESP+"><img src="assets/img-1c9ef996dd.webp" alt="POD Studio editor placing wrestling artwork on a T-shirt, plus screens for picking a POD-ready product, colour management and price grid; stats: $13B market, about 26% yearly growth, 4 steps." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Custom print, without leaving ESP+"><img src="/assets/img-1c9ef996dd.webp" alt="POD Studio editor placing wrestling artwork on a T-shirt, plus screens for picking a POD-ready product, colour management and price grid; stats: $13B market, about 26% yearly growth, 4 steps." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="From mockups to prototypes in code" data-desc="Claude builds from the Cosmos library through Figma and GitHub.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: From mockups to prototypes in code"><img src="assets/img-68db1032d2.webp" alt="Code sample of a POD Studio prototype built from Cosmos components, the four-step flow Brief, Claude plus MCP, Figma plus GitHub, Engineering, and results 11 to 3.5 days, 3.4 to 1.3 review rounds, minus 73% requirement changes." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: From mockups to prototypes in code"><img src="/assets/img-68db1032d2.webp" alt="Code sample of a POD Studio prototype built from Cosmos components, the four-step flow Brief, Claude plus MCP, Figma plus GitHub, Engineering, and results 11 to 3.5 days, 3.4 to 1.3 review rounds, minus 73% requirement changes." loading="lazy" decoding="async"></button></div>
               </figure>
             </div>
             <div class="g-bar">
@@ -476,257 +191,20 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
             <div class="kpi" role="listitem"><b>−73%</b><span>requirement changes after sign-off</span></div>
             <div class="kpi" role="listitem"><b>19 → 7</b><span>defects per feature set</span></div>
           </div>
-
-          <div class="acc" data-acc>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="true"><span><span class="acc-label">The challenge</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel open"><div class="acc-inner"><div class="acc-body">
-                <p>ASI has run the promotional products business since 1962. ESP+ grew through acquired modules, three generations of front-end framework and a design language that drifted every time a team shipped in a hurry. The job was to <strong>keep shipping new features without adding to the drift</strong>.</p>
-                <ul>
-                  <li>Distributors bought blank products in ESP+, then left to decorate them in one-click print-on-demand services.</li>
-                  <li>One product spread across 14 areas: search, orders, quotes and invoices, CRM, collections, presentations, websites, stores, analytics and more.</li>
-                  <li>Two brands, ESP+ and ASI Central, on one inconsistent component library.</li>
-                  <li>Details surfaced late: missing states in review round three, limits found in QA, components that didn’t exist on handoff day.</li>
-                </ul>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">My role and the team</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <ul>
-                  <li>Designed Print-on-Demand end to end, contributed to the Cosmos design system and helped move the team from static mockups to AI-built prototypes in code.</li>
-                  <li>Grew the design team: ran interviews and onboarding for <strong>3 designers I brought in</strong>, and helped backfill roles when designers and our UX researcher moved on, so delivery didn’t stall.</li>
-                  <li>Worked in a design team led by a VP of Design, alongside PMs, front-end and back-end engineers and QA across 14 product areas.</li>
-                </ul>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Print-on-Demand, inside the order</span><span class="acc-hint">4 steps</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>POD is a fast-growing market (about $13B in 2025, ~26% a year), and we were losing the decoration step to single-purpose tools. Distributor interviews kept coming back to the same line: they bought blanks in ESP+ and printed somewhere else.</p>
-                <ol class="steps">
-                  <li><span><b>Pick a POD-ready product</b>Start from the same catalogue and order.</span></li>
-                  <li><span><b>Place artwork</b>Artwork, text or uploads on the front and back.</span></li>
-                  <li><span><b>Choose method and colours</b>Decoration method and colour management in one panel.</span></li>
-                  <li><span><b>Set price and margin</b>A price grid and margin, with no second tool and no re-entering data.</span></li>
-                </ol>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">One system, two brands</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>Cosmos 1.2 powers both ESP+ and ASI Central: <strong>290+ component sets, 5,300+ variants and states and 500+ design tokens</strong>. I helped build and document its components, states and page patterns, so Search, Orders, CRM, Collections, Presentations and POD feel like one product.</p>
-                <p>Before bringing AI in, we spent six weeks cleaning up the library, so there was something worth generating from.</p>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">From mockups to prototypes in code</span><span class="acc-hint">AI in the design process</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <ol class="steps">
-                  <li><span><b>Brief</b>Product, design, front-end and QA agree on states, data and a closed list of components in one short session.</span></li>
-                  <li><span><b>Claude and Figma MCP</b>Claude reads the Cosmos library in Figma and builds only from components that already exist.</span></li>
-                  <li><span><b>Figma and GitHub</b>One run gives Figma frames for every state and a clickable prototype on a GitHub branch.</span></li>
-                  <li><span><b>Engineering</b>Developers keep the prototype’s front end and wire up data, auth and tests.</span></li>
-                </ol>
-                <p>We kept Figma on purpose: it stays the lasting, reviewable record, and designers review, edit and sign off every generated screen. <a href="https://medium.com/@iliya.vostrikov/how-we-put-claude-into-our-design-process-and-got-a-clickable-prototype-3x-faster-ec2626aacd54" target="_blank" rel="noopener">Read the full story on Medium</a>.</p>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">How we worked</span><span class="acc-hint">6 stages, 1,300+ screens</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <ol class="steps">
-                  <li><span><b>Research</b>Interviews with distributors and suppliers.</span></li>
-                  <li><span><b>Hypothesis</b>What we believe and how we’ll know.</span></li>
-                  <li><span><b>Critique</b>Design critique rounds with the team.</span></li>
-                  <li><span><b>Prototype</b>Clickable, in code, on Cosmos.</span></li>
-                  <li><span><b>Validate</b>Test with users and stakeholders.</span></li>
-                  <li><span><b>Ship</b>Hand off to developers, then measure.</span></li>
-                </ol>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Results</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>One product team, six features in a quarter:</p>
-                <ul>
-                  <li>Brief to clickable prototype: <strong>11 → 3.5 days</strong>.</li>
-                  <li>Review rounds per feature: <strong>3.4 → 1.3</strong>.</li>
-                  <li>Rework after handoff: <strong>4.2 → 1.1 developer-days</strong>.</li>
-                  <li>Defects per feature set: <strong>19 → 7</strong>.</li>
-                  <li>Requirement changes after sign-off: <strong>−73%</strong> (5.1 → 1.4).</li>
-                  <li><strong>Zero</strong> off-system components in generated UI.</li>
-                </ul>
-                <p>POD gave distributors a reason to keep decoration inside ESP+. Cosmos gave two brands one consistent language. And the team’s role shifted from drawing screens to engineering prototypes, without giving up Figma as the source of truth.</p>
-                <ul class="chips" aria-label="Focus areas"><li>Cosmos design system</li><li>Print-on-Demand</li><li>AI design engineering</li><li>B2B SaaS</li></ul>
-              </div></div></div>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <article class="case" aria-labelledby="uride-h">
-        <div class="case-media">
-          <div class="gallery" data-gallery aria-roledescription="carousel" aria-label="Uride screens">
-            <div class="track" tabindex="0" aria-label="Slides, use arrow keys to move">
-              <figure class="slide" data-cap="Rides between cities, designed from zero" data-desc="Two native apps for a Canadian ride-share network where drivers work in shifts.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Rides between cities, designed from zero"><img src="assets/uride-1.webp" alt="Uride cover: rider and driver app screens with driver on the way, ride offer and online heatmap; stats: 1M+ rides, 12 cities across Ontario and BC, 0 to 1 apps and design system." loading="lazy" decoding="async"></button></div>
-              </figure>
-              <figure class="slide" data-cap="320+ screens. Two apps. Two designers." data-desc="163 rider screens, 160 driver screens, 80+ feature flows.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: 320+ screens. Two apps. Two designers."><img src="assets/uride-2.webp" alt="Isometric grid of rider and driver app screens: wallet, profile, rides history, chat, safety milestones, rating and help." loading="lazy" decoding="async"></button></div>
-              </figure>
-              <figure class="slide" data-cap="From an 8-step web form to a guided document scan" data-desc="Drivers photograph documents; OCR and public registries fill in the rest.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: From an 8-step web form to a guided document scan"><img src="assets/uride-3.webp" alt="Before and after of driver onboarding: an 8-step web form versus a four-screen app flow with document checklist, licence scan, pre-filled data and review status; −70% manual input, 35 to 9 minutes, 2× completed sign-ups." loading="lazy" decoding="async"></button></div>
-              </figure>
-              <figure class="slide" data-cap="Drivers work shifts, not random gigs" data-desc="Shifts, daily goals and a reason instead of a no-show.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Drivers work shifts, not random gigs"><img src="assets/uride-4.webp" alt="Driver shift screens: daily goal and hours, reasons for cancelling, availability preferences and goal settings; −32% no-shows, +21% hours online, 94% shifts covered on time." loading="lazy" decoding="async"></button></div>
-              </figure>
-              <figure class="slide" data-cap="Transparent pay keeps drivers driving" data-desc="Weekly payouts, goals with guaranteed bonuses and achievements.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Transparent pay keeps drivers driving"><img src="assets/uride-5.webp" alt="Driver earnings, withdraw, achievements and arrived-at-pickup screens; +38% active drivers in 6 months, −24% churn, −41% pay-related support tickets." loading="lazy" decoding="async"></button></div>
-              </figure>
-              <figure class="slide" data-cap="Book a ride to the next city in under a minute" data-desc="Fixed price upfront, live matching, scheduled trips and a one-tap tip.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Book a ride to the next city in under a minute"><img src="assets/uride-6.webp" alt="Five rider screens from route and fixed price to scheduled trips along a dotted route from Kelowna to Kamloops; booking time 2:40 to 0:55, +18% completed trips." loading="lazy" decoding="async"></button></div>
-              </figure>
-              <figure class="slide" data-cap="One system, two apps" data-desc="Google Sans type scale, a Flame Red palette, one icon set.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: One system, two apps"><img src="assets/uride-7.webp" alt="Uride design system: 30 colour styles, 170+ icons, typography in Google Sans, buttons and inputs in every state, and toast notifications." loading="lazy" decoding="async"></button></div>
-              </figure>
-              <figure class="slide" data-cap="In their words, the Uride team" data-desc="Recommendations from the designer I worked with and the VP of Technology.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: In their words, the Uride team"><img src="assets/uride-8.webp" alt="Two recommendation cards from Alejandro Delgadillo, Design Engineer at Uride, and Lewis Dackam, VP of Technology at Uride." loading="lazy" decoding="async"></button></div>
-              </figure>
-            </div>
-            <div class="g-bar">
-              <p class="g-cap" aria-live="polite"></p>
-              <div class="g-ctrl">
-                <button class="icon-btn" type="button" data-prev aria-label="Previous slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
-                <span class="g-count" aria-hidden="true"></span>
-                <button class="icon-btn" type="button" data-next aria-label="Next slide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
-              </div>
-            </div>
-            <div class="thumbs" role="group" aria-label="Choose a slide"></div>
-          </div>
-        </div>
-
-        <div class="case-body">
-          <h3 class="case-title" id="uride-h">Uride</h3>
-          <p class="case-sub">Rider and Driver apps for a Canadian intercity ride-share network where drivers work in shifts. Designed from zero to replace a web service; 1M+ rides across Ontario and BC.</p>
-          <dl class="facts">
-            <dt>Role</dt><dd>Product Designer, later the sole designer</dd>
-            <dt>Team</dt><dd>Product owners, an ex-Uber project manager and company leadership</dd>
-            <dt>Platforms</dt><dd>iOS and Android, 320+ screens across two apps</dd>
-          </dl>
-          <div class="kpis" role="list" aria-label="Results">
-            <div class="kpi" role="listitem"><b>2×</b><span>completed driver sign-ups</span></div>
-            <div class="kpi" role="listitem"><b>2:40 → 0:55</b><span>time to book an intercity ride</span></div>
-            <div class="kpi" role="listitem"><b>+38%</b><span>active drivers in 6 months</span></div>
-            <div class="kpi" role="listitem"><b>35 → 9 min</b><span>to submit driver documents</span></div>
-          </div>
-
-          <div class="acc" data-acc>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="true"><span><span class="acc-label">The challenge</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel open"><div class="acc-inner"><div class="acc-body">
-                <p>Uride focuses on trips between cities. Unlike typical gig platforms, its drivers are part of the fleet and work scheduled shifts. Backed by private investment and Canadian government grants, it ran on the web: riders booked there and every driver signed up through a long web form.</p>
-                <p>Driver supply was the real bottleneck. Interviews and funnel data showed where it broke:</p>
-                <ul>
-                  <li>An 8-step web sign-up with 40+ typed fields and 8 document uploads.</li>
-                  <li>Licence, work eligibility, driver’s abstract, background check, vehicle ownership, insurance and safety, with rules that differ by province.</li>
-                  <li>No save and resume, so most drop-offs happened at document upload.</li>
-                  <li>Drivers work planned shifts, so one no-show breaks a trip between cities.</li>
-                  <li>Pay questions were the top support topic.</li>
-                </ul>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">My role and the team</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <ul>
-                  <li>One of two product designers who shaped the product from zero, and later the <strong>only designer owning design end to end</strong>.</li>
-                  <li>Drove the driver side from the start: onboarding with OCR and automated checks, shifts and earnings. Co-created the Rider app and the shared design system.</li>
-                  <li>Worked directly with product owners, a project manager who had previously managed product at Uber, and company leadership, turning business goals into flows, prototypes and specs that engineering could ship.</li>
-                  <li>Cross-functional team: product owners, the project manager, two product designers, iOS, Android and backend engineers, and QA.</li>
-                </ul>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Two apps, one network</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>Riders book, track and pay. Drivers onboard, plan shifts, take rides and get paid. Both apps share one system and one ride model, so every state a rider sees (searching, driver on the way, arrived, finished) has its pair on the driver side.</p>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Driver onboarding: scan, don’t type</span><span class="acc-hint">4 steps</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <ol class="steps">
-                  <li><span><b>One checklist</b>The web form became a document checklist, with progress saved after every step.</span></li>
-                  <li><span><b>Scan, don’t type</b>Drivers photograph their licence and documents.</span></li>
-                  <li><span><b>Data pre-filled</b>OCR and public registries fill in the data; the driver only checks and confirms.</span></li>
-                  <li><span><b>Clear review status</b>A visible status replaced “we’ll email you”.</span></li>
-                </ol>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Shifts, not gigs</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <ul>
-                  <li>A daily goal in hours, with progress for every shift.</li>
-                  <li>Own availability: preferred, unavailable and flexible time slots.</li>
-                  <li>“Can’t make it?” with a reason, so dispatch can re-plan supply instead of discovering a no-show.</li>
-                  <li>Personal goals with a guaranteed bonus for reliability: hours online, shift completion, acceptance rate.</li>
-                </ul>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Transparent earnings</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>Weekly earnings, instant withdraw, auto payouts and achievements made pay easy to understand and turned retention into a product feature.</p>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Rider journey</span><span class="acc-hint">5 steps</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <ol class="steps">
-                  <li><span><b>Route and fixed price</b>The fare is clear before booking.</span></li>
-                  <li><span><b>Live matching</b>Riders see the search and estimated pickup time.</span></li>
-                  <li><span><b>Driver on the way</b>Car, plate and driver details with live ETA.</span></li>
-                  <li><span><b>One-tap tip</b>Preset amounts or a custom tip.</span></li>
-                  <li><span><b>Scheduled trips</b>Book longer rides between cities ahead of time.</span></li>
-                </ol>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Design system from scratch</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>One visual language for both apps: a Google Sans type scale, a Flame Red core palette with <strong>30 colour styles</strong>, <strong>170+ icons</strong> and components with every state. <strong>320+ screens</strong> across <strong>80+ feature flows</strong>, from sign-up to payout.</p>
-              </div></div></div>
-            </div>
-            <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Results</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
-              <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>First 6 months after launch:</p>
-                <ul>
-                  <li><strong>2×</strong> completed driver sign-ups (31% → 64%), with <strong>70% less</strong> manual input.</li>
-                  <li>Time to submit documents: <strong>35 → 9 minutes</strong>.</li>
-                  <li><strong>+38%</strong> active drivers, <strong>−24%</strong> driver churn over 90 days.</li>
-                  <li>Shift no-shows <strong>−32%</strong>, with <strong>94%</strong> of shifts covered on time.</li>
-                  <li>Average time to book a ride: <strong>2:40 → 0:55</strong>, and <strong>+18%</strong> more requests turned into completed rides.</li>
-                  <li><strong>−41%</strong> pay-related support tickets.</li>
-                </ul>
-                <p>Uride moved from a web-only service to native apps in both stores. The shared design system let the team ship new flows without new UI and supported the expansion to South America. In 2025 Uride ranked <strong>#34 in the Deloitte Technology Fast 50 Canada</strong>, with 883% growth over four years.</p>
-                <ul class="chips" aria-label="Focus areas"><li>Rider app</li><li>Driver app</li><li>iOS and Android</li><li>AI-assisted onboarding</li><li>Design system</li></ul>
-              </div></div></div>
-            </div>
-          </div>
+          <div class="case-cta"><a class="btn primary" href="/work/asi-esp/">Read the case study <span class="arr" aria-hidden="true">→</span></a></div>
         </div>
       </article>
 
       <div class="more">
         <h3>More case studies</h3>
-        <p>Full write-ups are on the way. Until then, each one opens on Dribbble.</p>
+        <p>Full write-ups open on this site; the rest are on Dribbble while I move them here.</p>
         <ul class="work-list">
-          <li><a href="https://dribbble.com/shots/27828950-Logistics-Cluster" target="_blank" rel="noopener"><span class="w-name">UN WFP Logistics Cluster<span class="w-role">Lead Product Designer</span></span><span class="w-desc">Offline-first field app for humanitarian teams, with a lite version for low-end phones on 2G.</span><span class="w-metric"><em>−38%</em> time to dispatch</span><span class="w-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M8 7h9v9"/></svg></span></a></li>
-          <li><a href="https://dribbble.com/shots/27823439" target="_blank" rel="noopener"><span class="w-name">Studytube<span class="w-role">Design system owner</span></span><span class="w-desc">B2B learning platform; with 4 designers and a UX researcher we redesigned onboarding.</span><span class="w-metric"><em>43% → 59%</em> first-lesson conversion</span><span class="w-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M8 7h9v9"/></svg></span></a></li>
-          <li><a href="https://dribbble.com/shots/26765030" target="_blank" rel="noopener"><span class="w-name">SAP<span class="w-role">Design system consultant</span></span><span class="w-desc">Audited several design systems and consolidated them into one pilot system with governance.</span><span class="w-metric">Later received an <em>iF Design Award</em></span><span class="w-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M8 7h9v9"/></svg></span></a></li>
-          <li><a href="https://dribbble.com/shots/23851888" target="_blank" rel="noopener"><span class="w-name">Breethe<span class="w-role">Product Designer</span></span><span class="w-desc">Meditation and sleep app for iOS and Android.</span><span class="w-metric"><em>8M+</em> downloads</span><span class="w-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M8 7h9v9"/></svg></span></a></li>
-          <li><a href="https://dribbble.com/shots/23858411" target="_blank" rel="noopener"><span class="w-name">Goal Tracker<span class="w-role">Product Designer</span></span><span class="w-desc">Big-data visualisation for the UN Global Goals, built for Data Act Lab; I worked directly with the founder.</span><span class="w-metric">Data products</span><span class="w-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M8 7h9v9"/></svg></span></a></li>
+          <li><a href="/work/uride/"><span class="w-name">Uride<span class="w-role">Product Designer</span><span class="w-tags">Mobility · iOS and Android</span></span><span class="w-desc">Rider and Driver apps for Canadian intercity ride-share, designed from zero.</span><span class="w-metric"><em>2×</em> completed driver sign-ups</span><span class="w-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+          <li><a href="https://dribbble.com/shots/27828950-Logistics-Cluster" target="_blank" rel="noopener"><span class="w-name">UN WFP Logistics Cluster<span class="w-role">Lead Product Designer</span><span class="w-tags">Humanitarian · Mobile and admin · <span class="w-ext">on Dribbble ↗</span></span></span><span class="w-desc">Offline-first field app for humanitarian teams, with a lite version for low-end phones on 2G.</span><span class="w-metric"><em>−38%</em> time to dispatch</span><span class="w-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M8 7h9v9"/></svg></span></a></li>
+          <li><a href="https://dribbble.com/shots/27823439" target="_blank" rel="noopener"><span class="w-name">Studytube<span class="w-role">Design system owner</span><span class="w-tags">B2B SaaS · Learning · <span class="w-ext">on Dribbble ↗</span></span></span><span class="w-desc">B2B learning platform; with 4 designers and a UX researcher we redesigned onboarding.</span><span class="w-metric"><em>43% → 59%</em> first-lesson conversion</span><span class="w-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M8 7h9v9"/></svg></span></a></li>
+          <li><a href="https://dribbble.com/shots/26765030" target="_blank" rel="noopener"><span class="w-name">SAP<span class="w-role">Design system consultant</span><span class="w-tags">Enterprise · Design systems · <span class="w-ext">on Dribbble ↗</span></span></span><span class="w-desc">Audited several design systems and consolidated them into one pilot system with governance.</span><span class="w-metric">Later received an <em>iF Design Award</em></span><span class="w-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M8 7h9v9"/></svg></span></a></li>
+          <li><a href="https://dribbble.com/shots/23851888" target="_blank" rel="noopener"><span class="w-name">Breethe<span class="w-role">Product Designer</span><span class="w-tags">B2C · Wellness app · <span class="w-ext">on Dribbble ↗</span></span></span><span class="w-desc">Meditation and sleep app for iOS and Android.</span><span class="w-metric"><em>8M+</em> downloads</span><span class="w-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M8 7h9v9"/></svg></span></a></li>
+          <li><a href="https://dribbble.com/shots/23858411" target="_blank" rel="noopener"><span class="w-name">Goal Tracker<span class="w-role">Product Designer</span><span class="w-tags">Data visualisation · Web · <span class="w-ext">on Dribbble ↗</span></span></span><span class="w-desc">Big-data visualisation for the UN Global Goals, built for Data Act Lab; I worked directly with the founder.</span><span class="w-metric">Data products</span><span class="w-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M8 7h9v9"/></svg></span></a></li>
         </ul>
       </div>
     </div>
@@ -823,42 +301,42 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
             <blockquote class="rec-pull">“He built a clear, well-organized design process and kept design and engineering closely aligned.”</blockquote>
             <button class="rec-more" type="button" aria-haspopup="dialog" data-rec="rec-0">Read full recommendation</button>
             <div class="rec-full" id="rec-0"><div class="acc-inner"><div class="rec-text"><p>I am a COO at Mabrook and worked closely with Illia, who led the design team as Head of Design. He built a clear, well-organized design process and kept design and engineering closely aligned, which made delivery faster and smoother for everyone involved. Illia is a strong leader who consistently delivered high-quality product results, and his communication and soft skills made him a pleasure to work with. I would gladly work with him again and recommend him for any design leadership role.</p></div></div></div>
-            <div class="rec-by"><img class="avatar" src="assets/img-51281b202e.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/dmitry-zhemchugov/" target="_blank" rel="noopener">Dmitry Zhemchugov</a><small>COO, Mabrook</small></span></div>
+            <div class="rec-by"><img class="avatar" src="/assets/img-51281b202e.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/dmitry-zhemchugov/" target="_blank" rel="noopener">Dmitry Zhemchugov</a><small>COO, Mabrook</small></span></div>
           </li>
 <li class="rec">
             <span class="rec-rel">Client</span>
             <blockquote class="rec-pull">“Illia understands how products work, what makes users engage with them, and how good design translates into real business outcomes.”</blockquote>
             <button class="rec-more" type="button" aria-haspopup="dialog" data-rec="rec-1">Read full recommendation</button>
             <div class="rec-full" id="rec-1"><div class="acc-inner"><div class="rec-text"><p>I’ve had the pleasure of working with Illia, and I can confidently say he’s one of the best UI/UX designers I’ve worked with.</p><p>What truly sets Illia apart is his ability to own the entire design process — from understanding business objectives and user needs to shaping product strategy, crafting exceptional user experiences, and bringing those designs to life.</p><p>He’s not just someone who makes products look great. Illia understands how products work, what makes users engage with them, and, most importantly, how good design translates into real business outcomes. On top of that, he’s equally capable of implementing his designs in Webflow, taking ideas all the way from concept to a fully functional, polished product.</p><p>He combines exceptional creativity and attention to detail with strong product thinking, practical judgment, and a genuine sense of ownership. You can trust him with a complex challenge and know he’ll deliver a thoughtful, elegant solution that actually works.</p><p>I’d wholeheartedly recommend Illia to any team looking for a designer who can make a meaningful impact on both the product and the business.</p></div></div></div>
-            <div class="rec-by"><img class="avatar" src="assets/img-921c71e638.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/suren-kocharian/" target="_blank" rel="noopener">Suren Kocharian</a><small>VP Production and Operations, Breethe</small></span></div>
+            <div class="rec-by"><img class="avatar" src="/assets/img-921c71e638.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/suren-kocharian/" target="_blank" rel="noopener">Suren Kocharian</a><small>VP Production and Operations, Breethe</small></span></div>
           </li>
 <li class="rec">
             <span class="rec-rel">Reported to me</span>
             <blockquote class="rec-pull">“A strong design leader who combines strategic thinking, clear communication, and hands-on product design expertise.”</blockquote>
             <button class="rec-more" type="button" aria-haspopup="dialog" data-rec="rec-2">Read full recommendation</button>
             <div class="rec-full" id="rec-2"><div class="acc-inner"><div class="rec-text"><p>I had the pleasure of working with Illia on a complex, feature-rich product, where I had the opportunity to see both his design expertise and leadership skills in action.</p><p>One of his key contributions was helping the team organize a wide range of features into a clear, scalable product structure while keeping navigation intuitive and consistent.</p><p>Illia worked across several major product areas, including AI chat, dating, music, music battles, and music challenges, while also contributing to the shared design system.</p><p>Beyond hands-on design, he represented the design team in strategic product discussions, strengthened cross-functional collaboration, and consistently brought a data-driven perspective to design decisions.</p><p>I highly recommend Illia as a strong design leader who combines strategic thinking, clear communication, and hands-on product design expertise. He would be a valuable addition to any product team.</p></div></div></div>
-            <div class="rec-by"><img class="avatar" src="assets/img-3d4f959180.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/viktor-zhitomirskiy/" target="_blank" rel="noopener">Viktor Zhytomyrskyi</a><small>Senior Product Designer, now at HP</small></span></div>
+            <div class="rec-by"><img class="avatar" src="/assets/img-3d4f959180.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/viktor-zhitomirskiy/" target="_blank" rel="noopener">Viktor Zhytomyrskyi</a><small>Senior Product Designer, now at HP</small></span></div>
           </li>
 <li class="rec">
             <span class="rec-rel">Engineering partner</span>
             <blockquote class="rec-pull">“Illia is exactly the kind of Head of Design who brings value far beyond design itself.”</blockquote>
             <button class="rec-more" type="button" aria-haspopup="dialog" data-rec="rec-3">Read full recommendation</button>
             <div class="rec-full" id="rec-3"><div class="acc-inner"><div class="rec-text"><p>I’ve worked with many designers throughout my career, but Illia Vostrikov is one of those professionals who genuinely makes everyone around him better at what they do.</p><p>What impressed me most was his ability to take complex systems and find ways to make them simpler, more intuitive, and easier to implement without compromising the quality of the final product. He never treated design as something separate from development. He actively listened to engineers, understood technical constraints, and consistently found solutions that worked for both the users and the people building the product.</p><p>We worked closely together on numerous occasions, and I could always count on his responsiveness, attention to detail, and willingness to jump into a discussion and find the best way forward. Everything he delivered was thoughtful, polished, and on time — often exceeding expectations.</p><p>But beyond his professional expertise, Illia is simply a great person to work with. Approachable, respectful, open to feedback, and genuinely invested in the success of the entire team. Working with him never felt like a negotiation between design and development, but like two sides working toward the same goal.</p><p>Illia is exactly the kind of Head of Design who brings value far beyond design itself. I would gladly work with him again and recommend him without hesitation to any team looking for a strong design leader and an outstanding human being!</p></div></div></div>
-            <div class="rec-by"><img class="avatar" src="assets/img-518be9f7f0.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/wolkentreiber/" target="_blank" rel="noopener">Illia Shevchuk</a><small>Flutter Team Lead</small></span></div>
+            <div class="rec-by"><img class="avatar" src="/assets/img-518be9f7f0.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/wolkentreiber/" target="_blank" rel="noopener">Illia Shevchuk</a><small>Flutter Team Lead</small></span></div>
           </li>
 <li class="rec">
             <span class="rec-rel">Design partner</span>
             <blockquote class="rec-pull">“The Uride app under his design reached a level that genuinely held its own against what you would expect from something like Uber or Lyft.”</blockquote>
             <button class="rec-more" type="button" aria-haspopup="dialog" data-rec="rec-4">Read full recommendation</button>
             <div class="rec-full" id="rec-4"><div class="acc-inner"><div class="rec-text"><p>I had the pleasure of working alongside Illia Vostrikov at Uride, where I served as Design Lead and he was a key part of our design team. From day one, the thing that stood out most was how fast he worked without ever sacrificing quality.</p><p>He did not just execute on what was given to him. He was constantly bringing ideas forward, suggesting new features and finding ways to improve existing ones that made the product meaningfully better. The Uride app under his design reached a level that genuinely held its own against what you would expect from something like Uber or Lyft, and that is not an easy bar to clear.</p><p>He owned everything design-related, delivered consistently and managed communication upward with management at the highest executive level at the same time keeping clear and concise communication horizontally between teammates. Any team that gets him is lucky to have him.</p></div></div></div>
-            <div class="rec-by"><img class="avatar" src="assets/img-280ef8e9b0.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/alejandro-delgadillo-683b6a48/" target="_blank" rel="noopener">Alejandro Delgadillo</a><small>Design Engineer, Uride</small></span></div>
+            <div class="rec-by"><img class="avatar" src="/assets/img-280ef8e9b0.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/alejandro-delgadillo-683b6a48/" target="_blank" rel="noopener">Alejandro Delgadillo</a><small>Design Engineer, Uride</small></span></div>
           </li>
 <li class="rec">
             <span class="rec-rel">My team</span>
             <blockquote class="rec-pull">“A great Head of Design who knows how to support the team, provide helpful feedback, and create a great work environment.”</blockquote>
             <button class="rec-more" type="button" aria-haspopup="dialog" data-rec="rec-5">Read full recommendation</button>
             <div class="rec-full" id="rec-5"><div class="acc-inner"><div class="rec-text"><p>I’ve really enjoyed working with Illia, he’s a great Head of Design who knows how to support the team, provide helpful feedback, and create a great work environment.</p><p>Illia has a strong understanding of product design and knows how to connect design decisions with business goals. He sees the bigger picture, focuses on what matters, and always brings valuable insights to discussions.</p><p>I also appreciate his openness to new ideas and his willing for bringing AI into design workflows, so it can improve design processes and make it faster. He actively explores new tools and opportunities and encourages the team to do the same.</p><p>It’s truly a pleasure to work with someone who brings so much strong expertise and support.</p></div></div></div>
-            <div class="rec-by"><img class="avatar" src="assets/img-1a30366312.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/alinalev/" target="_blank" rel="noopener">Alina Sushylova</a><small>Senior Product Designer</small></span></div>
+            <div class="rec-by"><img class="avatar" src="/assets/img-1a30366312.webp" alt="" width="44" height="44" loading="lazy"><span><a href="https://www.linkedin.com/in/alinalev/" target="_blank" rel="noopener">Alina Sushylova</a><small>Senior Product Designer</small></span></div>
           </li>
         </ul>
         <a class="recs-all" href="https://www.linkedin.com/in/ilja2z/details/recommendations/" target="_blank" rel="noopener">Read all recommendations on LinkedIn</a>
@@ -896,141 +374,6 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 </dialog>
 
 
-<script>
-(function(){
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // header border on scroll
-  var header = document.querySelector('.site-header');
-  var onScroll = function(){ header.classList.toggle('scrolled', window.scrollY > 8); };
-  window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
-
-  // accordions
-  var uid = 0;
-  document.querySelectorAll('[data-acc] .acc-item').forEach(function(item){
-    var btn = item.querySelector('.acc-trigger'), panel = item.querySelector('.acc-panel');
-    var id = 'acc-' + (++uid);
-    panel.id = id; btn.setAttribute('aria-controls', id);
-    panel.setAttribute('role','region'); panel.setAttribute('aria-label', btn.querySelector('.acc-label').textContent);
-    btn.addEventListener('click', function(){
-      var open = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', String(!open));
-      panel.classList.toggle('open', !open);
-    });
-  });
-
-
-  // recommendations
-  var rd = document.querySelector('dialog.rec-dlg'), rdIn = rd.querySelector('.rd-inner'), rdOpener = null;
-  document.querySelectorAll('.rec-more').forEach(function(b){
-    b.addEventListener('click', function(){
-      var card = b.closest('.rec');
-      rdIn.innerHTML = '';
-      rdIn.appendChild(card.querySelector('.rec-rel').cloneNode(true));
-      rdIn.appendChild(card.querySelector('.rec-text').cloneNode(true));
-      var by = card.querySelector('.rec-by').cloneNode(true); var a = by.querySelector('a'); if (a) a.id = 'rd-name'; rdIn.appendChild(by);
-      rdOpener = b; if (rd.showModal) rd.showModal(); else rd.setAttribute('open','');
-      rd.scrollTop = 0;
-    });
-  });
-  rd.querySelector('.rd-close').addEventListener('click', function(){ rd.close(); });
-  rd.addEventListener('click', function(e){ if (e.target === rd) rd.close(); });
-  rd.addEventListener('close', function(){ if (rdOpener) rdOpener.focus({preventScroll:true}); });
-  var rt = document.querySelector('.rec-track');
-  if (rt) {
-    var rp = document.querySelector('[data-rprev]'), rn = document.querySelector('[data-rnext]');
-    var step = function(d){ var c = rt.querySelector('.rec'); var w = c ? c.getBoundingClientRect().width + 20 : rt.clientWidth; rt.scrollBy({left: d * w, behavior: reduce ? 'auto' : 'smooth'}); };
-    var rs = function(){ rp.disabled = rt.scrollLeft < 4; rn.disabled = rt.scrollLeft + rt.clientWidth > rt.scrollWidth - 4; };
-    rp.addEventListener('click', function(){ step(-1); }); rn.addEventListener('click', function(){ step(1); });
-    rt.addEventListener('scroll', rs, {passive:true}); window.addEventListener('resize', rs); rs();
-  }
-
-  // video from embedded data
-  var reelUrl = null;
-  reelUrl = 'assets/mabrook-reel.mp4';
-
-
-  var LB = (function(){
-    var lb = document.querySelector('dialog.lb'), img = lb.querySelector('img'), cnt = lb.querySelector('.lb-count');
-    var list = [], li = 0, done = null;
-    function show(n){ li = (n + list.length) % list.length; img.src = list[li].src; img.alt = list[li].alt; cnt.textContent = (li+1) + ' / ' + list.length; }
-    lb.querySelector('.lb-close').addEventListener('click', function(){ lb.close(); });
-    lb.querySelector('[data-lb-prev]').addEventListener('click', function(){ show(li-1); });
-    lb.querySelector('[data-lb-next]').addEventListener('click', function(){ show(li+1); });
-    lb.addEventListener('keydown', function(e){ if (e.key === 'ArrowRight') show(li+1); if (e.key === 'ArrowLeft') show(li-1); });
-    lb.addEventListener('click', function(e){ if (e.target === lb || e.target.classList.contains('lb-inner')) lb.close(); });
-    lb.addEventListener('close', function(){ if (done) done(li); });
-    return { open: function(l, n, cb){ list = l; done = cb; show(n); if (lb.showModal) lb.showModal(); else lb.setAttribute('open',''); } };
-  })();
-  // gallery
-  document.querySelectorAll('[data-gallery]').forEach(function(g){
-    var track = g.querySelector('.track'), slides = Array.prototype.slice.call(g.querySelectorAll('.slide'));
-    var cap = g.querySelector('.g-cap'), count = g.querySelector('.g-count');
-    var prev = g.querySelector('[data-prev]'), next = g.querySelector('[data-next]'), thumbs = g.querySelector('.thumbs');
-    var video = g.querySelector('[data-video]'), current = 0, vIdx = -1;
-    if (video && reelUrl) { video.src = reelUrl; video.preload = 'metadata'; }
-    if (video) vIdx = slides.indexOf(video.closest('.slide'));
-
-    slides.forEach(function(s, i){
-      s.setAttribute('role','group'); s.setAttribute('aria-roledescription','slide');
-      s.setAttribute('aria-label', (i+1) + ' of ' + slides.length + ': ' + s.dataset.cap);
-      var t = document.createElement('button'); t.type = 'button';
-      t.setAttribute('aria-label', 'Show slide ' + (i+1) + ': ' + s.dataset.cap);
-      var img = document.createElement('img'); img.alt = ''; img.loading = 'lazy';
-      var src = s.querySelector('img'); img.src = src ? src.getAttribute('src') : (video ? video.getAttribute('poster') : '');
-      t.appendChild(img);
-      if (!src) { var p = document.createElement('span'); p.className = 'play'; p.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>'; t.appendChild(p); }
-      t.addEventListener('click', function(){ go(i); });
-      thumbs.appendChild(t);
-    });
-    var tbtns = thumbs.querySelectorAll('button');
-
-    function go(i){ i = Math.max(0, Math.min(slides.length-1, i)); track.scrollTo({left: slides[i].offsetLeft - track.offsetLeft, behavior: reduce ? 'auto' : 'smooth'}); }
-    function update(i){
-      if (i === current && cap.textContent) return;
-      current = i;
-      var s = slides[i];
-      cap.innerHTML = '<b></b>'; cap.firstChild.textContent = s.dataset.cap; cap.appendChild(document.createTextNode(s.dataset.desc));
-      count.textContent = (i+1) + ' / ' + slides.length;
-      prev.disabled = i === 0; next.disabled = i === slides.length-1;
-      tbtns.forEach(function(b, j){ b.setAttribute('aria-current', j === i ? 'true' : 'false'); });
-      var tb = tbtns[i]; thumbs.scrollTo({left: tb.offsetLeft - thumbs.clientWidth/2 + tb.clientWidth/2, behavior: reduce ? 'auto' : 'smooth'});
-      if (video) { if (i === vIdx && !reduce) { var pr = video.play(); if (pr && pr.catch) pr.catch(function(){}); } else { video.pause(); } }
-    }
-    current = -1; update(0);
-    if (video && reduce) { video.controls = true; }
-
-    var raf;
-    track.addEventListener('scroll', function(){
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(function(){ update(Math.round(track.scrollLeft / track.clientWidth)); });
-    }, {passive:true});
-    prev.addEventListener('click', function(){ go(current-1); });
-    next.addEventListener('click', function(){ go(current+1); });
-    track.addEventListener('keydown', function(e){
-      if (e.key === 'ArrowRight') { e.preventDefault(); go(current+1); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); go(current-1); }
-    });
-    window.addEventListener('resize', function(){ go(current); });
-
-    // autoplay video only when visible
-    if (video && 'IntersectionObserver' in window && !reduce) {
-      new IntersectionObserver(function(es){ es.forEach(function(e){ if (!e.isIntersecting) video.pause(); else if (current === vIdx) { var pr = video.play(); if (pr && pr.catch) pr.catch(function(){}); } }); }, {threshold:.4}).observe(video);
-    }
-
-    // lightbox (shared dialog, one active gallery at a time)
-    var zoomables = slides.map(function(s){ return s.querySelector('img'); }).filter(Boolean);
-    g.querySelectorAll('[data-zoom]').forEach(function(b){
-      b.addEventListener('click', function(){
-        LB.open(zoomables, zoomables.indexOf(b.querySelector('img')), function(li){
-          var s = slides.findIndex(function(sl){ return sl.querySelector('img') === zoomables[li]; });
-          if (s > -1) go(s);
-          var zb = zoomables[li].closest('button'); if (zb) zb.focus({preventScroll:true});
-        });
-      });
-    });
-  });
-})();
-</script>
+<script src="/assets/site.js"></script>
 </body>
 </html>
