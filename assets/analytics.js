@@ -1,4 +1,4 @@
-/* Analytics: Google Analytics 4 after consent, plus custom events.
+/* Analytics: Google Analytics 4 and Amplitude after consent, plus custom events.
    ?notrack=1 turns tracking off on this browser (for the owner), ?notrack=0 turns it back on. */
 (function () {
   var GA_ID = 'G-5RKHK6YKF4';
@@ -14,17 +14,25 @@
   if (q.get('notrack') === '0') store.del('iv-notrack');
   var owner = store.get('iv-notrack') === '1';
 
+  var AMP_KEY = '4b119cad175a3eb3b5c1d43f676a0d46';
+  var AMP_SRC = 'https://cdn.jsdelivr.net/npm/@amplitude/analytics-browser@2.48.1/lib/scripts/amplitude-min.js';
+
   var queue = [];
-  var gaReady = false;
+  var ready = false;
+  var ampQueue = [];
+  function ampSend(name, params) {
+    if (window.amplitude && window.amplitude.track) window.amplitude.track(name, params);
+    else ampQueue.push([name, params]);
+  }
   window.track = function (name, params) {
     if (owner) return;
     params = params || {};
-    if (gaReady) window.gtag('event', name, params);
+    if (ready) { window.gtag('event', name, params); ampSend(name, params); }
     else queue.push([name, params]);
   };
 
   function startGA() {
-    if (gaReady || owner) return;
+    if (ready || owner) return;
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
@@ -33,8 +41,23 @@
     s.async = true;
     s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
     document.head.appendChild(s);
-    gaReady = true;
-    queue.forEach(function (e) { window.gtag('event', e[0], e[1]); });
+
+    var a = document.createElement('script');
+    a.async = true;
+    a.src = AMP_SRC;
+    a.onload = function () {
+      if (!window.amplitude) return;
+      window.amplitude.init(AMP_KEY, {
+        serverZone: 'US',
+        autocapture: { attribution: true, pageViews: true, sessions: true, formInteractions: false, fileDownloads: false, elementInteractions: false }
+      });
+      ampQueue.forEach(function (e) { window.amplitude.track(e[0], e[1]); });
+      ampQueue = [];
+    };
+    document.head.appendChild(a);
+
+    ready = true;
+    queue.forEach(function (e) { window.gtag('event', e[0], e[1]); ampSend(e[0], e[1]); });
     queue = [];
   }
 
