@@ -278,3 +278,4 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 .rec-by > span{min-width:0}
 
 .gallery.r43 .frame,.gallery.r43 .thumbs button{aspect-ratio:4/3}
+.measure{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:.875rem;line-height:1.55;color:var(--muted)}.measure b{color:var(--text);font-weight:600}
