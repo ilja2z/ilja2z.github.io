@@ -1,4 +1,4 @@
-/* Analytics: Google Analytics 4 and Amplitude after consent, plus custom events.
+/* Analytics: Google Analytics 4, Amplitude and Microsoft Clarity after consent, plus custom events.
    ?notrack=1 turns tracking off on this browser (for the owner), ?notrack=0 turns it back on. */
 (function () {
   var GA_ID = 'G-5RKHK6YKF4';
@@ -14,6 +14,7 @@
   if (q.get('notrack') === '0') store.del('iv-notrack');
   var owner = store.get('iv-notrack') === '1';
 
+  var CLARITY_ID = 'z7gt6y40uo';
   var AMP_KEY = '4b119cad175a3eb3b5c1d43f676a0d46';
   var AMP_SRC = 'https://cdn.jsdelivr.net/npm/@amplitude/analytics-browser@2.48.1/lib/scripts/amplitude-min.js';
 
@@ -55,6 +56,13 @@
       ampQueue = [];
     };
     document.head.appendChild(a);
+
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+      t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, 'clarity', 'script', CLARITY_ID);
+    window.clarity('consent');
 
     ready = true;
     queue.forEach(function (e) { window.gtag('event', e[0], e[1]); ampSend(e[0], e[1]); });
