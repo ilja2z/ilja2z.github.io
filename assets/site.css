@@ -287,3 +287,12 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 .cookie-link{all:unset;cursor:pointer;color:var(--soft);font-size:.875rem;text-decoration:underline;text-underline-offset:3px}
 .cookie-link:hover{color:var(--accent)}
 .cookie-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Team wall (inside accordion) */
+.acc-body.team-body{max-width:none}
+.acc-body ul.team-grid{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:26px 14px}
+.acc-body .team-grid li{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;margin:0}
+.team-grid img{width:88px;height:88px;border-radius:50%;object-fit:cover;background:var(--surface-2);box-shadow:0 0 0 2px var(--line);margin-bottom:8px}
+.team-grid b{font-size:14px;font-weight:600;color:var(--text);line-height:1.25}
+.team-grid li>span{font-size:12.5px;color:var(--soft);line-height:1.3}
+@media (max-width:560px){.acc-body ul.team-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 12px}.team-grid img{width:80px;height:80px}}
