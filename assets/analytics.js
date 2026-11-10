@@ -1,4 +1,4 @@
-/* Analytics: Google Analytics 4, Amplitude and Microsoft Clarity after consent, plus custom events.
+/* Analytics: Google Analytics 4, Amplitude, Microsoft Clarity and Hotjar (Contentsquare) after consent, plus custom events.
    ?notrack=1 turns tracking off on this browser (for the owner), ?notrack=0 turns it back on. */
 (function () {
   var GA_ID = 'G-5RKHK6YKF4';
@@ -15,6 +15,7 @@
   var owner = store.get('iv-notrack') === '1';
 
   var CLARITY_ID = 'z7gt6y40uo';
+  var CSQ_TAG = '5e5fe235cd846'; // Hotjar / Contentsquare
   var AMP_KEY = '4b119cad175a3eb3b5c1d43f676a0d46';
   var AMP_SRC = 'https://cdn.jsdelivr.net/npm/@amplitude/analytics-browser@2.48.1/lib/scripts/amplitude-min.js';
 
@@ -63,6 +64,11 @@
       y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
     })(window, document, 'clarity', 'script', CLARITY_ID);
     window.clarity('consent');
+
+    var h = document.createElement('script');
+    h.defer = true;
+    h.src = 'https://t.contentsquare.net/uxa/' + CSQ_TAG + '.js';
+    document.head.appendChild(h);
 
     ready = true;
     queue.forEach(function (e) { window.gtag('event', e[0], e[1]); ampSend(e[0], e[1]); });
