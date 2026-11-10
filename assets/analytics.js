@@ -16,7 +16,7 @@
 
   var CLARITY_ID = 'z7gt6y40uo';
   var CSQ_TAG = '5e5fe235cd846'; // Hotjar / Contentsquare
-  var AMP_KEY = '4b119cad175a3eb3b5c1d43f676a0d46';
+  var AMP_KEY = '608c2bab8507cff452c9b36a858b3789';
   var AMP_SRC = 'https://cdn.jsdelivr.net/npm/@amplitude/analytics-browser@2.48.1/lib/scripts/amplitude-min.js';
 
   var queue = [];
@@ -50,7 +50,7 @@
     a.onload = function () {
       if (!window.amplitude) return;
       window.amplitude.init(AMP_KEY, {
-        serverZone: 'US',
+        serverZone: 'EU',
         autocapture: { attribution: true, pageViews: true, sessions: true, formInteractions: false, fileDownloads: false, elementInteractions: false }
       });
       ampQueue.forEach(function (e) { window.amplitude.track(e[0], e[1]); });
