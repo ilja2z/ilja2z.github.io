@@ -164,7 +164,7 @@ button{font:inherit;color:inherit}
 .grads{display:grid;gap:8px;margin-top:8px}
 .grads div{height:22px;border-radius:6px;font-size:12px;font-weight:600;color:#fff;display:flex;align-items:center;padding-left:8px}
 .foot{font-size:13px;color:var(--ink-3);margin-top:18px}
-.hint{font-size:13px;color:var(--ink-3);text-align:center;margin-top:10px}
+.hint{font-size:13px;color:var(--ink-3);text-align:center}
 
 .success{position:absolute;inset:0;display:flex;flex-direction:column;background:radial-gradient(120% 70% at 50% 25%, #EDE7FF 0%, #F3F8F4 55%, #FFFFFF 100%)}
 .bandwrap{position:relative;width:250px;height:140px;display:grid;place-items:center;animation:popIn .55s cubic-bezier(.2,.9,.3,1.2) both}
@@ -233,6 +233,19 @@ button.hkrow{cursor:pointer}
 .siwa-radio{width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.45);display:grid;place-items:center;font-size:13px;color:transparent;flex:none;transition:all .15s}
 .siwa-radio.on{background:#5AC8FA;border-color:#5AC8FA;color:#1C3A55}
 .siwa-cta{border:0;border-radius:999px;background:#5AC8FA;color:#fff;font-size:18px;font-weight:700;padding:14px 46px;cursor:pointer}
+
+.layout{display:grid;grid-template-columns:200px 390px 440px;gap:40px;justify-content:center;align-items:start;padding:12px 28px 48px}
+.layout .steps{display:flex;flex-direction:column;gap:6px;position:sticky;top:16px;margin-top:62px}
+.layout .steps button{text-align:left;border-radius:12px;padding:10px 14px}
+.center{display:flex;flex-direction:column;align-items:center}
+.center .seg{margin-bottom:14px}
+.layout .notes{margin-top:62px;width:440px;position:sticky;top:16px}
+.hint{margin-top:22px;width:560px;max-width:92vw}
+@media (max-width:1180px){
+ .layout{grid-template-columns:1fr;justify-items:center;gap:20px}
+ .layout .steps{flex-direction:row;flex-wrap:wrap;justify-content:center;position:static;margin-top:0}
+ .layout .notes{margin-top:0;width:min(440px,100%);position:static}
+}
 </style>
 </head>
 <body>
@@ -240,15 +253,13 @@ button.hkrow{cursor:pointer}
   <h1>Hilo first-run — a concept</h1>
   <div class="disclaimer">Unofficial concept by Illia Vostrikov · not affiliated with Hilo or Aktiia · “Current” uses screenshots of the live app, Nov 2026</div>
 </header>
-<nav class="controls" aria-label="Prototype controls">
-  <div class="steps" id="steps"></div>
-  <div class="seg" role="group" aria-label="Version">
-    <button data-mode="current" aria-pressed="false">Current</button>
-    <button data-mode="proposed" aria-pressed="true">Proposed</button>
-  </div>
-</nav>
-<main class="stage">
-  <div>
+<main class="layout">
+  <nav class="steps" id="steps" aria-label="Steps"></nav>
+  <div class="center">
+    <div class="seg" role="group" aria-label="Version">
+      <button data-mode="current" aria-pressed="false">Current</button>
+      <button data-mode="proposed" aria-pressed="true">Proposed</button>
+    </div>
     <div class="phone"><div class="screen" id="screen"></div></div>
     <div class="hint"><span id="hint"></span> · <button id="replay" style="border:0;background:none;color:var(--primary);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px">↺ Replay this step</button></div>
   </div>
