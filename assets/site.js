@@ -135,9 +135,8 @@
     });
   });
 })();
-// back to top (case and leadership pages)
+// back to top (all pages)
 (function(){
-  if (!/^\/work\//.test(location.pathname.replace(/^\/p-[^/]+/, ''))) return;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var b = document.createElement('button');
   b.type = 'button'; b.className = 'to-top'; b.setAttribute('aria-label', 'Back to top'); b.tabIndex = -1;
