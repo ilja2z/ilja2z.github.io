@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Preview · Leadership card, faces in motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css?v=1794688198">
+<style>
+.pv{max-width:680px;margin:0 auto;padding:40px 20px 120px}
+.pv h1{font-size:clamp(1.6rem,4vw,2.4rem);margin:0 0 8px}
+.pv > p{color:var(--muted);margin:0 0 48px}
+.pv h2{font-size:1.25rem;margin:56px 0 6px}
+.pv h2 + p{color:var(--soft);font-size:.9rem;margin:0 0 16px}
+.fc{position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:linear-gradient(160deg,#163228 0%,var(--surface) 70%)}
+.fc.v2{background:radial-gradient(120% 90% at 50% 45%,#1C4A3A 0%,#10251D 55%,#0A1A14 100%)}
+.fc.v3{background:linear-gradient(160deg,#163228 0%,var(--surface) 70%)}
+.stage{position:relative;height:clamp(260px,46vw,340px);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12%,#000 88%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 12%,#000 88%,transparent 100%)}
+.v3 .stage{height:clamp(180px,30vw,220px)}
+.face{position:absolute;left:0;top:0;border-radius:50%;will-change:transform}
+.face img{position:absolute;inset:0;display:block;width:100%;height:100%;border-radius:50%;object-fit:cover}
+.v1 .face img{inset:7%;width:86%;height:86%}
+.v2 .face{padding:0;box-shadow:0 0 0 2px rgba(82,224,161,.55)}
+.v3 .face{padding:0;box-shadow:0 0 0 2px var(--surface-2)}
+.cap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px clamp(20px,3vw,32px) 20px;border-top:1px solid var(--line)}
+.cap p{margin:0;font-size:.9rem;color:var(--soft)}
+.cap b{font-family:var(--display);font-size:1.6rem;color:var(--accent);font-weight:700;line-height:1}
+.q{padding:4px clamp(24px,4vw,40px) 28px}
+.q blockquote{margin:0;font-family:var(--display);font-size:clamp(1.3rem,2.4vw,1.85rem);line-height:1.22;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.q cite{display:block;margin-top:16px;font-style:normal;font-size:.9rem;color:var(--muted)}
+.q cite b{display:block;color:var(--accent);font-weight:600;font-size:1rem}
+.badge{position:fixed;left:12px;bottom:12px;z-index:9999;background:#52E0A1;color:#06130E;font:600 12px/1 Instrument Sans,sans-serif;padding:8px 12px;border-radius:999px}
+</style>
+</head>
+<body>
+<div class="badge">Preview · not published</div>
+<main class="pv">
+  <h1>Leadership card: faces in motion</h1>
+  <p>Three directions. All 16 designers I hired or led pass once per loop, right to left. Motion pauses for people who turn it off in their system settings.</p>
+
+  <h2>1. Drifting cloud</h2>
+  <p>Faces of different sizes at different heights, colored discs behind them, a slow drift with a gentle float.</p>
+  <div class="fc v1"><div class="stage" data-v="1"></div>
+    <div class="cap"><p>16 designers I hired or led at Valor Software</p><b>16</b></div></div>
+
+  <h2>2. Wave</h2>
+  <p>Two strands crossing like a wave. Faces grow as they come forward and shrink as they move back.</p>
+  <div class="fc v2"><div class="stage" data-v="2"></div>
+    <div class="cap"><p>16 designers I hired or led at Valor Software</p><b>16</b></div></div>
+
+  <h2>3. Pulsing grid with the quote</h2>
+  <p>An uneven three-row grid, a pulse runs through it. The quote stays below, like the current card.</p>
+  <div class="fc v3"><div class="stage" data-v="3"></div>
+    <div class="q"><blockquote>He leads with trust rather than control, which is why people bring him with them from project to project.</blockquote>
+      <cite><b>Oleksandra Nadtochii</b>Product Designer</cite></div>
+    <div class="cap"><p>16 designers I hired or led at Valor Software</p><b>16</b></div></div>
+</main>
+<script>
+(function(){
+var names=['oleksandra-nadtochii','hussein-al-attar','anait-galustian','daria-alokhina','liliia-piddubna','akhan-janabekov','alina-sushylova','andrew-ovcharuk','danylo-gorbunov','oleksii-koval','ruslan-kovalenko','serhii-landar','taisiia-polianska','viktor-demidov','viktor-zhytomyrskyi','yurii-nykol'];
+var N=names.length, reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var discs=['#52E0A1','#F2C46B','#8FB8FF','#F29A8C','#B79CFF','#6FD3E0','#C9E86B','#F2B6D0'];
+var cfg={
+ 1:{spacing:60,speed:26,
+    size:[.34,.22,.40,.26,.19,.36,.28,.21,.38,.20,.30,.25,.35,.19,.29,.23],
+    y:[.30,.74,.52,.20,.82,.42,.70,.24,.60,.18,.78,.46,.32,.72,.54,.26]},
+ 2:{spacing:52,speed:34},
+ 3:{spacing:56,speed:30,rows:[.22,.78,.5,.24,.76,.5,.2,.8,.5,.26,.74,.5,.22,.78,.5,.24],size:[.30,.26,.36,.28,.30,.34,.26,.28,.36,.30,.26,.34,.28,.30,.36,.26]}
+};
+document.querySelectorAll('.stage').forEach(function(st){
+  var v=+st.dataset.v, c=cfg[v], els=[];
+  names.forEach(function(n,i){
+    var d=document.createElement('div'); d.className='face';
+    if(v===1) d.style.background=discs[i%discs.length];
+    d.innerHTML='<img src="/assets/team/'+n+'.webp" alt="" loading="lazy">';
+    st.appendChild(d); els.push(d);
+  });
+  var W=0,H=0,L=0,maxS=0,visible=true;
+  function measure(){W=st.clientWidth;H=st.clientHeight;maxS=H*.46;L=Math.max(W+maxS*2,N*c.spacing*Math.max(.7,Math.min(1,W/580)));}
+  measure(); new ResizeObserver(measure).observe(st);
+  new IntersectionObserver(function(e){visible=e[0].isIntersecting;}).observe(st);
+  function draw(t){
+    var shift=reduce?0:t*c.speed;
+    for(var i=0;i<N;i++){
+      var x=((i*L/N - shift)%L+L)%L - maxS; // wraps right edge → left edge
+      var s,y,z=1,o=1;
+      if(v===1){
+        s=c.size[i]*H*(reduce?1:1+.05*Math.sin(t*1.1+i));
+        y=c.y[i]*H + (reduce?0:9*Math.sin(t*.8+i*1.7));
+      } else if(v===2){
+        var ph=2*Math.PI*(x/Math.max(W,420)) - (reduce?0:t*.5), side=i%2?-1:1;
+        var depth=.5+.5*Math.cos(ph)*side;            // 0 back … 1 front
+        s=H*(.17+.17*depth); y=H/2 + side*H*.24*Math.sin(ph); z=Math.round(depth*10); o=.45+.55*depth;
+      } else {
+        var pulse=reduce?0:Math.sin(x/90 - t*1.6);
+        s=c.size[i]*H*(1+.14*pulse); y=c.rows[i]*H; o=.75+.25*(pulse+1)/2;
+      }
+      var e=els[i].style;
+      e.width=e.height=s+'px';
+      e.transform='translate3d('+(x-s/2+maxS/2)+'px,'+(y-s/2)+'px,0)';
+      e.zIndex=z; e.opacity=o;
+    }
+  }
+  var t0=performance.now();
+  function loop(now){ if(visible) draw((now-t0)/1000); if(!reduce) requestAnimationFrame(loop); }
+  requestAnimationFrame(loop); if(reduce) setTimeout(function(){draw(0)},50);
+});
+})();
+</script>
+</body>
+</html>
