@@ -313,3 +313,11 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 
 .t-note a{color:var(--accent);text-underline-offset:3px}
 .measure + *{margin-top:20px}
+/* back to top */
+.to-top{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--surface-2);color:var(--accent);display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .2s,transform .2s,border-color .2s}
+.to-top.show{opacity:1;transform:none;pointer-events:auto}
+.to-top:hover{border-color:var(--accent)}
+.to-top:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+h1:focus{outline:none}
+@media (min-width:900px){.to-top{right:24px;bottom:24px}}
+@media (prefers-reduced-motion:reduce){.to-top{transition:none}}
