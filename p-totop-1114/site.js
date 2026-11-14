@@ -142,7 +142,7 @@
   var b = document.createElement('button');
   b.type = 'button'; b.className = 'to-top'; b.setAttribute('aria-label', 'Back to top'); b.tabIndex = -1;
   b.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
-  document.body.appendChild(b);
+  document.body.appendChild(b); document.body.classList.add('has-totop');
   var shown = false;
   function update(){
     var show = window.scrollY > window.innerHeight * 1.5 && !document.querySelector('.consent');
