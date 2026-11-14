@@ -321,3 +321,4 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 h1:focus{outline:none}
 @media (min-width:900px){.to-top{right:24px;bottom:24px}}
 @media (prefers-reduced-motion:reduce){.to-top{transition:none}}
+.has-totop footer .wrap{padding-right:72px}
