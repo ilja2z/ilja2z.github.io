@@ -310,3 +310,5 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 .lead-media blockquote{margin:clamp(20px,3vw,32px) 0 0;padding-top:clamp(20px,3vw,28px);border-top:1px solid var(--line);font-family:var(--display);font-size:clamp(1.15rem,1.8vw,1.5rem);line-height:1.35;font-weight:500;color:var(--text)}
 .lead-media blockquote cite{display:block;margin-top:12px;font-family:inherit;font-style:normal;font-size:.875rem;font-weight:400;color:var(--soft)}
 @media (max-width:600px){.faces{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+.t-note a{color:var(--accent);text-underline-offset:3px}
