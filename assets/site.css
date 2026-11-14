@@ -305,7 +305,10 @@ dialog.lb::backdrop{background:rgba(3,10,7,.94)}
 .lead-quote{position:relative;background:linear-gradient(160deg,#163228 0%,var(--surface) 70%);border:1px solid var(--line);border-radius:16px;padding:clamp(24px,4vw,48px)}
 .lead-quote .qmark{position:absolute;top:-6px;left:clamp(18px,3vw,40px);font-family:var(--display);font-size:clamp(6rem,10vw,9rem);line-height:1;color:var(--accent);opacity:.35}
 .lead-quote blockquote{position:relative;margin:clamp(36px,5vw,56px) 0 0;font-family:var(--display);font-size:clamp(1.45rem,2.5vw,2.15rem);line-height:1.22;font-weight:600;color:var(--text);letter-spacing:-.01em}
-.lead-quote cite{display:block;margin-top:16px;font-family:inherit;font-style:normal;font-size:.9rem;font-weight:400;letter-spacing:0;color:var(--muted)}
+.lead-quote cite{display:block;margin-top:20px;font-family:inherit;font-style:normal;font-size:.9rem;font-weight:400;letter-spacing:0;color:var(--muted)}
+.lead-quote .cite-name{display:inline-block;font-size:1rem;font-weight:600;color:var(--accent);text-decoration:none}
+.lead-quote .cite-name:hover{text-decoration:underline;text-underline-offset:3px}
+.lead-quote .cite-role{display:block;margin-top:2px}
 .team-row{display:flex;align-items:center;gap:16px;margin-top:clamp(28px,4vw,44px);padding-top:clamp(20px,3vw,28px);border-top:1px solid var(--line)}
 .stack{display:flex;flex:none}
 .stack img,.stack .plus{flex:none;width:44px;height:44px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #142c23}
