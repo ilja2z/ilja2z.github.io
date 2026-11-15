@@ -154,3 +154,40 @@
     var h = document.querySelector('h1'); if (h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
   });
 })();
+
+// highlight the nav link of the section in view (home page)
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.nav a[href^="#"]:not(.btn)'));
+  var items=links.map(function(a){return {a:a,s:document.getElementById(a.getAttribute('href').slice(1))};}).filter(function(i){return i.s;});
+  if(!items.length) return;
+  var contact=document.getElementById('contact'), ticking=false;
+  function update(){
+    ticking=false;
+    var line=window.innerHeight*0.4, cur=null;
+    items.forEach(function(i){ if(i.s.getBoundingClientRect().top<=line) cur=i; });
+    if(contact && contact.getBoundingClientRect().top<=line) cur=null;
+    items.forEach(function(i){
+      var on=i===cur; i.a.classList.toggle('is-active',on);
+      if(on) i.a.setAttribute('aria-current','true'); else i.a.removeAttribute('aria-current');
+    });
+  }
+  window.addEventListener('scroll',function(){ if(!ticking){ticking=true;requestAnimationFrame(update);} },{passive:true});
+  window.addEventListener('resize',update); update();
+})();
+
+// leadership card: click a face to read their quote
+(function(){
+  var faces=[].slice.call(document.querySelectorAll('.lq-face')); if(!faces.length) return;
+  faces.forEach(function(b,i){
+    b.addEventListener('click',function(){
+      faces.forEach(function(f,j){
+        var on=j===i, item=document.getElementById(f.getAttribute('aria-controls'));
+        f.classList.toggle('on',on); f.setAttribute('aria-pressed',on?'true':'false');
+        item.classList.toggle('on',on);
+        if(on) item.removeAttribute('aria-hidden'); else item.setAttribute('aria-hidden','true');
+        var a=item.querySelector('a'); if(a){ if(on) a.removeAttribute('tabindex'); else a.setAttribute('tabindex','-1'); }
+      });
+      if(window.track) window.track('quote_switch',{person:b.getAttribute('aria-label').replace('Quote from ','')});
+    });
+  });
+})();
