@@ -34,6 +34,7 @@ p{margin:0 0 1em}
 .nav{display:flex;align-items:center;gap:clamp(12px,2.4vw,28px)}
 .nav a{text-decoration:none;color:var(--muted);font-size:.9375rem;font-weight:500;padding:8px 0}
 .nav a:hover{color:var(--text)}
+.nav a.is-active{color:var(--accent)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:999px;font:600 .9375rem/1 var(--body);text-decoration:none;border:1px solid var(--line);color:var(--text);background:transparent;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
 .btn:hover{border-color:var(--accent);color:var(--accent)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}

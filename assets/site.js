@@ -154,3 +154,23 @@
     var h = document.querySelector('h1'); if (h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
   });
 })();
+
+// highlight the nav link of the section in view (home page)
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.nav a[href^="#"]:not(.btn)'));
+  var items=links.map(function(a){return {a:a,s:document.getElementById(a.getAttribute('href').slice(1))};}).filter(function(i){return i.s;});
+  if(!items.length) return;
+  var contact=document.getElementById('contact'), ticking=false;
+  function update(){
+    ticking=false;
+    var line=window.innerHeight*0.4, cur=null;
+    items.forEach(function(i){ if(i.s.getBoundingClientRect().top<=line) cur=i; });
+    if(contact && contact.getBoundingClientRect().top<=line) cur=null;
+    items.forEach(function(i){
+      var on=i===cur; i.a.classList.toggle('is-active',on);
+      if(on) i.a.setAttribute('aria-current','true'); else i.a.removeAttribute('aria-current');
+    });
+  }
+  window.addEventListener('scroll',function(){ if(!ticking){ticking=true;requestAnimationFrame(update);} },{passive:true});
+  window.addEventListener('resize',update); update();
+})();
