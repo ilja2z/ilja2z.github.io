@@ -174,3 +174,20 @@
   window.addEventListener('scroll',function(){ if(!ticking){ticking=true;requestAnimationFrame(update);} },{passive:true});
   window.addEventListener('resize',update); update();
 })();
+
+// leadership card: click a face to read their quote
+(function(){
+  var faces=[].slice.call(document.querySelectorAll('.lq-face')); if(!faces.length) return;
+  faces.forEach(function(b,i){
+    b.addEventListener('click',function(){
+      faces.forEach(function(f,j){
+        var on=j===i, item=document.getElementById(f.getAttribute('aria-controls'));
+        f.classList.toggle('on',on); f.setAttribute('aria-pressed',on?'true':'false');
+        item.classList.toggle('on',on);
+        if(on) item.removeAttribute('aria-hidden'); else item.setAttribute('aria-hidden','true');
+        var a=item.querySelector('a'); if(a){ if(on) a.removeAttribute('tabindex'); else a.setAttribute('tabindex','-1'); }
+      });
+      if(window.track) window.track('quote_switch',{person:b.getAttribute('aria-label').replace('Quote from ','')});
+    });
+  });
+})();
