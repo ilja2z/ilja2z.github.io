@@ -34,6 +34,11 @@
 .wr-more{display:inline-flex;align-items:center;gap:8px;margin-top:20px;color:var(--accent);font-weight:600}
 ul.wr-list{list-style:none;padding:0;margin:clamp(24px,4vw,40px) 0 0;border-top:1px solid var(--line)}
 @media (max-width:760px){.wr-feature{grid-template-columns:1fr}}
+.hero-news{display:inline-flex;align-items:center;gap:10px;max-width:100%;padding:5px 14px 5px 5px;margin-bottom:clamp(20px,3vw,32px);border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--text);font-size:.9375rem;font-weight:500;text-decoration:none;transition:border-color .15s}
+.hero-news:hover{border-color:var(--accent)}
+.hero-news .new{flex:none;background:var(--accent);color:var(--accent-ink);font-size:.75rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+.hero-news .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hero-news svg{flex:none;color:var(--accent)}
 </style>
 </head>
 <body>
@@ -54,6 +59,7 @@ ul.wr-list{list-style:none;padding:0;margin:clamp(24px,4vw,40px) 0 0;border-top:
 
 <main id="main">
   <div class="wrap hero">
+    <a class="hero-news" href="/writing/ai-in-the-design-process/"><span class="new">New</span><span class="t">Workshop: AI in the design process</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     <h1>Illia <span class="last">Vostrikov</span><span class="role">Head of Design</span></h1>
     <p class="lede"><strong>I lead product design teams, and I still design.</strong> Up to 6 designers reported directly to me, on up to 4 products at once. I hired 12, grew people to the next level and kept the team working through layoffs. 11+ years in product design, 7 of them leading teams, across B2B, B2C and SaaS for web and mobile.</p>
     <div class="hero-actions">
