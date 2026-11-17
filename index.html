@@ -24,6 +24,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css?v=1794701698">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "Illia Vostrikov", "jobTitle": "Head of Design", "url": "https://illiavostrikov.com/", "image": "https://illiavostrikov.com/assets/apple-touch-icon.png", "email": "mailto:hi@illiavostrikov.com", "worksFor": {"@type": "Organization", "name": "Valor Software"}, "address": {"@type": "PostalAddress", "addressRegion": "Asturias", "addressCountry": "ES"}, "knowsLanguage": ["en", "uk", "ru", "es"], "knowsAbout": ["Design leadership", "Product design", "Design systems", "DesignOps", "AI-native design workflows"], "sameAs": ["https://www.linkedin.com/in/ilja2z/", "https://dribbble.com/ilja2z", "https://medium.com/@iliya.vostrikov", "https://github.com/ilja2z"]}</script>
+<style>
+.wr-feature{display:grid;grid-template-columns:1.15fr 1fr;gap:clamp(24px,4vw,48px);align-items:center;padding:clamp(16px,2.5vw,24px);border:1px solid var(--line);border-radius:20px;background:var(--surface);text-decoration:none;color:var(--text);transition:border-color .15s}
+.wr-feature:hover{border-color:var(--accent)}
+.wr-media img{width:100%;height:auto;border-radius:12px;border:1px solid var(--line)}
+.wr-text small{display:block;color:var(--soft);font-size:.875rem;margin-bottom:8px}
+.wr-text b{display:block;font-family:var(--display);font-size:clamp(1.75rem,3.6vw,2.5rem);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+.wr-text .d{display:block;color:var(--muted);margin-top:12px}
+.wr-more{display:inline-flex;align-items:center;gap:8px;margin-top:20px;color:var(--accent);font-weight:600}
+ul.wr-list{list-style:none;padding:0;margin:clamp(24px,4vw,40px) 0 0;border-top:1px solid var(--line)}
+@media (max-width:760px){.wr-feature{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -34,6 +45,7 @@
     <nav class="nav" aria-label="Main">
       <a href="#work">Work</a>
       <a href="#leadership" class="hide-xs">Leadership</a>
+      <a href="#writing" class="hide-sm">Writing</a>
       <a href="#experience" class="hide-sm">Experience</a>
       <a class="btn primary" href="#contact">Contact</a>
     </nav>
@@ -330,6 +342,26 @@
           </div></div></div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section id="writing" aria-labelledby="writing-h">
+    <div class="wrap">
+      <div class="sec-head"><h2 id="writing-h">Writing &amp; talks</h2><p>How I bring AI into design work: what I teach other teams and what we learned in practice.</p></div>
+      <a class="wr-feature" href="/writing/ai-in-the-design-process/">
+        <span class="wr-media"><img src="/assets/ai-process-one-system.webp" alt="" width="1320" height="742" loading="lazy" decoding="async"></span>
+        <span class="wr-text">
+          <small>Workshop · November 2026</small>
+          <b>AI in the design process</b>
+          <span class="d">A practical path from a Figma library to working code, built together with developers: six steps, how handoff changes, and a six-week plan.</span>
+          <span class="wr-more">Read the article <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </span>
+      </a>
+      <ul class="articles wr-list">
+        <li><a href="https://medium.com/@iliya.vostrikov/how-we-put-claude-into-our-design-process-and-got-a-clickable-prototype-3x-faster-ec2626aacd54" target="_blank" rel="noopener"><b>How we put Claude into our design process and got a clickable prototype 3× faster</b><span>Medium · Oct 2026</span></a></li>
+        <li><a href="https://medium.com/@iliya.vostrikov/one-person-three-stages-how-we-build-restaurant-websites-with-a-design-engineer-and-claude-2d6aecbafd64" target="_blank" rel="noopener"><b>One person, three stages: how we build restaurant websites with a design engineer and Claude</b><span>Medium · Oct 2026</span></a></li>
+        <li><a href="https://medium.com/@iliya.vostrikov/design-processes-automation-with-ai-services-7db554452967" target="_blank" rel="noopener"><b>Design processes automation with AI services</b><span>Medium · Mar 2023</span></a></li>
+      </ul>
     </div>
   </section>
 

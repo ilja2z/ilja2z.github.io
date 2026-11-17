@@ -123,6 +123,9 @@
         else if (/linkedin\.com\/in\/ilja2z\/?$/.test(href)) track('contact_click', { method: 'linkedin', page: page });
         else if (a.classList.contains('next-case')) track('next_case_click', { from: page, to: href });
         else if (/^\/work\//.test(href)) track('case_click', { from: page, to: href, place: a.closest('.logos') ? 'logo' : a.closest('.work-list') ? 'table' : 'card' });
+        else if (a.hasAttribute('data-deck')) track('deck_open', { page: page });
+        else if (/^\/writing\//.test(href)) track('writing_click', { from: page, to: href });
+        else if (a.closest('.post-links')) track('example_click', { url: href, page: page });
         else if (/medium\.com/.test(href)) track('article_click', { url: href });
       }
       var acc = t.closest('.acc-trigger');
