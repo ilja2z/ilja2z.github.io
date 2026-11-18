@@ -61,7 +61,7 @@
                 <div class="frame"><button type="button" data-zoom aria-label="Enlarge: Custom print, without leaving ESP+"><img src="/assets/img-1c9ef996dd.webp" alt="POD Studio editor placing wrestling artwork on a T-shirt, plus screens for picking a POD-ready product, colour management and price grid; stats: $13B market, about 26% yearly growth, 4 steps." loading="lazy" decoding="async"></button></div>
               </figure>
               <figure class="slide" data-cap="From mockups to prototypes in code" data-desc="Claude builds from the Cosmos library through Figma and GitHub.">
-                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: From mockups to prototypes in code"><img src="/assets/img-68db1032d2.webp" alt="Code sample of a POD Studio prototype built from Cosmos components, the four-step flow Brief, Claude plus MCP, Figma plus GitHub, Engineering, and results 11 to 3.5 days, 3.4 to 1.3 review rounds, minus 73% requirement changes." loading="lazy" decoding="async"></button></div>
+                <div class="frame"><button type="button" data-zoom aria-label="Enlarge: From mockups to prototypes in code"><img src="/assets/img-68db1032d2.webp" alt="Code sample of a POD Studio prototype built from Cosmos components, the four-step flow Brief, Claude plus Talk to Figma MCP, Figma plus GitHub, Engineering, and results 11 to 3.5 days, 3.4 to 1.3 review rounds, minus 73% requirement changes." loading="lazy" decoding="async"></button></div>
               </figure>
             </div>
             <div class="g-bar">
@@ -99,7 +99,7 @@
                 <ul>
                   <li>Distributors bought blank products in ESP+, then left to decorate them in one-click print-on-demand services.</li>
                   <li>One product spread across 14 areas: search, orders, quotes and invoices, CRM, collections, presentations, websites, stores, analytics and more.</li>
-                  <li>Two brands, ESP+ and ASI Central, on one inconsistent component library.</li>
+                  <li>Two brands, ESP+ and ASI Central, on one inconsistent component library. Code was ahead of design: engineers had a solid component library in Storybook, while Cosmos had only recently moved from Sketch to Figma, many files were broken copies of old Sketch work, and only about half of the components had a green “ready” status.</li>
                   <li>Details surfaced late: missing states in review round three, limits found in QA, components that didn’t exist on handoff day.</li>
                 </ul>
               </div></div></div>
@@ -128,17 +128,17 @@
               </div></div></div>
             </div>
             <div class="acc-item">
-              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Less, not more</span><span class="acc-hint">A hypothesis from research</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
+              <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">Less, not more</span><span class="acc-hint">A product hypothesis</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
               <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p>When we added fundraising to pop-up shops, stores built for one event such as a team launch, the obvious move was to show it in every existing flow. Interviews and research showed it mattered only when two conditions met at once, and that combination was rare.</p>
-                <p><strong>Hypothesis:</strong> adding it everywhere would clutter the flow for most users, who never needed it. We kept fundraising where it was needed and left the main flows clean. Our users told us where not to add.</p>
+                <p>When we built fundraising for stores, our PM suggested adding it as a seventh step in the six-step store creation wizard. Data, which reached me through our VP of Design, showed that stores are created often. Fundraising was new, so how many stores would use it could not be measured yet: my judgement from knowing the product was that it would be a small share.</p>
+                <p><strong>Hypothesis:</strong> a new step would slow down everyone to serve the few who need it. We kept the wizard at six steps, and fundraising became a toggle in store settings: a name, a goal and a payout rule, with the fund and its progress shown on the storefront.</p>
               </div></div></div>
             </div>
             <div class="acc-item">
               <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">One system, two brands</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
               <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
                 <p>Cosmos 1.2 powers both ESP+ and ASI Central: <strong>290+ component sets, 5,300+ variants and states and 500+ design tokens</strong>. I helped build and document its components, states and page patterns, so Search, Orders, CRM, Collections, Presentations and POD feel like one product.</p>
-                <p>Before bringing AI in, we spent six weeks cleaning up the library, so there was something worth generating from.</p>
+                <p>Before bringing AI in, we spent six weeks cleaning up the Sketch-era library, so there was something worth generating from.</p>
               </div></div></div>
             </div>
             <div class="acc-item">
@@ -146,7 +146,7 @@
               <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
                 <ol class="steps">
                   <li><span><b>Brief</b>Product, design, front-end and QA agree on states, data and a closed list of components in one short session.</span></li>
-                  <li><span><b>Claude and Figma MCP</b>Claude reads the Cosmos library in Figma and builds only from components that already exist.</span></li>
+                  <li><span><b>Claude and Talk to Figma MCP</b>Claude reads the Cosmos library in Figma and builds only from components that already exist. In 2025 Figma’s own MCP server could only read designs, so we used Talk to Figma, a community plugin; layouts often shifted and we fixed them by hand.</span></li>
                   <li><span><b>Figma and GitHub</b>One run gives Figma frames for every state and a clickable prototype on a GitHub branch.</span></li>
                   <li><span><b>Engineering</b>Developers keep the prototype’s front end and wire up data, auth and tests.</span></li>
                 </ol>
@@ -186,8 +186,8 @@
             <div class="acc-item">
               <h4 style="margin:0"><button class="acc-trigger" aria-expanded="false"><span><span class="acc-label">What I’d do differently</span></span><span class="acc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button></h4>
               <div class="acc-panel"><div class="acc-inner"><div class="acc-body">
-                <p><strong>Align with design leadership early, not case by case.</strong> I worked inside a product team, while design decisions also went through central design leadership. Sometimes my team agreed on a solution and it then stalled in design review, and I worked around it one feature at a time.</p>
-                <p>Today I would set up joint sessions from the start with the design lead and my product manager, agree on what good looks like and how decisions get made, and bring hypotheses and options to my own team earlier. Then the team spends its energy on users, not on alignment.</p>
+                <p><strong>Build a decision loop that survives busy calendars.</strong> Each month my team got a scope. I shaped solutions with my product manager, we reviewed them inside the team, and then they went to the central design critique. We had weekly syncs with our design lead, and they worked. When calendars filled up and the syncs were cancelled for weeks, some decisions stalled in critique, and I worked around it one feature at a time.</p>
+                <p>Today I would set up an async loop as a backup: a short decision request with two options and my recommendation, a quick video walkthrough, and a default: if there is no objection by an agreed day, the team goes ahead. And I would agree decision rights with the design lead and my product manager from the start. Then the team spends its energy on users, not on alignment.</p>
               </div></div></div>
             </div>
           </div>
