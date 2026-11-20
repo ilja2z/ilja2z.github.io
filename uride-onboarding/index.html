@@ -347,6 +347,7 @@ body.rec.bare .foot{padding-bottom:12px}
 .field.editing{border-color:var(--ink);box-shadow:0 0 0 3px rgba(31,42,55,.12);background:#fff}
 .field input{width:100%;border:0;outline:0;font-size:16px;line-height:24px;color:var(--ink);background:transparent}
 .field input::placeholder{color:#8A99A4}
+.numgap{flex:1;display:flex;align-items:baseline;font-size:16px;line-height:24px}.numgap input{width:22px;flex:none;text-align:center;margin:0 1px;border-bottom:2px solid var(--amber);border-radius:0;caret-color:var(--ink);font-weight:600}.field.invalid .numgap input{border-color:var(--red-text)}
 .field .err{display:none;font-size:13px;color:var(--red-text);margin-top:2px}
 .field.invalid{border-color:#E0786F}
 .field.invalid .err{display:block}
@@ -628,7 +629,7 @@ function cardBack(){
 /* ================= scenarios ================= */
 const SCEN = {
   story:  {name:'Full story', note:'One take: an expired card first, then glare, shaky hands, one unclear digit and the review screen.', dot:'#1F2A37', f:{expiredFirst:1, glare:'front', blur:'back', unsure:1}},
-  real:   {name:'Real camera', note:'One take on an iPhone with printed specimen cards: an expired card first, then the current one under real lamp glare, both sides.', dot:'#0B6E4F', f:{real:1}},
+  real:   {name:'Real camera', note:'One take on an iPhone with printed specimen cards: an expired card first, then the current one under real lamp glare. A trace of glare hides one character of the licence number; the driver types it.', dot:'#0B6E4F', f:{real:1, unsure:1, unsureKey:'num'}},
   happy:  {name:'Happy path', note:'Card found, captured and read without help.', dot:'#1E8E3E', f:{}},
   glare:  {name:'Glare on the card', note:'A light reflection hides the text. The app asks to tilt.', dot:'#E8A317', f:{glare:'front'}},
   blur:   {name:'Shaky hands', note:'The image is blurry, so capture waits until it is sharp.', dot:'#E8A317', f:{blur:'front'}},
@@ -655,6 +656,7 @@ const SPEC = {
   flip:{t:'Now the back', d:'The card turns over in place, so the driver understands what to do without reading anything.', why:'<b>Show, don’t tell:</b> one movement replaces a paragraph of instructions.', rows:[['Card flip','900ms',sp('· bounce .06')],['Hint cross-fade','240ms','standard']], hap:'Light tap when the flip prompt appears.'},
   read:{t:'Reading the licence', d:'A scan line passes over the photo. Each value lights up on the card at the moment it lands in its field, so the driver sees where every value came from.', why:'<b>Trust:</b> linking the box on the card to the field makes autofill feel checkable, not magic.', rows:[['Photo hand-off','550ms',sp('· bounce 0')],['Scan line','1500ms','ease-in-out'],['Field fill stagger','260ms each','emphasized decel'],['Tick','400ms',sp('· bounce .25')]], hap:'Success when all fields are filled.'},
   unsure:{t:'One value needs a check', d:'OCR is not sure about the expiry date. Only that field turns amber and says why. The driver taps Fix, the number keypad opens with the year almost filled, types the last digit and presses Enter. Continue unlocks.', why:'<b>Rule:</b> never silently guess a legal value. Ask only about the one field we are unsure of.', rows:[['Scroll to the field','smooth','browser default'],['Fix button nudge','2 × 700ms','ease-in-out'],['Edit focus ring','200ms','standard'],['Button unlocks','300ms','standard']], hap:'Light tap on Done.'},
+  unsureNum:{t:'One character needs a check', d:'A trace of the lamp’s glare stayed over the start of the licence number. The expiry date read fine, so the card was accepted at once; this value can wait for the review screen. Only the hidden character is asked for, with the number keypad.', why:'<b>Rule:</b> stop at the camera only for what makes going on pointless (expired, wrong document). Anything the driver can fix in a second waits for one review screen.', rows:[['Field highlight','240ms','standard'],['Gap fills, tick','250ms + pop',sp('· bounce .25')]], hap:'Light tap when the value is confirmed.'},
   expired:{t:'Licence has expired', d:'We read the date right after the front photo, so the driver does not flip a card we cannot accept. The message is about the document, not the photo. One clear action: scan a valid licence. A temporary paper licence has its own path.', why:'<b>2024 problem:</b> the expired warning could be closed and Continue still worked.', rows:[['Checking the front','1100ms','spinner'],['Sheet rises','600ms',sp('· bounce 0')],['Old card leaves','520ms','emphasized accel'],['New card comes in','1200ms','emphasized decel']], hap:'Error (three short taps), once.'},
   review:{t:'Under review: a calm wait', d:'The photo the driver just took carries over and settles in the middle. While we check, the motion is slow on purpose: one turn every 6 seconds and a halo that breathes. The timeline draws itself and says what happens next and when.', why:'<b>Why it matters:</b> waiting is where people drop off. Saying how long, what happens next and letting them keep going turns the wait into progress.', rows:[['Photo carries over','700ms',sp('· bounce 0')],['Badge','400ms',sp('· bounce .25')],['Ring turn','6s loop','linear'],['Halo breath','5s loop','ease-in-out'],['Timeline draws','1100ms','emphasized decel'],['Steps appear','330ms apart','emphasized decel']], hap:'Success on arrival. Light tap on “Notify me”.'},
   manual:{t:'Manual entry', d:'Real inputs. The licence number formats itself as you type, dates use the format printed on the card, and errors appear when you leave a field, not on every key.', why:'<b>Accessibility:</b> labels above fields, 16px text, and errors in words, not only in red.', rows:[['Focus ring','200ms','standard'],['Error reveal','240ms','emphasized decel'],['Button unlocks','300ms','standard']], hap:'None.'},
@@ -990,7 +992,7 @@ async function camera(retry=false){
 /* real camera: one take filmed on an iPhone with printed specimen cards under a desk lamp.
    The video is lightly stabilised (the card is eased towards the frame, hand tremor stays).
    Cues follow what the footage shows: expired card held 1–6.5 s, swap 7–10 s, glare on the new card 11.4–14.3 s,
-   sharp front 14.9–15.7 s, flip ~17.8 s, sharp back 19–20.3 s */
+   front captured at 14.6 s as the glare slides off, flip ~17.8 s, sharp back 19–20.3 s */
 async function realCamera(v,t){
   const wd=$('#wd',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), prog=$('#prog',v), fl=$('#fl',v), cam=$('.cam',v);
   const gt=parseFloat(cam.style.getPropertyValue('--gt'))||228;
@@ -1011,8 +1013,8 @@ async function realCamera(v,t){
       if(vid.currentTime>=s||vid.ended) return r();
       requestAnimationFrame(tick); }; tick(); });
   const snap=()=>gd.querySelectorAll('.cn').forEach(c=>{ c.style.transitionDuration=(SPR.snap.ms*K)+'ms'; c.style.transitionTimingFunction=SPR.snap.e; });
-  const lock=()=>{ spec('camera'); snap(); gd.classList.remove('warn'); gd.classList.add('locked'); setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`);
-    anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],800*K,'linear'); };
+  const lock=(ms=800)=>{ spec('camera'); snap(); gd.classList.remove('warn'); gd.classList.add('locked'); setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`);
+    anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],ms*K,'linear'); };
   const capture=txt=>{ if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
     haptic('medium impact'); setPill(pill,'ok',`${ICON.check}<span>${txt}</span>`); };
   // 1. the driver shows the old card first
@@ -1031,12 +1033,15 @@ async function realCamera(v,t){
   await at(11.4); if(!alive(t))return;
   spec('glare'); gd.classList.add('warn'); setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); haptic('warning');
   setHint(ch,'The light is reflecting on the card');
-  await at(14.3); if(!alive(t))return;
+  await at(14.1); if(!alive(t))return;
   gd.classList.remove('warn'); setPill(pill,'',`<span>That’s better</span>`); setHint(ch,'Keep it there');
-  await at(14.9); if(!alive(t))return; lock();
-  await at(15.7); if(!alive(t))return; capture('Front captured');
+  await at(14.25); if(!alive(t))return; lock(350);
+  await at(14.6); if(!alive(t))return; capture('Front captured');
+  // the front is read at once, as with the old card: the date is fine, so no stop here
+  await at(14.75); if(!alive(t))return;
+  setPill(pill,'',`<span class="spinner" style="border-color:rgba(255,255,255,.25);border-top-color:#fff"></span><span>Checking the front…</span>`);
+  await at(15.75); if(!alive(t))return;
   // 4. back
-  await at(16.2); if(!alive(t))return;
   spec('flip'); $('#sdF',v).classList.add('ok');
   setPill(pill,'',`<span>Great. Now turn it over</span>`); setHint(ch,'Same place, back side up');
   swapTitle($('#side',v),'Back of licence'); moveSide(v,1);
@@ -1210,16 +1215,16 @@ async function reading(){
   const yOf=k=>{ const bb=si.querySelector(`[data-f="${k}"]`).getBBox(); return bb.y+bb.height/2; };
   for(const x of [...FIELDS].sort((a,b)=>yOf(a.k)-yOf(b.k))){
     const at=(yOf(x.k)/197)*D; await wait(Math.max(0,at-prev)); prev=at; if(!alive(t))return;
-    const unsure = f.unsure && x.k==='exp', bad = cardOld && x.k==='exp';
+    const unsure = f.unsure && x.k===(f.unsureKey||'exp'), bad = cardOld && x.k==='exp';
     const b=document.createElement('div'); b.className='ocrbox'+(unsure?' unsure':'')+(bad?' bad':'');
     const bb=si.querySelector(`[data-f="${x.k}"]`).getBBox();
     Object.assign(b.style,{left:bb.x*scale-3+'px',top:bb.y*scale-2+'px',width:bb.width*scale+6+'px',height:bb.height*scale+4+'px'});
     si.appendChild(b);
     anim(b,[{opacity:0,transform:'scale(1.18)'},{opacity:1,transform:'scale(1)'}],SPR.snap);
     const fe=$(`[data-k="${x.k}"]`,v), val=$('.v',fe);
-    val.textContent = unsure ? '14 Jun 202?' : bad ? '12 Mar 2025' : x.v;
+    val.textContent = unsure ? (x.k==='num'?'M?234-56789-01234':'14 Jun 202?') : bad ? '12 Mar 2025' : x.v;
     anim(val,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],360,EASE.decel);
-    if(unsure){ fe.classList.add('unsure'); $('.note',fe).textContent='A hologram covers the last digit of the year. Please check.'; $('.ok',fe).outerHTML=`<button class="fix" id="fix">Fix</button>`; }
+    if(unsure){ fe.classList.add('unsure'); $('.note',fe).textContent=x.k==='num'?'Glare hid one character. Please check it on your card.':'A hologram covers the last digit of the year. Please check.'; $('.ok',fe).outerHTML=`<button class="fix" id="fix">Fix</button>`; }
     else if(bad){ fe.classList.add('bad'); $('.note',fe).textContent='Expired on 12 Mar 2025'; $('.ok',fe).outerHTML=`<span style="color:var(--red-text)">${ICON.alert}</span>`; }
     else { fe.classList.add('filled'); anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop); }
   }
@@ -1240,7 +1245,40 @@ async function reading(){
     go.onclick=()=>camera(true);
     return;
   }
-  if(f.unsure){
+  if(f.unsure && f.unsureKey==='num'){
+    // one character of the licence number was under the glare: fill only the gap, the rest stays as read
+    spec('unsureNum');
+    status(`<span style="color:var(--amber)">${ICON.alert}</span>Almost done. Please check one value`);
+    const fx=$('#fix',v), fe=$('[data-k="num"]',v), bd=$('.body',v);
+    fe.scrollIntoView({block:'center',behavior:'smooth'});
+    anim(fx,[{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],700,EASE.inout,{iterations:2,delay:600*K});
+    fx.onclick=()=>{
+      fe.classList.remove('unsure'); fe.classList.add('editing','hinting');
+      const vv=$('.val',fe);
+      vv.innerHTML=`<span class="numgap"><span>M</span><input id="ein" maxlength="1" inputmode="numeric" pattern="[0-9]" enterkeyhint="done" autocomplete="off" aria-label="Licence number, second character"><span>234-56789-01234</span></span><button class="fix" id="ok2" style="color:var(--ink)">Done</button>`;
+      $('.note',fe).textContent='Type the character after M, as printed on your card';
+      const inp=$('#ein',fe);
+      inp.focus();
+      let done=false;
+      const confirm=()=>{
+        if(done) return;
+        const d=inp.value.trim();
+        if(!/^\d$/.test(d)){ fe.classList.add('invalid'); $('.note',fe).textContent=d?'Licence numbers have only digits after the first letter':'Type the missing digit';
+          anim(fe,[{transform:'translateX(0)'},{transform:'translateX(-5px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],360,EASE.inout); return; }
+        done=true; inp.blur();
+        vv.innerHTML=`<span class="v">M${d}234-56789-01234</span><span class="ok">${ICON.check}</span>`;
+        $('.note',fe).textContent=''; fe.classList.remove('editing','hinting','invalid'); fe.classList.add('filled'); haptic('light');
+        anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop);
+        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);}
+        status(`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`);
+        enable();
+      };
+      inp.addEventListener('input',()=>{ inp.value=inp.value.slice(-1); fe.classList.remove('invalid'); $('.note',fe).textContent='Type the character after M, as printed on your card'; if(/^\d$/.test(inp.value)) setTimeout(confirm,250*K); });
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); confirm(); } });
+      $('#ok2',fe).addEventListener('pointerdown',e=>e.preventDefault());
+      $('#ok2',fe).onclick=confirm;
+    };
+  } else if(f.unsure){
     spec('unsure');
     status(`<span style="color:var(--amber)">${ICON.alert}</span>Almost done. Please check one value`);
     const fx=$('#fix',v), fe=$('[data-k="exp"]',v), bd=$('.body',v);
@@ -1425,7 +1463,8 @@ async function autopilot(){
     await tapEl('#scan',t,7800);          // let the tips play out on the example card first
     if(f.expired){ await waitFor('#exSc',t); return; }
     if(f.expiredFirst||f.real){ await tapEl('#exSc',t,3200); }
-    if(f.unsure){ await tapEl('#fix',t,1600); const inp=await waitFor('#ein',t); await wait(900); inp.value+='9'; inp.dispatchEvent(new Event('input'));
+    if(f.unsure && f.unsureKey==='num'){ await tapEl('#fix',t,1600); const inp=await waitFor('#ein',t); await wait(900); inp.value='1'; inp.dispatchEvent(new Event('input')); }
+    else if(f.unsure){ await tapEl('#fix',t,1600); const inp=await waitFor('#ein',t); await wait(900); inp.value+='9'; inp.dispatchEvent(new Event('input'));
       await wait(700); inp.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'})); }
     await waitFor('#go:not([disabled])',t);
     await tapEl('#go',t,1500);
