@@ -316,6 +316,7 @@ body.rec.bare .foot{padding-bottom:12px}
 /* reading / review */
 .scanimg{position:relative;width:100%;aspect-ratio:1.586;border-radius:12px;overflow:hidden;margin-top:6px;box-shadow:0 8px 20px -10px rgba(16,24,40,.35)}
 .scanimg .face{position:absolute;inset:0}
+.realimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.ghostsvg{position:absolute;inset:0;opacity:0}.ghostsvg svg{width:100%;height:100%}
 .scanline{position:absolute;left:0;right:0;height:56px;top:-56px;background:linear-gradient(to bottom,rgba(26,95,180,0),rgba(26,95,180,.22) 70%,rgba(26,95,180,.9) 98%,rgba(26,95,180,0));pointer-events:none}
 .ocrbox{position:absolute;border:2px solid #22A04B;border-radius:4px;background:rgba(34,160,75,.08);opacity:0;pointer-events:none}
 .ocrbox.unsure{border-color:#E8A317;background:rgba(232,163,23,.12)}
@@ -627,6 +628,7 @@ function cardBack(){
 /* ================= scenarios ================= */
 const SCEN = {
   story:  {name:'Full story', note:'One take: an expired card first, then glare, shaky hands, one unclear digit and the review screen.', dot:'#1F2A37', f:{expiredFirst:1, glare:'front', blur:'back', unsure:1}},
+  real:   {name:'Real camera', note:'Filmed on an iPhone: a printed specimen card under a desk lamp. The glare is real; the app waits, then captures both sides.', dot:'#0B6E4F', f:{real:1}},
   happy:  {name:'Happy path', note:'Card found, captured and read without help.', dot:'#1E8E3E', f:{}},
   glare:  {name:'Glare on the card', note:'A light reflection hides the text. The app asks to tilt.', dot:'#E8A317', f:{glare:'front'}},
   blur:   {name:'Shaky hands', note:'The image is blurry, so capture waits until it is sharp.', dot:'#E8A317', f:{blur:'front'}},
@@ -637,6 +639,9 @@ const SCEN = {
 let scenario='happy';
 const F = () => SCEN[scenario].f;
 let cardOld=false;                 // the card in front of the camera is the old, expired one
+const REAL = () => !!(SCEN[scenario]&&SCEN[scenario].f.real);
+// real-camera mode: the photo the phone took (flattened), with the same card drawn invisibly on top so OCR boxes still line up
+const realFace=(side,svg)=>REAL()?`<img class="realimg" src="real/${side}.jpg" alt="">`+`<div class="ghostsvg">${svg}</div>`:svg;
 const EXP = () => cardOld ? '2025/03/12' : '2029/06/14';
 
 /* ================= spec panel ================= */
@@ -919,7 +924,7 @@ async function camera(retry=false){
   const gt=Math.round(screen.clientHeight*.43-98);
   const html=`<div class="cam" style="--gt:${gt}px">
     <div class="world" id="wd"><div class="feed"></div><div class="grain"></div>
-    <div class="cardwrap" id="cw"><div class="card3d" id="c3"><div class="face front"><div class="art">${cardFront(EXP(),{old:cardOld,holo:f.unsure&&!cardOld})}</div><div class="glare" id="gl"><i class="sheen"></i><i class="core"></i></div></div><div class="face back">${cardBack()}</div></div></div></div>
+    <div class="cardwrap" id="cw"${f.real?' style="display:none"':''}><div class="card3d" id="c3"><div class="face front"><div class="art">${cardFront(EXP(),{old:cardOld,holo:f.unsure&&!cardOld})}</div><div class="glare" id="gl"><i class="sheen"></i><i class="core"></i></div></div><div class="face back">${cardBack()}</div></div></div></div>
     <div class="hole"></div>
     <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><div class="sidebox"><b id="side">Front of licence</b><div class="sides"><i class="sdhl"></i><span id="sdF">Front</span><span id="sdB">Back</span></div></div><span style="width:44px"></span></div>
     <div class="pill" id="pill">Place the front of your licence in the frame</div>
@@ -942,6 +947,7 @@ async function camera(retry=false){
   $('#sh',v).onclick=()=>camChip(v,'Just hold still, we take the photo for you');
   const c3=$('#c3',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v);
   const cwr=$('#cw',v), wd=$('#wd',v);
+  if(f.real){ await realCamera(v,t); return; }
   // the card lies on a table; the camera moves over the table and finds it (the card itself does not fly)
   wd.style.transform='translate(50px,250px) scale(.86)';
   await wait(600); if(!alive(t))return;
@@ -979,6 +985,59 @@ async function camera(retry=false){
   await issues(v,'back',drift,t); if(!alive(t))return;
   await lockAndCapture(v,drift,'back',t); if(!alive(t))return;
   await wait(300); if(!alive(t))return;
+  reading();
+}
+/* real camera: footage filmed on an iPhone (printed specimen card, desk lamp). The video was stabilised so the card
+   sits near the frame, the way a phone corrects small hand movement; the overlay reacts to what the video shows:
+   glare 1.3–5.9 s, sharp front 6.7–7.6 s, flip ~9.6–10.8 s, sharp back 11.9–12.9 s */
+async function realCamera(v,t){
+  const wd=$('#wd',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), prog=$('#prog',v), fl=$('#fl',v), cam=$('.cam',v);
+  const gt=parseFloat(cam.style.getPropertyValue('--gt'))||228;
+  $('#cw',v).style.display='none';
+  wd.innerHTML=`<video id="rv" muted playsinline webkit-playsinline preload="auto" poster="real/poster.jpg"><source src="real/scan.mp4" type="video/mp4"><source src="real/scan.webm" type="video/webm"></video>`;
+  const vid=$('#rv',wd);
+  Object.assign(vid.style,{position:'absolute',left:'0',top:(gt+98.5-326.5)+'px',width:'360px',height:'880px',objectFit:'cover',opacity:0,background:'#3b2416'});
+  setPill(pill,'',`<span class="spinner" style="border-color:rgba(255,255,255,.25);border-top-color:#fff"></span><span>Starting camera…</span>`);
+  await new Promise(r=>{ if(vid.readyState>=3) return r(); vid.addEventListener('canplaythrough',r,{once:true}); setTimeout(r,6000); });
+  if(!alive(t)) return;
+  vid.playbackRate=Math.max(.5,1/K);
+  try{ await vid.play(); }catch(e){}
+  anim(vid,[{opacity:0,filter:'blur(6px) brightness(.6)'},{opacity:1,filter:'none'}],500,EASE.decel);
+  setPill(pill,'',`<span>Place the front of your licence in the frame</span>`);
+  const at=s=>new Promise(r=>{ const tick=()=>{
+      if(!alive(t)||!vid.isConnected){ vid.pause(); return r(); }
+      if(PAUSED){ if(!vid.paused) vid.pause(); } else if(vid.paused && !vid.ended) vid.play().catch(()=>{});
+      if(vid.currentTime>=s||vid.ended) return r();
+      requestAnimationFrame(tick); }; tick(); });
+  const snap=()=>gd.querySelectorAll('.cn').forEach(c=>{ c.style.transitionDuration=(SPR.snap.ms*K)+'ms'; c.style.transitionTimingFunction=SPR.snap.e; });
+  // 1. glare from the desk lamp hides the name and dates
+  await at(1.3); if(!alive(t))return;
+  spec('glare'); gd.classList.add('warn'); setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); haptic('warning');
+  setHint(ch,'The light is reflecting on the card');
+  // 2. the card is tilted, the text is readable again
+  await at(5.9); if(!alive(t))return;
+  gd.classList.remove('warn'); setPill(pill,'',`<span>That’s better</span>`); setHint(ch,'Keep it there');
+  // 3. four edges found and the image is sharp: lock, fill the ring, capture
+  await at(6.7); if(!alive(t))return;
+  spec('camera'); snap(); gd.classList.add('locked'); setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`);
+  anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],850*K,'linear');
+  await at(7.6); if(!alive(t))return;
+  if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
+  haptic('medium impact'); setPill(pill,'ok',`${ICON.check}<span>Front captured</span>`);
+  // 4. now the back
+  await at(8.3); if(!alive(t))return;
+  spec('flip'); $('#sdF',v).classList.add('ok');
+  setPill(pill,'',`<span>Great. Now turn it over</span>`); setHint(ch,'Same place, back side up');
+  swapTitle($('#side',v),'Back of licence'); moveSide(v,1);
+  gd.classList.remove('locked'); anim(prog,[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std); haptic('light');
+  await at(11.9); if(!alive(t))return;
+  spec('camera'); snap(); gd.classList.add('locked'); setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`); setHint(ch,'Keep it there');
+  anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],850*K,'linear');
+  await at(12.9); if(!alive(t))return;
+  if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
+  haptic('medium impact'); setPill(pill,'ok',`${ICON.check}<span>Back captured</span>`);
+  await at(13.6); if(!alive(t))return;
+  vid.pause(); await wait(300); if(!alive(t))return;
   reading();
 }
 /* camera pan: the whole table (feed + card) moves; a touch of motion blur only while moving fast */
@@ -1118,10 +1177,10 @@ async function reading(){
   const t=RUN, f=F(); spec('read');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Check details</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
-    <div class="scanimg" id="si"><div class="face">${cardFront(EXP(),{holo:f.unsure})}</div></div>
+    <div class="scanimg" id="si"><div class="face">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div></div>
     <div class="thumbs">
-      <div class="thumb"><div class="mini"><div class="face">${cardFront(EXP(),{holo:f.unsure})}</div></div>Front<button class="rt">Retake</button></div>
-      <div class="thumb"><div class="mini"><div class="face">${cardBack()}</div></div>Back<button class="rt">Retake</button></div>
+      <div class="thumb"><div class="mini"><div class="face">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div></div>Front<button class="rt">Retake</button></div>
+      <div class="thumb"><div class="mini"><div class="face">${realFace('back',cardBack())}</div></div>Back<button class="rt">Retake</button></div>
     </div>
     <div id="bn"></div>
     <div class="status" id="stt"><span class="spinner"></span>Reading your licence…</div>
@@ -1233,7 +1292,7 @@ async function underReview(){
       <svg class="urring" width="176" height="176" viewBox="0 0 176 176"><circle cx="88" cy="88" r="78" fill="none" stroke="#E6EBEE" stroke-width="4"/>
         <circle class="arc" cx="88" cy="88" r="78" fill="none" stroke="url(#urg)" stroke-width="4" stroke-linecap="round" stroke-dasharray="${C*.28} ${C}"/>
         <defs><linearGradient id="urg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1A5FB4" stop-opacity="0"/><stop offset="1" stop-color="#1A5FB4"/></linearGradient></defs></svg>
-      <div class="urcard"><div class="face">${cardFront('2029/06/14')}</div><span class="urbadge">${ICON.clock}</span></div>
+      <div class="urcard"><div class="face">${realFace('front',cardFront('2029/06/14'))}</div><span class="urbadge">${ICON.clock}</span></div>
     </div>
     <h2 class="urt">Licence sent for review</h2>
     <p class="urp">We check it with the issuing office. It usually takes less than 24 hours, and you can keep going in the meantime.</p>
