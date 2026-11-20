@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Uride proto">
+<title>Uride licence scan · first pass (v1) · Illia Vostrikov</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --k:1;                       /* motion multiplier: 1 = real time, 4 = slow motion */
+  --red:#D93025; --red-hover:#C5221F; --red-soft:#FCE8E6; --red-text:#B3261E;
+  --ink:#1F2A37; --body:#3E4958; --muted:#5B6B78; --hint:#7A8A96;
+  --line:#E3E8EB; --line-strong:#C9D3D9; --surface:#FFFFFF; --bg:#F5F7F8;
+  --green:#1E8E3E; --green-soft:#E6F4EA; --amber:#9A5B00; --amber-soft:#FEF4DD; --amber-line:#F2C46D;
+  --blue:#1A5FB4; --blue-soft:#E8F0FE; --violet:#6E62A5; --violet-soft:#EFEDF7;
+  --ease-out:cubic-bezier(.2,.8,.2,1); --ease-in-out:cubic-bezier(.65,0,.35,1); --spring:cubic-bezier(.34,1.56,.64,1);
+  --font:"Google Sans","Product Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);background:#ECEFF1;color:var(--body);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+
+/* ---------- page layout ---------- */
+.page{min-height:100%;display:grid;grid-template-columns:minmax(0,1fr) 400px minmax(0,1fr);gap:40px;padding:32px 40px 48px;align-items:start}
+.intro{grid-column:1 / -1;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.intro h1{font-size:28px;line-height:34px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.intro p{font-size:15px;line-height:22px;color:var(--muted);max-width:640px;margin-top:6px}
+.intro .by{font-size:13px;color:var(--muted)}
+.intro .by a{color:var(--ink)}
+.left,.right{display:flex;flex-direction:column;gap:16px}
+.left{align-items:flex-end}
+.panel{background:#fff;border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(16,24,40,.06);width:100%;max-width:340px}
+.panel h2{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:12px}
+.scen{display:flex;flex-direction:column;gap:6px}
+.scen button{display:flex;gap:10px;align-items:flex-start;text-align:left;padding:10px 12px;border-radius:10px;border:1px solid var(--line);transition:background calc(160ms*var(--k)),border-color calc(160ms*var(--k))}
+.scen button:hover{background:var(--bg)}
+.scen button[aria-pressed="true"]{border-color:var(--ink);background:var(--bg)}
+.scen b{display:block;font-size:14px;color:var(--ink);font-weight:500}
+.scen small{display:block;font-size:12.5px;line-height:17px;color:var(--muted);margin-top:2px}
+.scen .dot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none}
+.ctrl{display:flex;flex-direction:column;gap:10px}
+.toggle{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--ink)}
+.switch{width:40px;height:24px;border-radius:12px;background:var(--line-strong);position:relative;transition:background calc(200ms*var(--k))}
+.switch::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform calc(200ms*var(--k)) var(--ease-out)}
+.switch[aria-checked="true"]{background:var(--ink)}
+.switch[aria-checked="true"]::after{transform:translateX(16px)}
+.restart{margin-top:4px;padding:10px;border-radius:10px;border:1px solid var(--line);font-size:14px;color:var(--ink);font-weight:500}
+.restart:hover{background:var(--bg)}
+
+.spec h3{font-size:18px;line-height:24px;color:var(--ink);font-weight:700}
+.spec p{font-size:14px;line-height:21px;color:var(--body);margin-top:8px}
+.spec .why{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--bg);font-size:13.5px;line-height:20px}
+.spec .why b{color:var(--ink)}
+.spec table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12.5px}
+.spec th{text-align:left;color:var(--muted);font-weight:500;padding:6px 0;border-bottom:1px solid var(--line)}
+.spec td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink)}
+.spec td:nth-child(2),.spec td:nth-child(3){font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--body);white-space:nowrap;padding-left:8px}
+.spec .hap{margin-top:12px;font-size:13px;color:var(--body);display:flex;gap:8px}
+.spec .hap span{flex:none}
+.changes li{font-size:13.5px;line-height:20px;margin:0 0 8px 18px;color:var(--body)}
+.changes li b{color:var(--ink);font-weight:500}
+
+/* ---------- device ---------- */
+.device{width:392px;height:832px;border-radius:56px;background:#0E1114;padding:16px;box-shadow:0 30px 60px -20px rgba(16,24,40,.35),0 0 0 1px #2A2F35 inset;position:relative}
+.screen{position:relative;width:360px;height:800px;border-radius:42px;overflow:hidden;background:var(--surface);isolation:isolate}
+.statusbar{position:absolute;left:0;right:0;top:0;height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px 0 30px;font-size:15px;font-weight:500;color:var(--ink);z-index:50;pointer-events:none;transition:color calc(200ms*var(--k))}
+.statusbar.dark{color:#fff}
+.statusbar .icons{display:flex;gap:6px;align-items:center}
+.island{position:absolute;top:11px;left:50%;width:96px;height:28px;margin-left:-48px;border-radius:20px;background:#000;z-index:60}
+.homebar{position:absolute;bottom:8px;left:50%;width:128px;height:5px;margin-left:-64px;border-radius:3px;background:var(--ink);z-index:60;opacity:.85;transition:background calc(200ms*var(--k))}
+.homebar.light{background:#fff}
+.view{position:absolute;inset:0;background:var(--surface);display:flex;flex-direction:column;will-change:transform}
+
+/* ---------- app shell ---------- */
+.top{padding:52px 16px 8px;display:flex;align-items:center;gap:8px}
+.iconbtn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;transition:background calc(150ms*var(--k))}
+.iconbtn:active{background:rgba(0,0,0,.06)}
+.top h1{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:20px;line-height:26px;font-weight:700;color:var(--ink);letter-spacing:.1px}
+.stepper{font-size:13px;font-weight:500;color:var(--muted);background:var(--bg);padding:6px 10px;border-radius:14px;white-space:nowrap}
+.body{flex:1;overflow:auto;padding:4px 20px 16px;scrollbar-width:none}
+.body::-webkit-scrollbar{display:none}
+.lead{font-size:15px;line-height:22px;color:var(--body)}
+.foot{padding:12px 20px 30px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(to top,#fff 75%,rgba(255,255,255,0))}
+.btn{height:52px;border-radius:14px;font-size:17px;font-weight:700;letter-spacing:.1px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform calc(120ms*var(--k)) var(--ease-out),background calc(160ms*var(--k)),opacity calc(160ms*var(--k)),box-shadow calc(160ms*var(--k))}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--red);color:#fff;box-shadow:0 1px 2px rgba(217,48,37,.3)}
+.btn.primary:hover{background:var(--red-hover)}
+.btn.primary[disabled]{background:#E4E8EB;color:#6B7A86;box-shadow:none;cursor:not-allowed;transform:none}
+.btn.ghost{color:var(--red-text);height:44px;font-size:16px;font-weight:500}
+.help{text-align:center;font-size:14px;color:var(--muted)}
+.help b{color:var(--ink);font-weight:500;text-decoration:underline;text-underline-offset:3px}
+
+/* checklist */
+.ring{width:56px;height:56px;position:relative;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink)}
+.sumrow{display:flex;gap:14px;align-items:center;padding:6px 0 18px}
+.sumrow b{display:block;font-size:17px;color:var(--ink);font-weight:700}
+.sumrow small{font-size:14px;color:var(--muted)}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;text-align:left;width:100%;position:relative;transition:border-color calc(240ms*var(--k)),box-shadow calc(240ms*var(--k)),background calc(240ms*var(--k))}
+.item.next{border-color:var(--ink);box-shadow:0 4px 14px -6px rgba(31,42,55,.25)}
+.item .ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:none;transition:background calc(240ms*var(--k))}
+.item .tx{flex:1;min-width:0}
+.item .tx b{display:block;font-size:16px;line-height:22px;color:var(--ink);font-weight:500}
+.item .tx small{display:block;font-size:13px;line-height:18px;margin-top:1px}
+.item .go{font-size:14px;font-weight:700;color:var(--red-text)}
+.st-ok .ic{background:var(--green-soft);color:var(--green)} .st-ok small{color:var(--green)}
+.st-rev .ic{background:var(--blue-soft);color:var(--blue)} .st-rev small{color:var(--blue)}
+.st-todo .ic{background:var(--bg);color:var(--hint)} .st-todo small{color:var(--muted)}
+.st-next .ic{background:var(--red-soft);color:var(--red-text)} .st-next small{color:var(--red-text)}
+.st-bad .ic{background:var(--red-soft);color:var(--red-text)} .st-bad small{color:var(--red-text)}
+.group{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;margin:16px 2px 8px}
+
+/* licence intro */
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.slot{aspect-ratio:1.586;border-radius:12px;border:1.5px dashed var(--line-strong);display:grid;place-items:center;position:relative;background:var(--bg);overflow:hidden}
+.slot span{font-size:13px;font-weight:500;color:var(--muted);position:absolute;left:10px;bottom:8px}
+.slot svg.card-ghost{opacity:.55}
+.needs{margin-top:22px;display:flex;flex-direction:column;gap:12px}
+.needs div{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:21px;color:var(--body)}
+.needs i{width:28px;height:28px;border-radius:8px;background:var(--violet-soft);color:var(--violet);display:grid;place-items:center;flex:none;font-style:normal}
+
+/* banners */
+.banner{display:flex;gap:12px;padding:12px 14px;border-radius:12px;font-size:14px;line-height:20px;margin-top:4px}
+.banner b{display:block;font-size:15px;color:var(--ink);font-weight:700;margin-bottom:2px}
+.banner.err{background:var(--red-soft);border:1px solid #F3B8B3}
+.banner.warn{background:var(--amber-soft);border:1px solid var(--amber-line)}
+.banner.info{background:var(--blue-soft);border:1px solid #BCD3F7}
+.banner svg{flex:none;margin-top:2px}
+
+/* camera */
+.cam{position:absolute;inset:0;background:#15181B;overflow:hidden}
+.cam .feed{position:absolute;inset:-20px;background:
+  radial-gradient(120% 80% at 30% 20%,#5A4A3C 0%,#3A3029 45%,#211C18 100%);filter:saturate(.9)}
+.cam .grain{position:absolute;inset:0;background-image:repeating-linear-gradient(115deg,rgba(255,255,255,.025) 0 2px,transparent 2px 7px);mix-blend-mode:overlay}
+.cam .shade{position:absolute;inset:0;pointer-events:none}
+.cam .topbar{position:absolute;top:48px;left:12px;right:12px;display:flex;align-items:center;justify-content:space-between;z-index:5;color:#fff}
+.cam .topbar b{font-size:16px;font-weight:500}
+.cam .iconbtn{background:rgba(255,255,255,.12);color:#fff}
+.guide{position:absolute;left:24px;top:228px;width:312px;height:197px;z-index:3}
+.guide .cn{position:absolute;width:30px;height:30px;border:3.5px solid #fff;transition:border-color calc(200ms*var(--k)),transform calc(260ms*var(--k)) var(--spring)}
+.guide .tl{left:-4px;top:-4px;border-right:0;border-bottom:0;border-radius:14px 0 0 0}
+.guide .tr{right:-4px;top:-4px;border-left:0;border-bottom:0;border-radius:0 14px 0 0}
+.guide .bl{left:-4px;bottom:-4px;border-right:0;border-top:0;border-radius:0 0 0 14px}
+.guide .br{right:-4px;bottom:-4px;border-left:0;border-top:0;border-radius:0 0 14px 0}
+.guide.locked .cn{border-color:#5BD17E}
+.guide.locked .tl{transform:translate(5px,5px)} .guide.locked .tr{transform:translate(-5px,5px)}
+.guide.locked .bl{transform:translate(5px,-5px)} .guide.locked .br{transform:translate(-5px,-5px)}
+.guide.warn .cn{border-color:#FFC75F}
+.cardwrap{position:absolute;left:24px;top:228px;width:312px;height:197px;z-index:2;perspective:900px}
+.cardwrap .card3d{width:100%;height:100%;position:relative;transform-style:preserve-3d}
+.cardwrap .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;overflow:hidden;box-shadow:0 18px 30px -12px rgba(0,0,0,.6)}
+.cardwrap .face.back{transform:rotateY(180deg)}
+.glare{position:absolute;width:180px;height:120px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,.55) 45%,rgba(255,255,255,0));mix-blend-mode:screen;pointer-events:none;opacity:0}
+.pill{position:absolute;left:50%;top:150px;transform:translateX(-50%);z-index:5;background:rgba(20,22,25,.72);backdrop-filter:blur(8px);color:#fff;font-size:15px;line-height:20px;padding:10px 16px;border-radius:22px;white-space:nowrap;display:flex;gap:8px;align-items:center;transition:background calc(200ms*var(--k))}
+.pill.warn{background:rgba(124,78,0,.9)}
+.pill.ok{background:rgba(22,112,52,.92)}
+.camhint{position:absolute;left:24px;right:24px;top:446px;text-align:center;color:rgba(255,255,255,.78);font-size:14px;line-height:20px;z-index:5}
+.shutterbar{position:absolute;left:0;right:0;bottom:44px;display:flex;justify-content:center;align-items:center;gap:48px;z-index:5}
+.shutter{width:76px;height:76px;border-radius:50%;position:relative;display:grid;place-items:center}
+.shutter .core{width:60px;height:60px;border-radius:50%;background:#fff;transition:transform calc(120ms*var(--k)) var(--ease-out)}
+.shutter:active .core{transform:scale(.9)}
+.shutter svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.camside{color:#fff;font-size:13px;width:64px;text-align:center;opacity:.85}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:20;pointer-events:none}
+.autolabel{position:absolute;left:0;right:0;bottom:130px;text-align:center;color:rgba(255,255,255,.7);font-size:13px;z-index:5}
+
+/* reading / review */
+.scanimg{position:relative;width:100%;aspect-ratio:1.586;border-radius:12px;overflow:hidden;margin-top:6px;box-shadow:0 8px 20px -10px rgba(16,24,40,.35)}
+.scanimg .face{position:absolute;inset:0}
+.scanline{position:absolute;left:0;right:0;height:56px;top:-56px;background:linear-gradient(to bottom,rgba(26,95,180,0),rgba(26,95,180,.22) 70%,rgba(26,95,180,.9) 98%,rgba(26,95,180,0));pointer-events:none}
+.ocrbox{position:absolute;border:2px solid #1A73E8;border-radius:4px;background:rgba(26,115,232,.08);opacity:0;pointer-events:none}
+.ocrbox.unsure{border-color:#E8A317;background:rgba(232,163,23,.12)}
+.ocrbox.bad{border-color:#D93025;background:rgba(217,48,37,.10)}
+.thumbs{display:flex;gap:10px;margin-top:10px}
+.thumb{flex:1;display:flex;align-items:center;gap:8px;padding:6px;border-radius:10px;border:1px solid var(--line);font-size:13px;color:var(--ink)}
+.thumb .mini{width:46px;height:29px;border-radius:4px;overflow:hidden;position:relative;flex:none}
+.thumb .mini .face{position:absolute;inset:0}
+.thumb button{margin-left:auto;font-size:13px;font-weight:500;color:var(--red-text);padding:4px}
+.status{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink);font-weight:500;margin:18px 0 10px;min-height:22px}
+.spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--blue-soft);border-top-color:var(--blue);animation:spin calc(800ms*var(--k)) linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fields{display:flex;flex-direction:column;gap:10px}
+.field{border:1px solid var(--line);border-radius:12px;padding:8px 12px 9px;position:relative;background:#fff;transition:border-color calc(200ms*var(--k)),background calc(200ms*var(--k)),box-shadow calc(200ms*var(--k))}
+.field label{display:block;font-size:12.5px;line-height:16px;color:var(--muted)}
+.field .val{font-size:16px;line-height:24px;color:var(--ink);min-height:24px;display:flex;align-items:center;gap:8px}
+.field .val .v{flex:1}
+.field .skel{display:block;height:12px;width:60%;border-radius:6px;background:linear-gradient(90deg,#EEF1F3 25%,#F7F9FA 50%,#EEF1F3 75%);background-size:200% 100%;animation:shimmer calc(1200ms*var(--k)) linear infinite;margin:6px 0}
+@keyframes shimmer{to{background-position:-200% 0}}
+.field .ok{color:var(--green);opacity:0;transform:scale(.4)}
+.field.filled .ok{opacity:1;transform:scale(1);transition:opacity calc(160ms*var(--k)),transform calc(320ms*var(--k)) var(--spring)}
+.field.unsure{border-color:var(--amber-line);background:var(--amber-soft)}
+.field.unsure .note{display:block}
+.field.bad{border-color:#F3B8B3;background:var(--red-soft)}
+.field .note{display:none;font-size:13px;line-height:18px;color:var(--amber);margin-top:2px}
+.field.bad .note{display:block;color:var(--red-text)}
+.field .fix{font-size:14px;font-weight:700;color:var(--amber);padding:4px 2px}
+.field.editing{border-color:var(--ink);box-shadow:0 0 0 3px rgba(31,42,55,.12);background:#fff}
+.field input{width:100%;border:0;outline:0;font-size:16px;line-height:24px;color:var(--ink);background:transparent}
+.field input::placeholder{color:#8A99A4}
+.field .err{display:none;font-size:13px;color:var(--red-text);margin-top:2px}
+.field.invalid{border-color:#E0786F}
+.field.invalid .err{display:block}
+.field.valid{border-color:#A6D8B4}
+
+/* toast */
+.toast{position:absolute;left:12px;right:12px;top:48px;z-index:40;background:#1F2A37;color:#fff;border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center;font-size:14.5px;line-height:20px;box-shadow:0 12px 24px -10px rgba(0,0,0,.5);transform:translateY(-140%)}
+.toast b{font-weight:700}
+/* haptic marker */
+.haptic{position:absolute;left:50%;top:11px;height:28px;z-index:61;display:flex;align-items:center;gap:7px;background:#000;color:#fff;border-radius:20px;padding:0 14px 0 10px;font-size:12px;font-weight:500;white-space:nowrap;opacity:0;pointer-events:none;transform:translateX(-50%)}
+.haptic i{width:8px;height:8px;border-radius:50%;background:#FF6B5E;position:relative}
+.haptic i::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--red);opacity:.5}
+/* tap ring */
+.tap{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:rgba(31,42,55,.18);pointer-events:none;z-index:80}
+body:not(.show-taps) .tap{display:none}
+/* under review */
+.done-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:30px 8px 0}
+.done-hero h2{font-size:24px;line-height:30px;color:var(--ink);font-weight:700;margin-top:18px}
+.done-hero p{font-size:15px;line-height:22px;margin-top:8px}
+.timeline{margin-top:26px;display:flex;flex-direction:column;gap:0;text-align:left}
+.tl{display:flex;gap:12px;position:relative;padding-bottom:18px}
+.tl::before{content:"";position:absolute;left:11px;top:24px;bottom:0;width:2px;background:var(--line)}
+.tl:last-child::before{display:none}
+.tl .d{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--bg);color:var(--hint);border:2px solid var(--line)}
+.tl.on .d{background:var(--green);border-color:var(--green);color:#fff}
+.tl.now .d{background:#fff;border-color:var(--blue);color:var(--blue)}
+.tl b{display:block;font-size:15px;color:var(--ink);font-weight:500}
+.tl small{font-size:13px;color:var(--muted)}
+
+@media (max-width:1180px){.page{grid-template-columns:1fr;justify-items:center}.left,.right{align-items:center;order:2}.right{order:3}}
+
+/* ---------- record mode (?record) ---------- */
+body.rec{overflow:hidden}
+body.rec .intro,body.rec .left,body.rec .right{display:none}
+body.rec .page{display:flex;justify-content:center;align-items:center;min-height:100vh;min-height:100dvh;padding:20px}
+body.rec.bare{background:#fff}
+body.rec.bare .page{padding:0}
+body.rec.bare .device{background:none;padding:0;box-shadow:none;border-radius:0;width:360px;height:800px}
+body.rec.bare .screen{border-radius:0}
+body.rec.bare .statusbar,body.rec.bare .island,body.rec.bare .homebar{display:none}
+body.rec.bare .top{padding-top:16px}
+body.rec.bare .cam .topbar{top:14px}
+body.rec.bare .toast{top:12px}
+body.rec.bare .haptic{top:8px}
+@media (max-width:520px){.page{padding:20px 8px 40px;gap:20px}.intro h1{font-size:22px;line-height:28px}}
+@media (prefers-reduced-motion:reduce){:root{--k:.01}}
+</style>
+</head>
+<body class="show-taps">
+<div class="page">
+  <div class="intro">
+    <div>
+      <p style="display:inline-block;background:#1F2A37;color:#fff;font-size:13px;font-weight:500;padding:6px 12px;border-radius:14px;margin-bottom:10px">v1 · first pass, built in one go from my brief · <a href="../" style="color:#fff">see the final version →</a></p>
+      <h1>Uride · Driver onboarding, licence scan</h1>
+      <p>A working prototype of the driver licence step: camera with edge detection, auto-capture, OCR read-out and every unhappy path I designed for. Revisited in 2026 from the shipped 2024 design, with the fixes listed on the right.</p>
+    </div>
+    <div class="by">By <a href="https://illiavostrikov.com">Illia Vostrikov</a> · sample data only</div>
+  </div>
+
+  <div class="left">
+    <div class="panel">
+      <h2>Scenario</h2>
+      <div class="scen" id="scen"></div>
+    </div>
+    <div class="panel ctrl">
+      <h2>Controls</h2>
+      <div class="toggle">Slow motion ×4 <button class="switch" id="slow" role="switch" aria-checked="false" aria-label="Slow motion"></button></div>
+      <div class="toggle">Show taps <button class="switch" id="taps" role="switch" aria-checked="true" aria-label="Show taps"></button></div>
+      <button class="restart" id="restart">Restart scenario</button>
+    </div>
+  </div>
+
+  <div class="device"><div class="screen" id="screen">
+    <div class="island"></div>
+    <div class="statusbar" id="sb"><span>9:41</span><span class="icons">
+      <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="currentColor"/><rect x="5" y="5" width="3" height="7" rx="1" fill="currentColor"/><rect x="10" y="2.5" width="3" height="9.5" rx="1" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.5 5.6 9a3.4 3.4 0 0 1 4.8 0L8 11.5Zm-4-4L2.4 6a8 8 0 0 1 11.2 0L12 7.5a5.7 5.7 0 0 0-8 0Z" fill="currentColor"/></svg>
+      <svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3.5" stroke="currentColor" opacity=".45" fill="none"/><rect x="2" y="2" width="17" height="8" rx="2" fill="currentColor"/><rect x="24" y="4" width="1.6" height="4" rx=".8" fill="currentColor" opacity=".5"/></svg>
+    </span></div>
+    <div class="homebar" id="hb"></div>
+  </div></div>
+
+  <div class="right">
+    <div class="panel spec" id="spec"></div>
+    <div class="panel">
+      <h2>What I changed from the 2024 design</h2>
+      <ul class="changes">
+        <li><b>Statuses you can trust.</b> “Rejected” showed a green tick. Each state now has its own colour, icon and next action.</li>
+        <li><b>Contrast.</b> Green and grey labels were about 1.6:1. All text now passes WCAG AA, including the disabled button.</li>
+        <li><b>The photo stays visible.</b> The camera button no longer covers the document, so you can see if the shot is sharp.</li>
+        <li><b>Plain words.</b> “Accordingly to local bylaws” → “By law, we need…”. “Need an assistance?” → “Need help?”.</li>
+        <li><b>Unhappy paths.</b> Glare, blur, an unclear field, an expired licence and manual entry each have a designed state.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= helpers ================= */
+let K = 1;                                   // motion multiplier
+const $ = (s, r=document) => r.querySelector(s);
+const screen = $('#screen');
+const wait = ms => new Promise(r => setTimeout(r, ms * K));
+let RUN = 0;                                 // run token: cancels stale async flows
+const alive = t => t === RUN;
+function anim(el, kf, ms, easing='cubic-bezier(.2,.8,.2,1)', extra={}) {
+  if (!el) return Promise.resolve();
+  const a = el.animate(kf, {duration: ms * K, easing, fill: 'forwards', ...extra});
+  return a.finished.catch(()=>{});
+}
+const ICON = {
+  back:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  close:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  check:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  clock:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  dot:'<svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>',
+  arrow:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  alert:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15"/><path d="M12 7v6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1.4" fill="currentColor"/></svg>',
+  cam:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.3-2h6l1.3 2h1.2A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-8Z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12.5" r="3.2" stroke="currentColor" stroke-width="2"/></svg>',
+  id:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="11" r="2" stroke="currentColor" stroke-width="2"/><path d="M6 16c.6-1.4 1.7-2 3-2s2.4.6 3 2M14 10h4M14 13.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  lock:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="10.5" width="14" height="10" rx="2.5" stroke="currentColor" stroke-width="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="currentColor" stroke-width="2"/></svg>',
+  sun:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+};
+
+/* ================= sample licence (fictional) ================= */
+function cardFront(exp){
+  return `<svg viewBox="0 0 312 197" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-label="Sample driver licence, front">
+  <defs>
+    <linearGradient id="cf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EEF3F7"/><stop offset=".55" stop-color="#E3ECF2"/><stop offset="1" stop-color="#D7E3EB"/></linearGradient>
+    <pattern id="guil" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M0 7c3.5-5 10.5-5 14 0M0 14c3.5-5 10.5-5 14 0" stroke="#C6D5DF" stroke-width=".7" fill="none"/></pattern>
+  </defs>
+  <rect width="312" height="197" rx="12" fill="url(#cf)"/>
+  <rect width="312" height="197" rx="12" fill="url(#guil)" opacity=".7"/>
+  <rect width="312" height="34" fill="#2B4C6F"/>
+  <text x="14" y="22" font-family="Google Sans,Arial" font-size="13" font-weight="700" fill="#fff" letter-spacing="1.2">DRIVER'S LICENCE</text>
+  <text x="298" y="22" text-anchor="end" font-family="Google Sans,Arial" font-size="10" fill="#C9DAEA" letter-spacing=".8">PERMIS DE CONDUIRE</text>
+  <rect x="14" y="46" width="70" height="88" rx="6" fill="#B9C9D6"/>
+  <circle cx="49" cy="78" r="17" fill="#8FA5B6"/><path d="M22 134c3-20 14-30 27-30s24 10 27 30Z" fill="#8FA5B6"/>
+  <g font-family="ui-monospace,Menlo,monospace" fill="#1E2B38">
+    <text x="96" y="56" font-size="7.5" fill="#5D7183">4d NUMBER</text>
+    <text x="96" y="69" font-size="12.5" font-weight="700" letter-spacing=".4">M1234-56789-01234</text>
+    <text x="96" y="86" font-size="7.5" fill="#5D7183">1,2 NAME</text>
+    <text x="96" y="99" font-size="12" font-weight="700">MORGAN, ALEX</text>
+    <text x="96" y="116" font-size="7.5" fill="#5D7183">3 DOB</text>
+    <text x="96" y="129" font-size="11.5" font-weight="700">1988/06/14</text>
+    <text x="186" y="116" font-size="7.5" fill="#5D7183">4b EXP</text>
+    <text x="186" y="129" font-size="11.5" font-weight="700">${exp}</text>
+    <text x="96" y="146" font-size="7.5" fill="#5D7183">9 CLASS</text>
+    <text x="96" y="159" font-size="12" font-weight="700">G</text>
+    <text x="186" y="146" font-size="7.5" fill="#5D7183">8 ADDRESS</text>
+    <text x="186" y="159" font-size="8.5" font-weight="700">12 LAKESHORE RD</text>
+    <text x="186" y="169" font-size="8.5" font-weight="700">TORONTO ON</text>
+  </g>
+  <path d="M18 170c10-8 16 6 24-2s12-6 18 1 10-3 16-1" stroke="#2B4C6F" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <text x="156" y="120" text-anchor="middle" font-family="Google Sans,Arial" font-size="40" font-weight="700" fill="#2B4C6F" opacity=".09" transform="rotate(-14 156 110)">SAMPLE</text>
+  <circle cx="276" cy="172" r="14" fill="none" stroke="#9DB3C4" stroke-width="1.2"/><circle cx="276" cy="172" r="9" fill="none" stroke="#9DB3C4" stroke-width="1"/>
+</svg>`;
+}
+function cardBack(){
+  let bars='';let x=18;const seed=[3,1,2,1,4,2,1,3,1,1,2,3,1,2,1,4,1,2,2,1,3,1,1,2,4,1,2,1,3,2,1,1,2,3,1,2,1,1,4,2,1,3,2,1,2,1,3,1,1,2];
+  for(let r=0;r<4;r++){x=18;for(let i=0;i<seed.length;i++){const w=seed[(i+r*7)%seed.length];if(i%2===0)bars+=`<rect x="${x}" y="${92+r*15}" width="${w*1.6}" height="13" fill="#1E2B38"/>`;x+=w*1.6+1.2;if(x>292)break;}}
+  return `<svg viewBox="0 0 312 197" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-label="Sample driver licence, back">
+  <rect width="312" height="197" rx="12" fill="#E9EEF2"/>
+  <rect y="18" width="312" height="30" fill="#2E3A44"/>
+  <g font-family="ui-monospace,Menlo,monospace" font-size="7.5" fill="#43586A">
+    <text x="18" y="66">RESTRICTIONS: NONE</text><text x="18" y="78">ENDORSEMENTS: —</text>
+    <text x="190" y="66">DD 4821 AB 77</text><text x="190" y="78">REV 2024/06</text>
+  </g>
+  ${bars}
+  <text x="156" y="186" text-anchor="middle" font-family="Google Sans,Arial" font-size="8" fill="#6A7F90">SAMPLE · NOT A VALID DOCUMENT</text>
+</svg>`;
+}
+
+/* ================= scenarios ================= */
+const SCEN = {
+  happy:{name:'Happy path', note:'Card found, captured and read without help.', dot:'#1E8E3E'},
+  glare:{name:'Glare on the card', note:'A light reflection hides the text. The app asks to tilt.', dot:'#E8A317'},
+  blur:{name:'Shaky hands', note:'The image is blurry, so capture waits until it is sharp.', dot:'#E8A317'},
+  unsure:{name:'Unclear field', note:'OCR is not sure about one value. The driver confirms it.', dot:'#E8A317'},
+  expired:{name:'Expired licence', note:'The read works, but the licence is no longer valid.', dot:'#D93025'},
+  manual:{name:'Manual entry', note:'No camera or the driver prefers typing. Live format checks.', dot:'#6E62A5'},
+};
+let scenario='happy';
+const EXP = () => scenario==='expired' ? '2025/03/12' : '2029/06/14';
+
+/* ================= spec panel content ================= */
+const SPEC = {
+  list:{t:'Registration checklist', d:'One list for all ten steps. Each item has its own status, so a driver always knows what is done, what is checked and what is next.', why:'<b>2024 problem:</b> rejected items still showed a green tick, and status labels were too pale to read.', rows:[['Item press','120ms','ease-out'],['Next-step highlight','240ms','ease-out'],['Progress ring','600ms','ease-in-out']], hap:'Light tap on item press.'},
+  intro:{t:'Licence: what we need and why', d:'Says why we ask, in plain words, and offers the fastest path first: scan. Manual entry is always one tap away.', why:'<b>2024 problem:</b> “Accordingly to local bylaws…” and two empty photo boxes with no guidance.', rows:[['Push transition','320ms','cubic(.2,.8,.2,1)'],['Card ghost fade-in','280ms','ease-out']], hap:'None.'},
+  camera:{t:'Camera: find, lock, capture', d:'The frame looks for the card. When all four edges are found, the corners snap in and turn green, and the shutter fills itself. No need to press anything.', why:'<b>Why auto-capture:</b> pressing the shutter shakes the phone, which is the main cause of blurry document photos.', rows:[['Card enters frame','900ms','ease-out'],['Corner snap','260ms','spring(1.56)'],['Hold-still ring','700ms','linear'],['Shutter flash','160ms','ease-out'],['Capture → thumbnail','420ms','cubic(.2,.8,.2,1)']], hap:'Medium impact on capture.'},
+  glare:{t:'Glare detected', d:'A bright spot covers part of the text. Instead of a vague error, the hint says exactly what to do: tilt the card. Capture waits until the reflection is gone.', why:'<b>Edge case from support tickets:</b> glossy licences under ceiling lights were the most common failed upload.', rows:[['Hint colour change','200ms','ease'],['Corners turn amber','200ms','ease'],['Glare drift (tilt)','1400ms','ease-in-out']], hap:'Warning pattern (2 light taps) once, not on loop.'},
+  blur:{t:'Too blurry to read', d:'The frame stays open and the hint asks to hold steady. Capture only happens on a sharp image, so OCR never reads a blurry photo.', why:'<b>Design rule:</b> never punish the user with a failed read after the fact if the camera can tell up front.', rows:[['Blur → sharp','1200ms','ease-out'],['Hint swap','200ms','ease']], hap:'None until capture.'},
+  flip:{t:'Now the back', d:'The card flips in place, so the driver understands what to do without reading. The back is captured the same way.', why:'<b>Show, don’t tell:</b> one animation replaces a paragraph of instructions.', rows:[['Card flip (Y axis)','700ms','cubic(.65,0,.35,1)'],['Hint cross-fade','200ms','ease']], hap:'Light tap when the flip prompt appears.'},
+  read:{t:'Reading the licence', d:'A scan line passes over the photo and each value lights up on the card as it lands in its field. The driver sees where every value came from.', why:'<b>Trust:</b> linking the box on the card to the field makes autofill feel checkable, not magic.', rows:[['Scan line sweep','1100ms','ease-in-out'],['OCR box draw','220ms','ease-out'],['Field fill (stagger)','90ms each','ease-out'],['Check mark pop','320ms','spring(1.56)']], hap:'Success notification when all fields are filled.'},
+  unsure:{t:'One value needs a check', d:'OCR is not sure about the expiry date. The field turns amber and says why. The driver fixes it in place, and Continue unlocks.', why:'<b>Rule:</b> never silently guess a legal value. Ask only about the one field we are unsure of.', rows:[['Amber state','200ms','ease'],['Inline edit focus','200ms','ease-out'],['Value typed','40ms / char','linear']], hap:'Light tap on confirm.'},
+  expired:{t:'Licence has expired', d:'The scan worked, so we say what is wrong with the document, not with the photo. One clear action: scan a valid licence.', why:'<b>2024 problem:</b> the expired warning was a small yellow note that was easy to dismiss.', rows:[['Error banner in','280ms','cubic(.2,.8,.2,1)'],['Field shake','360ms','ease-in-out']], hap:'Error pattern (3 short taps).'},
+  manual:{t:'Manual entry', d:'Real inputs you can type into. The licence number formats itself as you type, dates use the format printed on the card, and errors appear on blur, not on every key.', why:'<b>Accessibility:</b> labels above fields, 16px text, and errors in words, not only in red.', rows:[['Focus ring','150ms','ease-out'],['Error reveal','200ms','ease-out'],['Button enable','160ms','ease']], hap:'None.'},
+  saved:{t:'Saved and back to the list', d:'The licence moves to “In review”, the progress ring fills, and the next step is highlighted. A toast confirms progress is saved, so the driver can leave and come back.', why:'<b>2024 problem:</b> there was no save and resume, and most drop-offs happened at document upload.', rows:[['Pop back','320ms','cubic(.2,.8,.2,1)'],['Status cross-fade','240ms','ease'],['Ring fill','600ms','ease-in-out'],['Toast in / out','360ms / 280ms','spring / ease-in']], hap:'Success notification.'},
+};
+function spec(key){
+  const s=SPEC[key]; const el=$('#spec');
+  el.innerHTML=`<h2>What you are seeing</h2><h3>${s.t}</h3><p>${s.d}</p><div class="why">${s.why}</div>
+  <table><tr><th>Motion</th><th>Duration</th><th>Easing</th></tr>${s.rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table>
+  <div class="hap"><span>📳</span><span><b>Haptics:</b> ${s.hap}</span></div>`;
+  anim(el,[{opacity:.4},{opacity:1}],200);
+}
+
+/* ================= view management ================= */
+let current=null;
+async function show(html, dir='push', dark=false){
+  const v=document.createElement('div'); v.className='view'; v.innerHTML=html;
+  screen.insertBefore(v, $('#sb'));
+  $('#sb').classList.toggle('dark',dark); $('#hb').classList.toggle('light',dark);
+  const old=current; current=v;
+  if(old){
+    if(dir==='push'){
+      anim(old,[{transform:'translateX(0)',filter:'brightness(1)'},{transform:'translateX(-28%)',filter:'brightness(.92)'}],320);
+      await anim(v,[{transform:'translateX(100%)'},{transform:'translateX(0)'}],320);
+    } else if(dir==='pop'){
+      v.style.zIndex=0; old.style.zIndex=1;
+      anim(v,[{transform:'translateX(-28%)'},{transform:'translateX(0)'}],320);
+      await anim(old,[{transform:'translateX(0)'},{transform:'translateX(100%)'}],320);
+    } else if(dir==='up'){
+      await anim(v,[{transform:'translateY(100%)'},{transform:'translateY(0)'}],380);
+    } else if(dir==='down'){
+      v.style.zIndex=0; old.style.zIndex=1;
+      await anim(old,[{transform:'translateY(0)'},{transform:'translateY(100%)'}],320,'cubic-bezier(.4,0,1,1)');
+    } else {
+      await anim(v,[{opacity:0},{opacity:1}],240);
+    }
+    old.remove();
+  }
+  return v;
+}
+function haptic(label){
+  let h=$('.haptic',screen); if(!h){h=document.createElement('div');h.className='haptic';screen.appendChild(h);}
+  h.innerHTML=`<i></i>Haptic · ${label}`;
+  anim(h,[{opacity:0,minWidth:'96px'},{opacity:1,minWidth:'150px',offset:.18},{opacity:1,minWidth:'150px',offset:.82},{opacity:0,minWidth:'96px'}],1300,'cubic-bezier(.34,1.3,.64,1)');
+}
+async function toast(html){
+  const t=document.createElement('div'); t.className='toast'; t.innerHTML=html; screen.appendChild(t);
+  await anim(t,[{transform:'translateY(-140%)'},{transform:'translateY(0)'}],360,'cubic-bezier(.34,1.4,.64,1)');
+  await wait(2200);
+  await anim(t,[{transform:'translateY(0)',opacity:1},{transform:'translateY(-140%)',opacity:0}],280,'cubic-bezier(.4,0,1,1)');
+  t.remove();
+}
+screen.addEventListener('pointerdown',e=>{
+  const r=screen.getBoundingClientRect(); const d=document.createElement('div'); d.className='tap';
+  d.style.left=(e.clientX-r.left)+'px'; d.style.top=(e.clientY-r.top)+'px'; screen.appendChild(d);
+  anim(d,[{transform:'scale(.4)',opacity:1},{transform:'scale(1.3)',opacity:0}],450).then(()=>d.remove());
+});
+
+/* ================= screen: checklist ================= */
+const STEPS=['Personal information','Driver’s licence','Work eligibility','Driver’s abstract','Background check','Vehicle information','Vehicle insurance','Vehicle safety','Vehicle photos','Profile photo'];
+function ring(frac,label){
+  const c=2*Math.PI*24;
+  return `<div class="ring"><svg width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" stroke="#E6EBEE" stroke-width="6" fill="none"/><circle class="arc" cx="28" cy="28" r="24" stroke="#1E8E3E" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-frac)}"/></svg><span>${label}</span></div>`;
+}
+function item(i,state){
+  const map={
+    ok:['st-ok',ICON.check,'Approved'],
+    rev:['st-rev',ICON.clock,'In review · usually within 24 h'],
+    next:['st-next',ICON.dot,'Next step · about 2 min'],
+    todo:['st-todo',ICON.dot,'Not started'],
+  };
+  const [cls,ic,sub]=map[state];
+  return `<button class="item ${cls} ${state==='next'?'next':''}" data-i="${i}"><span class="ic">${ic}</span><span class="tx"><b>${STEPS[i]}</b><small>${sub}</small></span>${state==='next'?'<span class="go">Start</span>':`<span style="color:var(--hint)">${ICON.arrow}</span>`}</button>`;
+}
+async function checklist(saved=false, dir='fade'){
+  spec(saved?'saved':'list');
+  const st=i=> i===0?'ok': i===1?(saved?'rev':'next'): (saved&&i===2?'next':'todo');
+  const html=`<div class="top"><button class="iconbtn" aria-label="Back">${ICON.back}</button><h1>Driver registration</h1></div>
+  <div class="body">
+    <div class="sumrow">${ring(saved?.1:.1, saved?'2/10':'1/10')}<div><b id="sumt">${saved?'2 of 10 steps sent':'1 of 10 steps done'}</b><small>Progress saves after every step</small></div></div>
+    <div class="list">${STEPS.map((_,i)=>item(i,st(i))).join('')}</div>
+  </div>`;
+  const v=await show(html,dir);
+  const lic=$('[data-i="1"]',v);
+  if(!saved){ lic.onclick=()=>licenceIntro(); }
+  else {
+    const t=RUN;
+    await wait(150);
+    // status change already rendered; animate ring 1/10 -> 2/10 and highlight next
+    const arc=$('.arc',v), c=2*Math.PI*24;
+    anim(arc,[{strokeDashoffset:c*.9},{strokeDashoffset:c*.8}],600,'cubic-bezier(.65,0,.35,1)');
+    anim(lic,[{background:'#E8F0FE'},{background:'#fff'}],900);
+    anim($('.ic',lic),[{transform:'scale(.6)'},{transform:'scale(1)'}],320,'cubic-bezier(.34,1.56,.64,1)');
+    anim($('[data-i="2"]',v),[{transform:'translateY(6px)',opacity:.6},{transform:'none',opacity:1}],320);
+    haptic('success');
+    if(alive(t)) toast(`${ICON.check}<span><b>Licence sent for review.</b> Your progress is saved, you can come back anytime.</span>`);
+  }
+}
+
+/* ================= screen: licence intro ================= */
+async function licenceIntro(dir='push'){
+  spec('intro');
+  const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Driver’s licence</h1><span class="stepper">Step 2 of 10</span></div>
+  <div class="body">
+    <p class="lead">By law, we need your licence number, class and expiry date. Scan both sides and we’ll fill them in for you.</p>
+    <div class="slots">
+      <div class="slot"><svg class="card-ghost" width="62" height="40" viewBox="0 0 62 40"><rect x="1" y="1" width="60" height="38" rx="5" fill="none" stroke="#97ADB6" stroke-width="2"/><rect x="7" y="9" width="14" height="18" rx="2" fill="#C9D3D9"/><rect x="26" y="11" width="28" height="3" rx="1.5" fill="#C9D3D9"/><rect x="26" y="18" width="20" height="3" rx="1.5" fill="#C9D3D9"/><rect x="26" y="25" width="24" height="3" rx="1.5" fill="#C9D3D9"/></svg><span>Front</span></div>
+      <div class="slot"><svg class="card-ghost" width="62" height="40" viewBox="0 0 62 40"><rect x="1" y="1" width="60" height="38" rx="5" fill="none" stroke="#97ADB6" stroke-width="2"/><rect x="1" y="6" width="60" height="6" fill="#C9D3D9"/><g fill="#C9D3D9"><rect x="7" y="20" width="2" height="12"/><rect x="11" y="20" width="4" height="12"/><rect x="17" y="20" width="2" height="12"/><rect x="21" y="20" width="3" height="12"/><rect x="26" y="20" width="2" height="12"/><rect x="30" y="20" width="5" height="12"/><rect x="37" y="20" width="2" height="12"/><rect x="41" y="20" width="3" height="12"/><rect x="46" y="20" width="2" height="12"/><rect x="50" y="20" width="4" height="12"/></g></svg><span>Back</span></div>
+    </div>
+    <div class="needs">
+      <div><i>${ICON.sun}</i><span>Find good light and put the card on a dark, flat surface.</span></div>
+      <div><i>${ICON.cam}</i><span>Hold the phone above it. We take the photo for you when it’s sharp.</span></div>
+      <div><i>${ICON.lock}</i><span>We only use this to check you can drive with Uride.</span></div>
+    </div>
+  </div>
+  <div class="foot">
+    <button class="btn primary" id="scan">${ICON.cam} Scan front of licence</button>
+    <button class="btn ghost" id="man">Enter details manually</button>
+    <p class="help">Need help? <b>Chat with us</b></p>
+  </div>`;
+  const v=await show(html,dir);
+  $('#bk',v).onclick=()=>checklist(false,'pop');
+  $('#scan',v).onclick=()=>camera();
+  $('#man',v).onclick=()=>manual();
+  if(scenario==='manual'){ const t=RUN; await wait(900); if(alive(t)) { pulse($('#man',v)); } }
+}
+function pulse(el){anim(el,[{background:'rgba(110,98,165,0)'},{background:'rgba(110,98,165,.14)'},{background:'rgba(110,98,165,0)'}],1000,'ease-in-out',{iterations:2});}
+
+/* ================= screen: camera ================= */
+async function camera(){
+  const t=RUN;
+  spec('camera');
+  const html=`<div class="cam">
+    <div class="feed"></div><div class="grain"></div>
+    <svg class="shade" width="360" height="800"><defs><mask id="hole"><rect width="360" height="800" fill="#fff"/><rect x="24" y="228" width="312" height="197" rx="14" fill="#000"/></mask></defs><rect width="360" height="800" fill="rgba(0,0,0,.55)" mask="url(#hole)"/></svg>
+    <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><b id="side">Front of licence</b><span style="width:44px"></span></div>
+    <div class="pill" id="pill">Place the front of your licence in the frame</div>
+    <div class="cardwrap" id="cw"><div class="card3d" id="c3"><div class="face front">${cardFront(EXP())}</div><div class="face back">${cardBack()}</div></div><div class="glare" id="gl"></div></div>
+    <div class="guide" id="gd"><span class="cn tl"></span><span class="cn tr"></span><span class="cn bl"></span><span class="cn br"></span></div>
+    <p class="camhint" id="ch">Use a dark surface and avoid direct light</p>
+    <div class="autolabel" id="al">Auto-capture is on</div>
+    <div class="shutterbar"><span class="camside">Flash<br>Auto</span>
+      <button class="shutter" id="sh" aria-label="Take photo"><svg width="76" height="76"><circle cx="38" cy="38" r="35" stroke="rgba(255,255,255,.5)" stroke-width="4" fill="none"/><circle id="prog" cx="38" cy="38" r="35" stroke="#5BD17E" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/></svg><span class="core"></span></button>
+      <span class="camside">Tips</span></div>
+    <div class="flash" id="fl"></div>
+  </div>`;
+  const v=await show(html,'up',true);
+  $('#cx',v).onclick=()=>{RUN++;licenceIntro('down');};
+  const cw=$('#cw',v), c3=$('#c3',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v);
+  // card moves into view with hand-held drift
+  c3.style.opacity=0;
+  await wait(500); if(!alive(t))return;
+  c3.style.opacity=1;
+  await anim(c3,[{transform:'translate(40px,220px) rotate(-14deg) scale(.82)'},{transform:'translate(6px,8px) rotate(-3deg) scale(.97)'}],900,'cubic-bezier(.2,.8,.2,1)');
+  if(!alive(t))return;
+  const drift=c3.animate([{transform:'translate(6px,8px) rotate(-3deg) scale(.97)'},{transform:'translate(-4px,3px) rotate(1.5deg) scale(.985)'},{transform:'translate(3px,-2px) rotate(-1deg) scale(.98)'},{transform:'translate(6px,8px) rotate(-3deg) scale(.97)'}],{duration:2600*K,iterations:Infinity,easing:'ease-in-out'});
+  if(scenario==='glare'){
+    spec('glare');
+    gl.style.left='130px'; gl.style.top='30px';
+    await anim(gl,[{opacity:0},{opacity:1}],300);
+    setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); gd.classList.add('warn'); haptic('warning');
+    ch.textContent='The light is reflecting on the card';
+    await wait(2200); if(!alive(t))return;
+    await anim(gl,[{transform:'translate(0,0)',opacity:1},{transform:'translate(150px,-40px)',opacity:0}],1400,'cubic-bezier(.65,0,.35,1)');
+    gd.classList.remove('warn');
+  }
+  if(scenario==='blur'){
+    spec('blur');
+    $('.front',v).style.filter='blur(3.5px)';
+    setPill(pill,'warn',`<span>Hold your phone steady</span>`); gd.classList.add('warn');
+    ch.textContent='Rest your elbows on the table if you can';
+    await wait(1800); if(!alive(t))return;
+    await anim($('.front',v),[{filter:'blur(3.5px)'},{filter:'blur(0px)'}],1200);
+    gd.classList.remove('warn');
+  }
+  await lockAndCapture(v,drift,'front'); if(!alive(t))return;
+  // flip to back
+  spec('flip');
+  setPill(pill,'',`<span>Great. Now flip it over</span>`); ch.textContent='Same position, back side up';
+  $('#side',v).textContent='Back of licence';
+  gd.classList.remove('locked'); $('#prog',v).style.strokeDashoffset=220;
+  haptic('light');
+  await anim(c3,[{transform:'translate(0,0) rotateY(0deg)'},{transform:'translate(0,-14px) rotateY(90deg) scale(1.03)',offset:.5},{transform:'translate(0,0) rotateY(180deg)'}],700,'cubic-bezier(.65,0,.35,1)');
+  if(!alive(t))return;
+  const drift2=c3.animate([{transform:'rotateY(180deg) translate(2px,2px) rotate(1deg)'},{transform:'rotateY(180deg) translate(-3px,-2px) rotate(-1deg)'},{transform:'rotateY(180deg) translate(2px,2px) rotate(1deg)'}],{duration:2400*K,iterations:Infinity,easing:'ease-in-out'});
+  await wait(900); if(!alive(t))return;
+  await lockAndCapture(v,drift2,'back'); if(!alive(t))return;
+  await wait(250); if(!alive(t))return;
+  reading();
+}
+function setPill(p,cls,html){p.className='pill '+cls; p.innerHTML=html; anim(p,[{opacity:.3,transform:'translateX(-50%) scale(.96)'},{opacity:1,transform:'translateX(-50%) scale(1)'}],200);}
+async function lockAndCapture(v,drift,side){
+  const t=RUN, gd=$('#gd',v), pill=$('#pill',v), prog=$('#prog',v), fl=$('#fl',v), c3=$('#c3',v);
+  await wait(500); if(!alive(t))return;
+  drift.pause(); const cur=getComputedStyle(c3).transform; drift.cancel();
+  await anim(c3,[{transform:cur},{transform: side==='back'?'rotateY(180deg)':'none'}],260,'cubic-bezier(.34,1.56,.64,1)');
+  gd.classList.add('locked');
+  setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`);
+  await anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],700,'linear'); if(!alive(t))return;
+  await anim(fl,[{opacity:.85},{opacity:0}],160,'ease-out');
+  haptic('medium impact');
+  setPill(pill,'ok',`${ICON.check}<span>${side==='front'?'Front captured':'Back captured'}</span>`);
+  await anim(c3,[{transform: side==='back'?'rotateY(180deg)':'none'},{transform:(side==='back'?'rotateY(180deg) ':'')+'scale(.96)'},{transform: side==='back'?'rotateY(180deg)':'none'}],260);
+  await wait(450);
+}
+/* ================= screen: reading + review ================= */
+const FIELDS=[
+  {k:'name',label:'Full name',v:'Alex Morgan',box:[94,88,110,14]},
+  {k:'num',label:'Licence number',v:'M1234-56789-01234',box:[94,58,132,14]},
+  {k:'class',label:'Licence class',v:'G · Car and light truck',box:[94,148,18,14]},
+  {k:'dob',label:'Date of birth',v:'14 Jun 1988',box:[94,118,74,14]},
+  {k:'exp',label:'Expiry date',v:'14 Jun 2029',box:[184,118,74,14]},
+];
+async function reading(){
+  const t=RUN; spec('read');
+  const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Check details</h1><span class="stepper">Step 2 of 10</span></div>
+  <div class="body">
+    <div class="scanimg" id="si"><div class="face">${cardFront(EXP())}</div><div class="scanline" id="sl"></div></div>
+    <div class="thumbs">
+      <div class="thumb"><div class="mini"><div class="face">${cardFront(EXP())}</div></div>Front<button>Retake</button></div>
+      <div class="thumb"><div class="mini"><div class="face">${cardBack()}</div></div>Back<button>Retake</button></div>
+    </div>
+    <div id="bn"></div>
+    <div class="status" id="stt"><span class="spinner"></span>Reading your licence…</div>
+    <div class="fields" id="fs">${FIELDS.map(f=>`<div class="field" data-k="${f.k}"><label>${f.label}</label><div class="val"><span class="v"><span class="skel"></span></span><span class="ok">${ICON.check}</span></div><span class="note"></span></div>`).join('')}</div>
+  </div>
+  <div class="foot"><button class="btn primary" id="go" disabled>Looks right, continue</button></div>`;
+  const v=await show(html,'fade',false);
+  $('#bk',v).onclick=()=>{RUN++;licenceIntro('pop');};
+  const si=$('#si',v), sl=$('#sl',v), go=$('#go',v);
+  // scale-in hand-off from camera
+  anim(si,[{transform:'scale(1.12) translateY(40px)',opacity:.6},{transform:'none',opacity:1}],420);
+  await wait(300); if(!alive(t))return;
+  anim(sl,[{top:'-56px'},{top:'100%'}],1100,'cubic-bezier(.65,0,.35,1)');
+  // OCR boxes appear in reading order, fields fill
+  const scale=si.clientWidth/312;
+  for(const f of FIELDS){
+    await wait(f===FIELDS[0]?380:170); if(!alive(t))return;
+    const b=document.createElement('div'); b.className='ocrbox';
+    const unsure = scenario==='unsure' && f.k==='exp';
+    const bad = scenario==='expired' && f.k==='exp';
+    if(unsure) b.classList.add('unsure'); if(bad) b.classList.add('bad');
+    Object.assign(b.style,{left:f.box[0]*scale-3+'px',top:f.box[1]*scale-3+'px',width:f.box[2]*scale+6+'px',height:f.box[3]*scale+6+'px'});
+    si.appendChild(b);
+    anim(b,[{opacity:0,transform:'scale(1.25)'},{opacity:1,transform:'scale(1)'}],220);
+    const fe=$(`[data-k="${f.k}"]`,v), val=$('.v',fe);
+    let txt=f.v; if(unsure) txt='14 Jun 202?'; if(bad) txt='12 Mar 2025';
+    val.textContent=txt;
+    anim(val,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],220);
+    if(unsure){ fe.classList.add('unsure'); $('.note',fe).textContent='We couldn’t read the last digit. Please check.'; $('.ok',fe).outerHTML=`<button class="fix" id="fix">Fix</button>`; }
+    else if(bad){ fe.classList.add('bad'); $('.note',fe).textContent='Expired on 12 Mar 2025'; $('.ok',fe).outerHTML=`<span style="color:var(--red-text)">${ICON.alert}</span>`; }
+    else fe.classList.add('filled');
+  }
+  await wait(300); if(!alive(t))return;
+  // fade boxes a little so the photo reads clean again
+  si.querySelectorAll('.ocrbox:not(.unsure):not(.bad)').forEach(b=>anim(b,[{opacity:1},{opacity:.35}],400));
+  const stt=$('#stt',v);
+  if(scenario==='expired'){
+    spec('expired');
+    stt.innerHTML=`<span style="color:var(--red-text)">${ICON.alert}</span>We read your licence, but it has expired`;
+    const bn=$('#bn',v);
+    bn.innerHTML=`<div class="banner err" style="margin-top:14px"><span style="color:var(--red-text)">${ICON.alert}</span><div><b>This licence expired on 12 Mar 2025</b>You need a valid licence to drive with Uride. If you’ve renewed it, scan the new card.</div></div>`;
+    anim(bn,[{opacity:0,transform:'translateY(-8px)'},{opacity:1,transform:'none'}],280);
+    anim($('[data-k="exp"]',v),[{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(5px)'},{transform:'translateX(-3px)'},{transform:'translateX(0)'}],360,'ease-in-out');
+    haptic('error');
+    go.disabled=false; go.innerHTML=`${ICON.cam} Scan a valid licence`;
+    go.onclick=()=>{ scenario='happy'; markScen(); camera(); };
+    return;
+  }
+  if(scenario==='unsure'){
+    spec('unsure');
+    stt.innerHTML=`<span style="color:var(--amber)">${ICON.alert}</span>Almost done. Please check one value`;
+    const fx=$('#fix',v), fe=$('[data-k="exp"]',v);
+    const bd=$('.body',v); bd.scrollTo({top:bd.scrollHeight,behavior:K>2?'auto':'smooth'});
+    anim(fx,[{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],500,'ease-in-out',{iterations:2,delay:400*K});
+    fx.onclick=async()=>{
+      fe.classList.remove('unsure'); fe.classList.add('editing');
+      const vv=$('.val',fe); vv.innerHTML=`<input id="ein" value="14 Jun 202" aria-label="Expiry date"><button class="fix" id="ok2" style="color:var(--ink)">Done</button>`;
+      $('.note',fe).textContent='';
+      const inp=$('#ein',fe); inp.focus(); inp.setSelectionRange(99,99);
+      await wait(500); inp.value+='9'; anim(inp,[{color:'#1A73E8'},{color:'#1F2A37'}],400);
+      $('#ok2',fe).onclick=()=>{
+        vv.innerHTML=`<span class="v">${inp.value}</span><span class="ok">${ICON.check}</span>`;
+        fe.classList.remove('editing'); fe.classList.add('filled'); haptic('light');
+        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.35}],400);}
+        stt.innerHTML=`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`;
+        go.disabled=false;
+      };
+    };
+  } else {
+    stt.innerHTML=`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`;
+    haptic('success');
+    go.disabled=false;
+  }
+  go.onclick=()=>checklist(true,'pop');
+}
+
+/* ================= screen: manual entry ================= */
+async function manual(){
+  spec('manual');
+  const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Enter details</h1><span class="stepper">Step 2 of 10</span></div>
+  <div class="body">
+    <p class="lead">Type the details exactly as they appear on your licence.</p>
+    <div class="fields" style="margin-top:16px">
+      <div class="field" data-f="num"><label for="f-num">Licence number</label><input id="f-num" inputmode="text" autocomplete="off" placeholder="A1234-56789-01234" maxlength="17"><span class="err">Use 1 letter and 14 digits, like A1234-56789-01234</span></div>
+      <div class="field" data-f="cls"><label for="f-cls">Licence class</label><input id="f-cls" placeholder="G" maxlength="3"><span class="err">Enter the class shown on your card, for example G or G2</span></div>
+      <div class="field" data-f="exp"><label for="f-exp">Expiry date</label><input id="f-exp" inputmode="numeric" placeholder="YYYY/MM/DD" maxlength="10"><span class="err" id="exp-err">Use the format YYYY/MM/DD</span></div>
+    </div>
+    <div class="banner info" style="margin-top:16px"><span style="color:var(--blue)">${ICON.cam}</span><div>Scanning is faster and avoids typos. <b style="display:inline;font-weight:700;color:var(--blue);cursor:pointer" id="toscan">Scan instead</b></div></div>
+  </div>
+  <div class="foot"><button class="btn primary" id="go" disabled>Save and continue</button></div>`;
+  const v=await show(html,'push');
+  $('#bk',v).onclick=()=>{RUN++;licenceIntro('pop');};
+  $('#toscan',v).onclick=()=>camera();
+  const num=$('#f-num',v), cls=$('#f-cls',v), exp=$('#f-exp',v), go=$('#go',v);
+  const okNum=s=>/^[A-Z]\d{4}-\d{5}-\d{5}$/.test(s);
+  const okCls=s=>/^(A|B|C|D|E|F|G|G1|G2|M|M1|M2)$/i.test(s.trim());
+  function okExp(s){ const m=/^(\d{4})\/(\d{2})\/(\d{2})$/.exec(s); if(!m)return 'fmt'; const d=new Date(+m[1],m[2]-1,+m[3]); if(d.getMonth()!==m[2]-1)return 'fmt'; return d<new Date()?'past':'ok'; }
+  num.addEventListener('input',()=>{ let s=num.value.toUpperCase().replace(/[^A-Z0-9]/g,''); let L=s.slice(0,1).replace(/[^A-Z]/g,''); let D=s.slice(1).replace(/\D/g,'').slice(0,14);
+    let out=L+D.slice(0,4); if(D.length>4) out+='-'+D.slice(4,9); if(D.length>9) out+='-'+D.slice(9,14); num.value=out; mark(num,null); check(); });
+  exp.addEventListener('input',()=>{ let d=exp.value.replace(/\D/g,'').slice(0,8); let o=d.slice(0,4); if(d.length>4)o+='/'+d.slice(4,6); if(d.length>6)o+='/'+d.slice(6,8); exp.value=o; mark(exp,null); check(); });
+  cls.addEventListener('input',()=>{cls.value=cls.value.toUpperCase(); mark(cls,null); check();});
+  function mark(inp,ok){ const f=inp.closest('.field'); f.classList.toggle('invalid',ok===false); f.classList.toggle('valid',ok===true); if(ok===false) anim($('.err',f),[{opacity:0,transform:'translateY(-4px)'},{opacity:1,transform:'none'}],200); }
+  num.addEventListener('blur',()=>num.value&&mark(num,okNum(num.value)));
+  cls.addEventListener('blur',()=>cls.value&&mark(cls,okCls(cls.value)));
+  exp.addEventListener('blur',()=>{ if(!exp.value)return; const r=okExp(exp.value); $('#exp-err',v).textContent= r==='past'?'This date has passed. You need a valid licence to drive with Uride.':'Use the format YYYY/MM/DD'; mark(exp,r==='ok'); });
+  [num,cls,exp].forEach(i=>{ i.addEventListener('focus',()=>i.closest('.field').classList.add('editing')); i.addEventListener('blur',()=>i.closest('.field').classList.remove('editing')); });
+  function check(){ go.disabled=!(okNum(num.value)&&okCls(cls.value)&&okExp(exp.value)==='ok'); }
+  go.onclick=()=>checklist(true,'pop');
+  // demo typing
+  if(scenario==='manual'){ const t=RUN; await wait(600); if(!alive(t))return; await typeInto(num,'M12345678901234',t); await typeInto(cls,'G',t); await typeInto(exp,'20290614',t); }
+}
+async function typeInto(inp,str,t){
+  inp.focus();
+  for(const ch of str){ if(!alive(t))return; inp.value+=ch; inp.dispatchEvent(new Event('input')); await wait(55); }
+  await wait(200); inp.blur();
+}
+
+/* ================= wiring ================= */
+function markScen(){ document.querySelectorAll('#scen button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===scenario)); }
+function start(){
+  RUN++;
+  current && current.remove(); current=null;
+  screen.querySelectorAll('.toast,.haptic').forEach(n=>n.remove());
+  checklist(false,'fade');
+}
+$('#scen').innerHTML=Object.entries(SCEN).map(([k,s])=>`<button data-s="${k}" aria-pressed="${k===scenario}"><span class="dot" style="background:${s.dot}"></span><span><b>${s.name}</b><small>${s.note}</small></span></button>`).join('');
+$('#scen').onclick=e=>{const b=e.target.closest('button'); if(!b)return; scenario=b.dataset.s; markScen(); start(); };
+$('#restart').onclick=start;
+$('#slow').onclick=e=>{const on=e.currentTarget.getAttribute('aria-checked')!=='true'; e.currentTarget.setAttribute('aria-checked',on); K=on?4:1; document.documentElement.style.setProperty('--k',K);};
+$('#taps').onclick=e=>{const on=e.currentTarget.getAttribute('aria-checked')!=='true'; e.currentTarget.setAttribute('aria-checked',on); document.body.classList.toggle('show-taps',on);};
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){ K=.01; }
+const Q=new URLSearchParams(location.search);
+if(Q.has('record')){document.body.classList.add('rec'); if(innerWidth<600) document.body.classList.add('bare');}
+if(Q.get('s') && SCEN[Q.get('s')]) { scenario=Q.get('s'); markScen(); }
+if(Q.get('slow')) { K=+Q.get('slow')||4; document.documentElement.style.setProperty('--k',K); }
+function fit(){const d=$('.device'); const rec=document.body.classList.contains('rec'), bare=document.body.classList.contains('bare');
+  if(bare){ d.style.zoom=Math.min(innerWidth/360, innerHeight/800); return; }
+  if(rec){ d.style.zoom=Math.min(1,(innerHeight-40)/832,(innerWidth-40)/392); return; }
+  const w=innerWidth-16; d.style.zoom=w<392?(w/392):''; }
+addEventListener('resize',fit);fit();
+start();
+</script>
+</body>
+</html>
