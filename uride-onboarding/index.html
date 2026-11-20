@@ -157,6 +157,22 @@ input{font:inherit;color:inherit}
 .study p{font-size:15px;line-height:22px;margin-bottom:10px}
 .study p.small{font-size:12.5px;line-height:18px;color:var(--muted)}
 .study .go{margin-top:8px;width:100%;height:50px;border-radius:14px;background:var(--ink);color:#fff;font-weight:700;font-size:17px}
+.bdg{position:absolute;right:-4px;bottom:-4px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;border:2px solid #fff;box-sizing:content-box}
+.bdg.ok{background:var(--green)} .bdg.rev{background:var(--blue)}
+.st-ok .ic{background:var(--green-soft);color:#3F7D52}
+.st-rev .ic{background:var(--blue-soft);color:var(--blue)}
+.st-todo .ic{background:var(--bg);color:#8395A2}
+.item.next{border-color:#AEBBC6;box-shadow:0 6px 16px -10px rgba(31,42,55,.35)}
+/* intro hero */
+.hero-card{position:relative;width:296px;height:194px;margin:22px auto 4px;perspective:900px}
+.hc-card{position:absolute;left:14px;top:14px;width:268px;height:166px;border-radius:11px;overflow:hidden;transform:rotateX(6deg) rotateZ(-2deg);box-shadow:0 18px 30px -16px rgba(16,24,40,.45),0 2px 6px rgba(16,24,40,.12)}
+.hc-card .face{position:absolute;inset:0}
+.hc-frame{position:absolute;inset:0;width:100%;height:100%}
+.hc-beam{position:absolute;left:0;right:0;top:0;height:2px;opacity:0;mix-blend-mode:screen;background:linear-gradient(90deg,rgba(120,180,255,0),#E4EFFF 20%,#fff 50%,#E4EFFF 80%,rgba(120,180,255,0));box-shadow:0 0 8px 2px rgba(70,150,255,.6)}
+.hc-beam::before{content:"";position:absolute;left:0;right:0;bottom:2px;height:40px;background:linear-gradient(to top,rgba(70,150,255,.18),rgba(70,150,255,0))}
+.chips{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;margin-top:18px}
+.chips span{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 10px 6px 8px;font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap}
+.chips svg{width:15px;height:15px;color:var(--violet);flex:none}
 /* director menu */
 .dir{position:fixed;inset:0;z-index:200;background:rgba(16,20,24,.45);display:none;align-items:flex-end;justify-content:center}
 .dir.on{display:flex}
@@ -205,7 +221,7 @@ input{font:inherit;color:inherit}
 .list{display:flex;flex-direction:column;gap:8px}
 .item{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;text-align:left;width:100%;position:relative;transition:border-color calc(240ms*var(--k)),box-shadow calc(240ms*var(--k)),background calc(240ms*var(--k))}
 .item.next{border-color:var(--ink);box-shadow:0 4px 14px -6px rgba(31,42,55,.25)}
-.item .ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:none;transition:background calc(240ms*var(--k))}
+.item .ic{position:relative;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:none;transition:background calc(240ms*var(--k))}
 .item .tx{flex:1;min-width:0}
 .item .tx b{display:block;font-size:16px;line-height:22px;color:var(--ink);font-weight:500}
 .item .tx small{display:block;font-size:13px;line-height:18px;margin-top:1px}
@@ -213,7 +229,7 @@ input{font:inherit;color:inherit}
 .st-ok .ic{background:var(--green-soft);color:var(--green)} .st-ok small{color:var(--green)}
 .st-rev .ic{background:var(--blue-soft);color:var(--blue)} .st-rev small{color:var(--blue)}
 .st-todo .ic{background:var(--bg);color:var(--hint)} .st-todo small{color:var(--muted)}
-.st-next .ic{background:var(--ink);color:#fff} .st-next small{color:var(--ink);font-weight:500}
+.st-next .ic{background:#E9EEF2;color:var(--ink)} .st-next small{color:var(--ink);font-weight:500}
 .st-bad .ic{background:var(--red-soft);color:var(--red-text)} .st-bad small{color:var(--red-text)}
 .group{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;margin:16px 2px 8px}
 
@@ -696,19 +712,34 @@ screen.addEventListener('pointerdown',e=>{
 
 /* ================= checklist ================= */
 const STEPS=['Personal information','Driver’s licence','Work eligibility','Driver’s abstract','Background check','Vehicle information','Vehicle insurance','Vehicle safety','Vehicle photos','Profile photo'];
+const SI=(d)=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const STEP_IC=[
+  SI('<circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/>'),
+  SI('<rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.6-1.4 1.7-2 3-2s2.4.6 3 2M14.5 10h3.5M14.5 13.5h2.5"/>'),
+  SI('<rect x="3" y="7.5" width="18" height="12.5" rx="2.5"/><path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5M3 13h18"/>'),
+  SI('<path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v4h4M9 12h6M9 15.5h6"/>'),
+  SI('<circle cx="10" cy="8.5" r="3.2"/><path d="M4 19.5c0-3.2 2.7-5.5 6-5.5"/><circle cx="16.5" cy="16" r="2.6"/><path d="M18.4 17.9 20.5 20"/>'),
+  SI('<path d="M5 15.5v-3.2l1.7-4.4a2 2 0 0 1 1.9-1.4h6.8a2 2 0 0 1 1.9 1.4l1.7 4.4v3.2"/><rect x="3.5" y="12" width="17" height="5" rx="1.6"/><path d="M6.5 17v2M17.5 17v2"/><circle cx="7.5" cy="14.5" r=".6" fill="currentColor"/><circle cx="16.5" cy="14.5" r=".6" fill="currentColor"/>'),
+  SI('<path d="M12 3 19 6v5c0 4.4-2.9 8.1-7 9.8C7.9 19.1 5 15.4 5 11V6l7-3Z"/>'),
+  SI('<path d="M14.6 4.2a4.3 4.3 0 0 0-5 5.6L4 15.4a1.9 1.9 0 0 0 2.7 2.7l5.6-5.6a4.3 4.3 0 0 0 5.6-5L15.5 9.9l-2.4-.6-.6-2.4 2.1-2.7Z"/>'),
+  SI('<path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.3-2h6l1.3 2h1.2A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5v-8Z"/><circle cx="12" cy="12.5" r="3.2"/>'),
+  SI('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.6 18.4c1.2-2.1 3.1-3.4 5.4-3.4s4.2 1.3 5.4 3.4"/>'),
+];
+const BADGE={ok:`<span class="bdg ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`,
+  rev:`<span class="bdg rev"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#fff" stroke-width="3"/><path d="M12 8v4l2.5 1.5" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></span>`};
 const STATE={
-  ok:['st-ok',ICON.check,'Approved'],
-  rev:['st-rev',ICON.clock,'In review · usually within 24 h'],
-  next:['st-next',ICON.dot,'Next step · about 2 min'],
-  todo:['st-todo',ICON.dot,'Not started'],
+  ok:['st-ok','','Approved'],
+  rev:['st-rev','','In review · usually within 24 h'],
+  next:['st-next','','Next step · about 2 min'],
+  todo:['st-todo','','Not started'],
 };
-const itemInner=(i,st)=>`<span class="ic">${STATE[st][1]}</span><span class="tx"><b>${STEPS[i]}</b><small>${STATE[st][2]}</small></span>${st==='next'?'<span class="go">Start</span>':`<span class="chev">${ICON.arrow}</span>`}`;
+const itemInner=(i,st)=>`<span class="ic">${STEP_IC[i]}${BADGE[st]||''}</span><span class="tx"><b>${STEPS[i]}</b><small>${STATE[st][2]}</small></span>${st==='next'?'<span class="go">Start</span>':`<span class="chev">${ICON.arrow}</span>`}`;
 const item=(i,st)=>`<button class="item ${STATE[st][0]} ${st==='next'?'next':''}" data-i="${i}">${itemInner(i,st)}</button>`;
 async function morph(el,i,st){
   const parts=[...el.querySelectorAll('.ic,.tx,.go,.chev')];
   await Promise.all(parts.map(p=>anim(p,[{opacity:1,transform:'none'},{opacity:0,transform:'translateY(-3px)'}],160,EASE.accel)));
   el.className=`item ${STATE[st][0]} ${st==='next'?'next':''}`; el.innerHTML=itemInner(i,st);
-  anim($('.ic',el),[{opacity:0,transform:'scale(.5)'},{opacity:1,transform:'scale(1)'}],SPR.pop);
+  anim($('.ic',el),[{opacity:0},{opacity:1}],200,EASE.std); const bd=$('.bdg',el); if(bd) anim(bd,[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:120*K});
   el.querySelectorAll('.tx,.go,.chev').forEach(p=>anim(p,[{opacity:0,transform:'translateY(4px)'},{opacity:1,transform:'none'}],320,EASE.decel));
 }
 function ring(frac,label){
@@ -752,13 +783,11 @@ async function licenceIntro(dir='push'){
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Driver’s licence</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
     <p class="lead">By law, we need your licence details. Scan both sides and we’ll fill them in for you.</p>
-    <div class="hero-ill" aria-hidden="true"><svg width="220" height="150" viewBox="0 0 220 150" fill="none">
-      <rect x="38" y="30" width="144" height="91" rx="9" fill="#E8EEF3"/><rect x="38" y="30" width="144" height="17" rx="9" fill="#2B4C6F"/><rect x="38" y="40" width="144" height="7" fill="#2B4C6F"/>
-      <rect x="48" y="56" width="32" height="40" rx="4" fill="#C3D0DA"/><circle cx="64" cy="70" r="7" fill="#A3B5C3"/><path d="M52 96c1.5-9 6.5-13 12-13s10.5 4 12 13Z" fill="#A3B5C3"/>
-      <rect x="90" y="58" width="62" height="6" rx="3" fill="#C3D0DA"/><rect x="90" y="71" width="46" height="6" rx="3" fill="#C3D0DA"/><rect x="90" y="84" width="54" height="6" rx="3" fill="#C3D0DA"/>
-      <g stroke="#1F2A37" stroke-width="3" stroke-linecap="round"><path d="M26 40V28A8 8 0 0 1 34 20H46"/><path d="M174 20H186A8 8 0 0 1 194 28V40"/><path d="M26 111V123A8 8 0 0 0 34 131H46"/><path d="M174 131H186A8 8 0 0 0 194 123V111"/></g>
-    </svg></div>
-    <div class="tiprow"><span class="tlab">Tips</span><span class="tag">${ICON.sun}Good light</span><span class="tag">${ICON.surface}Dark surface</span><span class="tag">${ICON.hand}Hold still</span></div>
+    <div class="hero-card" aria-hidden="true">
+      <div class="hc-card"><div class="face">${cardFront('2029/06/14')}</div><div class="hc-beam"></div></div>
+      <svg class="hc-frame" viewBox="0 0 296 194" fill="none" stroke="#1F2A37" stroke-width="3" stroke-linecap="round"><path d="M2 26V12A10 10 0 0 1 12 2H26"/><path d="M270 2H284A10 10 0 0 1 294 12V26"/><path d="M2 168V182A10 10 0 0 0 12 192H26"/><path d="M270 192H284A10 10 0 0 0 294 182V168"/></svg>
+    </div>
+    <div class="chips"><span>${ICON.sun}Good light</span><span>${ICON.surface}Dark surface</span><span>${ICON.hand}Hold still</span></div>
     <p class="privacy">${ICON.lock}<span>Only used to check you can drive with Uride</span></p>
   </div>
   <div class="foot">
@@ -770,6 +799,8 @@ async function licenceIntro(dir='push'){
   $('#bk',v).onclick=()=>{RUN++;checklist(false,'pop');};
   $('#scan',v).onclick=()=>camera();
   $('#man',v).onclick=()=>manual();
+  // a slow, quiet scan sweep across the example card: shows what will happen, without asking for attention
+  const hb=$('.hc-beam',v); if(hb) hb.animate([{transform:'translateY(-10px)',opacity:0},{opacity:.9,offset:.1},{opacity:.9,offset:.85},{transform:'translateY(182px)',opacity:0}],{duration:2600*K,delay:900*K,iterations:Infinity,easing:'cubic-bezier(.45,0,.55,1)',endDelay:0});
   // no extra entrance for the content: it travels with the screen, one motion only
 }
 
@@ -779,6 +810,22 @@ function setPill(p,cls,html){
   anim(p,[{opacity:.2,transform:'translateX(-50%) translateY(4px) scale(.97)'},{opacity:1,transform:'translateX(-50%) translateY(0) scale(1)'}],280,EASE.decel);
 }
 function setHint(el,txt){ el.textContent=txt; anim(el,[{opacity:0},{opacity:1}],240,EASE.std); }
+/* the card is held by a hand: slow drift from two low-frequency waves, a tremor that fades in and out,
+   and a settle that eases the movement to zero (no jump between two transforms) */
+function hand(c3,base=''){
+  let amp=1,ampT=1,tr=0,trT=0,run=true,t=0,last=performance.now(),cb=null;
+  function frame(now){ if(!run) return; const dt=Math.min(.05,(now-last)/1000); last=now; if(!PAUSED) t+=dt/K;
+    amp+=(ampT-amp)*Math.min(1,dt*3.2/K); tr+=(trT-tr)*Math.min(1,dt*2.4/K);
+    const x=amp*(1.8*Math.sin(t*.9)+.9*Math.sin(t*2.1+1.3)) + tr*(2.4*Math.sin(t*9.7)+1.5*Math.sin(t*14.3+2));
+    const y=amp*(1.3*Math.sin(t*.7+2)+.7*Math.sin(t*1.8)) + tr*(1.9*Math.sin(t*8.3+1)+1.3*Math.sin(t*12.9));
+    const r=amp*(.45*Math.sin(t*.6+1)) + tr*(.35*Math.sin(t*10.1+.5));
+    c3.style.transform=`${base}translate(${x.toFixed(2)}px,${y.toFixed(2)}px) rotate(${r.toFixed(3)}deg)`;
+    cb&&cb(tr,amp); requestAnimationFrame(frame); }
+  c3.getAnimations().forEach(a=>a.cancel()); c3.style.transform=base||'none';
+  requestAnimationFrame(frame);
+  return { settle(){ampT=0;trT=0;}, wake(){ampT=1;}, shake(on){trT=on?1:0;}, onFrame(f){cb=f;},
+    stop(){ run=false; c3.style.transform=base||'none'; } };
+}
 const DRIFT_FRONT=[{transform:'translate(0,0) rotate(0deg)'},{transform:'translate(-2px,1.5px) rotate(-.5deg)'},{transform:'translate(1.5px,-1px) rotate(.4deg)'},{transform:'translate(0,0) rotate(0deg)'}];
 const DRIFT_BACK=DRIFT_FRONT.map(f=>({transform:'rotateY(180deg) '+f.transform}));
 async function camera(retry=false){
@@ -816,19 +863,19 @@ async function camera(retry=false){
   cwr.style.transition=`opacity ${400*K}ms ${EASE.std}`; cwr.style.opacity=1;
   await anim(c3,[{transform:'translate(30px,260px) rotate(-12deg) scale(.86)'},{transform:'translate(0,0) rotate(0deg) scale(1)'}],1200,EASE.decel);
   if(!alive(t))return;
-  let drift=c3.animate(DRIFT_FRONT,{duration:5000*K,iterations:Infinity,easing:'ease-in-out'});
+  let drift=hand(c3,'');
   if(cardOld){
     await lockAndCapture(v,drift,'front',t); if(!alive(t))return;
     const ok = await expiredSheet(v,t); if(!alive(t)||!ok) return;
     // the old card leaves, the new one comes in
     await anim(cwr,[{transform:'none',opacity:1},{transform:'translate(-40px,280px) rotate(10deg)',opacity:0}],520,EASE.accel); if(!alive(t))return;
-    cwr.getAnimations().forEach(a=>a.cancel()); c3.getAnimations().forEach(a=>a.cancel());
+    cwr.getAnimations().forEach(a=>a.cancel()); drift.stop(); c3.getAnimations().forEach(a=>a.cancel());
     cardOld=false; $('.art',v).innerHTML=cardFront(EXP(),{holo:f.unsure});
     gd.classList.remove('locked','warn'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
     setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a dark surface and avoid direct light');
     await wait(500); if(!alive(t))return;
     await anim(c3,[{transform:'translate(30px,260px) rotate(-12deg) scale(.86)'},{transform:'translate(0,0) rotate(0deg) scale(1)'}],1200,EASE.decel); if(!alive(t))return;
-    drift=c3.animate(DRIFT_FRONT,{duration:5000*K,iterations:Infinity,easing:'ease-in-out'});
+    drift=hand(c3,'');
   }
   await issues(v,'front',drift,t); if(!alive(t))return;
   await lockAndCapture(v,drift,'front',t); if(!alive(t))return;
@@ -839,9 +886,10 @@ async function camera(retry=false){
   gd.classList.remove('locked'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
   haptic('light');
   await wait(500); if(!alive(t))return;
+  drift.stop();
   await anim(c3,[{transform:'rotateY(0deg) translateZ(0)'},{transform:'rotateY(180deg) translateZ(0)'}],SPR.flip);
   if(!alive(t))return;
-  drift=c3.animate(DRIFT_BACK,{duration:5000*K,iterations:Infinity,easing:'ease-in-out'});
+  drift=hand(c3,'rotateY(180deg) ');
   await wait(700); if(!alive(t))return;
   await issues(v,'back',drift,t); if(!alive(t))return;
   await lockAndCapture(v,drift,'back',t); if(!alive(t))return;
@@ -932,12 +980,14 @@ async function issues(v,side,drift,t){
   if(f.blur===side){
     spec('blur');
     const face=$(side==='front'?'.front':'.back',v);
-    face.style.filter='blur(3px)';
-    await wait(300); if(!alive(t))return;
+    drift.onFrame(tr=>{ face.style.filter=tr>.02?`blur(${(tr*3.2).toFixed(2)}px)`:''; });
+    drift.shake(true);
+    await wait(700); if(!alive(t))return;
     gd.classList.add('warn'); setPill(pill,'warn',`${ICON.hand}<span>Hold your phone steady</span>`);
     setHint(ch,'Rest your elbows on the table if you can');
     await wait(3000); if(!alive(t))return;
-    await anim(face,[{filter:'blur(3px)'},{filter:'blur(0px)'}],1400,EASE.decel); face.style.filter='';
+    drift.shake(false);                                 // the hand calms down, the image sharpens with it
+    await wait(1400); if(!alive(t))return; drift.onFrame(null); face.style.filter='';
     gd.classList.remove('warn'); setPill(pill,'',`<span>Sharp. Keep still</span>`);
     await wait(400);
   }
@@ -946,8 +996,7 @@ async function lockAndCapture(v,drift,side,t){
   const gd=$('#gd',v), pill=$('#pill',v), prog=$('#prog',v), fl=$('#fl',v), c3=$('#c3',v);
   const rest = side==='back'?'rotateY(180deg)':'none';
   await wait(600); if(!alive(t))return;
-  const cur=getComputedStyle(c3).transform; drift.cancel();
-  await anim(c3,[{transform:cur},{transform:rest}],SPR.settle); if(!alive(t))return;
+  drift.settle(); await wait(900); if(!alive(t))return; drift.stop();
   gd.classList.add('locked');                         // corners close in (CSS spring-ish transition)
   gd.querySelectorAll('.cn').forEach(c=>c.style.transitionDuration=(SPR.snap.ms*K)+'ms');
   gd.querySelectorAll('.cn').forEach(c=>c.style.transitionTimingFunction=SPR.snap.e);
