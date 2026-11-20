@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uride licence step · 2024 vs 2026 · Illia Vostrikov</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400..700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:"Google Sans",-apple-system,Segoe UI,Roboto,sans-serif;background:#ECEFF1;color:#1F2A37;-webkit-font-smoothing:antialiased;overflow:hidden}
+.slide{position:absolute;inset:0;display:grid;grid-template-columns:auto auto minmax(260px,340px);gap:48px;align-items:center;justify-content:center;padding:40px;opacity:0;pointer-events:none;transition:opacity .35s cubic-bezier(.2,.8,.2,1)}
+.slide.on{opacity:1;pointer-events:auto}
+figure{display:flex;flex-direction:column;align-items:center;gap:14px}
+figure img{height:min(74vh,700px);width:auto;border-radius:28px;box-shadow:0 20px 40px -18px rgba(16,24,40,.35);background:#fff;display:block}
+figcaption{font-size:15px;font-weight:700;letter-spacing:.6px;color:#5B6B78}
+figcaption.new{color:#1E8E3E}
+.notes h2{font-size:26px;line-height:32px;font-weight:700;margin-bottom:20px}
+.notes ol{list-style:none;counter-reset:n;display:flex;flex-direction:column;gap:16px}
+.notes li{counter-increment:n;display:flex;gap:12px;font-size:16px;line-height:23px;color:#3E4958}
+.notes li::before{content:counter(n);flex:none;width:26px;height:26px;border-radius:50%;background:#1F2A37;color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center;margin-top:-1px}
+.notes li b{color:#1F2A37;font-weight:500}
+.nav{position:fixed;left:0;right:0;bottom:18px;display:flex;justify-content:center;gap:8px}
+.nav button{width:8px;height:8px;border-radius:4px;border:0;background:#B8C3CA;cursor:pointer;transition:width .3s,background .3s}
+.nav button.on{width:24px;background:#1F2A37}
+.hint{position:fixed;right:20px;bottom:14px;font-size:12px;color:#7A8A96}
+@media (max-width:900px){body{overflow:auto}.slide{position:static;opacity:1;grid-template-columns:1fr 1fr;gap:16px;padding:24px 12px}.notes{grid-column:1/-1}figure img{height:auto;width:100%}.nav,.hint{display:none}}
+</style>
+</head>
+<body>
+<section class="slide on">
+  <figure><img src="../ba/2024-list.png" alt="2024 checklist"><figcaption>2024</figcaption></figure>
+  <figure><img src="../ba/2026-list.jpg" alt="2026 checklist"><figcaption class="new">2026</figcaption></figure>
+  <div class="notes"><h2>Statuses you can trust</h2><ol>
+    <li><span><b>“Rejected” had a green tick.</b> Now every state has its own colour, icon and words.</span></li>
+    <li><span><b>Pale labels</b> were about 1.6:1 contrast. Now all text passes AA.</span></li>
+    <li><span><b>The next step is obvious,</b> with a time estimate, and progress is saved.</span></li>
+  </ol></div>
+</section>
+<section class="slide">
+  <figure><img src="../ba/2024-licence.png" alt="2024 licence step"><figcaption>2024</figcaption></figure>
+  <figure><img src="../ba/2026-intro.jpg" alt="2026 licence step"><figcaption class="new">2026</figcaption></figure>
+  <div class="notes"><h2>One clear way forward</h2><ol>
+    <li><span><b>The camera icon covered the photo,</b> so you could not check if it was sharp.</span></li>
+    <li><span><b>Plain words.</b> “Accordingly to local bylaws” became “By law, we need…”.</span></li>
+    <li><span><b>Scan first, type if you prefer.</b> No “Skip” on a legal step, and auto-capture instead of a shutter.</span></li>
+  </ol></div>
+</section>
+<section class="slide">
+  <figure><img src="../ba/2024-expired.png" alt="2024 expired document"><figcaption>2024</figcaption></figure>
+  <figure><img src="../ba/2026-expired.jpg" alt="2026 expired licence"><figcaption class="new">2026</figcaption></figure>
+  <div class="notes"><h2>Errors that tell you what to do</h2><ol>
+    <li><span><b>The expired warning could be closed,</b> and Continue still worked.</span></li>
+    <li><span><b>Now the problem is named:</b> which date, why it matters, one action.</span></li>
+    <li><span><b>The field that failed is marked</b> on the card and in the form.</span></li>
+  </ol></div>
+</section>
+<div class="nav"></div>
+<div class="hint">← → to switch</div>
+<script>
+const S=[...document.querySelectorAll('.slide')], nav=document.querySelector('.nav'); let i=0;
+S.forEach((_,k)=>{const b=document.createElement('button');b.onclick=()=>go(k);nav.appendChild(b);});
+function go(k){i=(k+S.length)%S.length;S.forEach((s,j)=>s.classList.toggle('on',j===i));[...nav.children].forEach((b,j)=>b.classList.toggle('on',j===i));}
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')go(i+1);if(e.key==='ArrowLeft')go(i-1);});
+go(0);
+</script>
+</body>
+</html>

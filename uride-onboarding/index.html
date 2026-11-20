@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Uride proto">
 <title>Uride driver onboarding — licence scan · Illia Vostrikov</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -233,6 +237,20 @@ body:not(.show-taps) .tap{display:none}
 .tl small{font-size:13px;color:var(--muted)}
 
 @media (max-width:1180px){.page{grid-template-columns:1fr;justify-items:center}.left,.right{align-items:center;order:2}.right{order:3}}
+
+/* ---------- record mode (?record) ---------- */
+body.rec{overflow:hidden}
+body.rec .intro,body.rec .left,body.rec .right{display:none}
+body.rec .page{display:flex;justify-content:center;align-items:center;min-height:100vh;min-height:100dvh;padding:20px}
+body.rec.bare{background:#fff}
+body.rec.bare .page{padding:0}
+body.rec.bare .device{background:none;padding:0;box-shadow:none;border-radius:0;width:360px;height:800px}
+body.rec.bare .screen{border-radius:0}
+body.rec.bare .statusbar,body.rec.bare .island,body.rec.bare .homebar{display:none}
+body.rec.bare .top{padding-top:16px}
+body.rec.bare .cam .topbar{top:14px}
+body.rec.bare .toast{top:12px}
+body.rec.bare .haptic{top:8px}
 @media (max-width:520px){.page{padding:20px 8px 40px;gap:20px}.intro h1{font-size:22px;line-height:28px}}
 @media (prefers-reduced-motion:reduce){:root{--k:.01}}
 </style>
@@ -734,7 +752,14 @@ $('#restart').onclick=start;
 $('#slow').onclick=e=>{const on=e.currentTarget.getAttribute('aria-checked')!=='true'; e.currentTarget.setAttribute('aria-checked',on); K=on?4:1; document.documentElement.style.setProperty('--k',K);};
 $('#taps').onclick=e=>{const on=e.currentTarget.getAttribute('aria-checked')!=='true'; e.currentTarget.setAttribute('aria-checked',on); document.body.classList.toggle('show-taps',on);};
 if(matchMedia('(prefers-reduced-motion: reduce)').matches){ K=.01; }
-function fit(){const d=$('.device');const w=innerWidth-16;d.style.zoom=w<392?(w/392):'';}
+const Q=new URLSearchParams(location.search);
+if(Q.has('record')){document.body.classList.add('rec'); if(innerWidth<600) document.body.classList.add('bare');}
+if(Q.get('s') && SCEN[Q.get('s')]) { scenario=Q.get('s'); markScen(); }
+if(Q.get('slow')) { K=+Q.get('slow')||4; document.documentElement.style.setProperty('--k',K); }
+function fit(){const d=$('.device'); const rec=document.body.classList.contains('rec'), bare=document.body.classList.contains('bare');
+  if(bare){ d.style.zoom=Math.min(innerWidth/360, innerHeight/800); return; }
+  if(rec){ d.style.zoom=Math.min(1,(innerHeight-40)/832,(innerWidth-40)/392); return; }
+  const w=innerWidth-16; d.style.zoom=w<392?(w/392):''; }
 addEventListener('resize',fit);fit();
 start();
 </script>
