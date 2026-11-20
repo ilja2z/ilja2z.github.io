@@ -71,6 +71,21 @@ input{font:inherit;color:inherit}
 /* ---------- device ---------- */
 .device{width:392px;height:832px;border-radius:56px;background:#0E1114;padding:16px;box-shadow:0 30px 60px -20px rgba(16,24,40,.35),0 0 0 1px #2A2F35 inset;position:relative}
 .screen{position:relative;width:360px;height:800px;border-radius:42px;overflow:hidden;background:var(--surface);isolation:isolate}
+/* hole in camera shade */
+.hole{position:absolute;left:24px;top:var(--gt,228px);width:312px;height:197px;border-radius:14px;box-shadow:0 0 0 1200px rgba(0,0,0,.52);z-index:3;pointer-events:none}
+.item .chev{color:var(--hint);display:flex}
+.item{will-change:transform}
+/* director menu */
+.dir{position:fixed;inset:0;z-index:200;background:rgba(16,20,24,.45);display:none;align-items:flex-end;justify-content:center}
+.dir.on{display:flex}
+.dir .sheet{background:#fff;width:100%;max-width:420px;border-radius:22px 22px 0 0;padding:18px 18px 28px;font-size:15px;color:var(--ink)}
+.dir h3{font-size:13px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:10px 2px 8px}
+.dir .row{display:flex;flex-wrap:wrap;gap:8px}
+.dir .row button{padding:10px 14px;border-radius:12px;border:1px solid var(--line);font-size:15px;color:var(--ink)}
+.dir .row button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.dir .go{margin-top:18px;width:100%;height:50px;border-radius:14px;background:var(--red);color:#fff;font-weight:700;font-size:17px}
+.dir p{font-size:13px;color:var(--muted);margin-top:10px;line-height:18px}
+.hint1{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:rgba(31,42,55,.92);color:#fff;font-size:13px;padding:8px 14px;border-radius:16px;z-index:150;white-space:nowrap}
 .statusbar{position:absolute;left:0;right:0;top:0;height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px 0 30px;font-size:15px;font-weight:500;color:var(--ink);z-index:50;pointer-events:none;transition:color calc(200ms*var(--k))}
 .statusbar.dark{color:#fff}
 .statusbar .icons{display:flex;gap:6px;align-items:center}
@@ -83,6 +98,7 @@ input{font:inherit;color:inherit}
 .top{padding:52px 16px 8px;display:flex;align-items:center;gap:8px}
 .iconbtn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:none;transition:background calc(150ms*var(--k))}
 .iconbtn:active{background:rgba(0,0,0,.06)}
+.cam .iconbtn:active{background:rgba(255,255,255,.22)}
 .top h1{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:20px;line-height:26px;font-weight:700;color:var(--ink);letter-spacing:.1px}
 .stepper{font-size:13px;font-weight:500;color:var(--muted);background:var(--bg);padding:6px 10px;border-radius:14px;white-space:nowrap}
 .body{flex:1;overflow:auto;padding:4px 20px 16px;scrollbar-width:none}
@@ -90,7 +106,6 @@ input{font:inherit;color:inherit}
 .lead{font-size:15px;line-height:22px;color:var(--body)}
 .foot{padding:12px 20px 30px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(to top,#fff 75%,rgba(255,255,255,0))}
 .btn{height:52px;border-radius:14px;font-size:17px;font-weight:700;letter-spacing:.1px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform calc(120ms*var(--k)) var(--ease-out),background calc(160ms*var(--k)),opacity calc(160ms*var(--k)),box-shadow calc(160ms*var(--k))}
-.btn:active{transform:scale(.97)}
 .btn.primary{background:var(--red);color:#fff;box-shadow:0 1px 2px rgba(217,48,37,.3)}
 .btn.primary:hover{background:var(--red-hover)}
 .btn.primary[disabled]{background:#E4E8EB;color:#6B7A86;box-shadow:none;cursor:not-allowed;transform:none}
@@ -146,7 +161,7 @@ input{font:inherit;color:inherit}
 .cam .topbar{position:absolute;top:48px;left:12px;right:12px;display:flex;align-items:center;justify-content:space-between;z-index:5;color:#fff}
 .cam .topbar b{font-size:16px;font-weight:500}
 .cam .iconbtn{background:rgba(255,255,255,.12);color:#fff}
-.guide{position:absolute;left:24px;top:228px;width:312px;height:197px;z-index:3}
+.guide{position:absolute;left:24px;top:var(--gt,228px);width:312px;height:197px;z-index:3}
 .guide .cn{position:absolute;width:30px;height:30px;border:3.5px solid #fff;transition:border-color calc(200ms*var(--k)),transform calc(260ms*var(--k)) var(--spring)}
 .guide .tl{left:-4px;top:-4px;border-right:0;border-bottom:0;border-radius:14px 0 0 0}
 .guide .tr{right:-4px;top:-4px;border-left:0;border-bottom:0;border-radius:0 14px 0 0}
@@ -156,19 +171,18 @@ input{font:inherit;color:inherit}
 .guide.locked .tl{transform:translate(5px,5px)} .guide.locked .tr{transform:translate(-5px,5px)}
 .guide.locked .bl{transform:translate(5px,-5px)} .guide.locked .br{transform:translate(-5px,-5px)}
 .guide.warn .cn{border-color:#FFC75F}
-.cardwrap{position:absolute;left:24px;top:228px;width:312px;height:197px;z-index:2;perspective:900px}
+.cardwrap{position:absolute;left:24px;top:var(--gt,228px);width:312px;height:197px;z-index:2;perspective:900px}
 .cardwrap .card3d{width:100%;height:100%;position:relative;transform-style:preserve-3d}
 .cardwrap .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;overflow:hidden;box-shadow:0 18px 30px -12px rgba(0,0,0,.6)}
 .cardwrap .face.back{transform:rotateY(180deg)}
 .glare{position:absolute;width:180px;height:120px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,.55) 45%,rgba(255,255,255,0));mix-blend-mode:screen;pointer-events:none;opacity:0}
-.pill{position:absolute;left:50%;top:150px;transform:translateX(-50%);z-index:5;background:rgba(20,22,25,.72);backdrop-filter:blur(8px);color:#fff;font-size:15px;line-height:20px;padding:10px 16px;border-radius:22px;white-space:nowrap;display:flex;gap:8px;align-items:center;transition:background calc(200ms*var(--k))}
+.pill{position:absolute;left:50%;top:calc(var(--gt,228px) - 76px);transform:translateX(-50%);z-index:5;background:rgba(20,22,25,.72);backdrop-filter:blur(8px);color:#fff;font-size:15px;line-height:20px;padding:10px 16px;border-radius:22px;white-space:nowrap;display:flex;gap:8px;align-items:center;transition:background calc(200ms*var(--k))}
 .pill.warn{background:rgba(124,78,0,.9)}
 .pill.ok{background:rgba(22,112,52,.92)}
-.camhint{position:absolute;left:24px;right:24px;top:446px;text-align:center;color:rgba(255,255,255,.78);font-size:14px;line-height:20px;z-index:5}
+.camhint{position:absolute;left:24px;right:24px;top:calc(var(--gt,228px) + 217px);text-align:center;color:rgba(255,255,255,.78);font-size:14px;line-height:20px;z-index:5}
 .shutterbar{position:absolute;left:0;right:0;bottom:44px;display:flex;justify-content:center;align-items:center;gap:48px;z-index:5}
 .shutter{width:76px;height:76px;border-radius:50%;position:relative;display:grid;place-items:center}
 .shutter .core{width:60px;height:60px;border-radius:50%;background:#fff;transition:transform calc(120ms*var(--k)) var(--ease-out)}
-.shutter:active .core{transform:scale(.9)}
 .shutter svg{position:absolute;inset:0;transform:rotate(-90deg)}
 .camside{color:#fff;font-size:13px;width:64px;text-align:center;opacity:.85}
 .flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:20;pointer-events:none}
@@ -220,7 +234,7 @@ input{font:inherit;color:inherit}
 .haptic i{width:8px;height:8px;border-radius:50%;background:#FF6B5E;position:relative}
 .haptic i::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--red);opacity:.5}
 /* tap ring */
-.tap{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:rgba(31,42,55,.18);pointer-events:none;z-index:80}
+.tap{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(31,42,55,.25),0 4px 14px rgba(0,0,0,.25);pointer-events:none;z-index:80}
 body:not(.show-taps) .tap{display:none}
 /* under review */
 .done-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:30px 8px 0}
@@ -250,7 +264,7 @@ body.rec.bare .statusbar,body.rec.bare .island,body.rec.bare .homebar{display:no
 body.rec.bare .top{padding-top:16px}
 body.rec.bare .cam .topbar{top:14px}
 body.rec.bare .toast{top:12px}
-body.rec.bare .haptic{top:8px}
+body.rec.bare .haptic{top:auto;bottom:6px}
 @media (max-width:520px){.page{padding:20px 8px 40px;gap:20px}.intro h1{font-size:22px;line-height:28px}}
 @media (prefers-reduced-motion:reduce){:root{--k:.01}}
 </style>
@@ -278,6 +292,13 @@ body.rec.bare .haptic{top:8px}
     </div>
   </div>
 
+  <div class="dir" id="dir"><div class="sheet">
+  <h3>Scenario</h3><div class="row" id="dirS"></div>
+  <h3>Autoplay</h3><div class="row" id="dirA"><button data-v="0">Off, I tap</button><button data-v="1">On, hands-free</button></div>
+  <h3>Pace</h3><div class="row" id="dirP"><button data-v="1">Normal</button><button data-v="1.3">Calm</button><button data-v="2">Slow ×2</button></div>
+  <button class="go" id="dirGo">Start</button>
+  <p>Open this menu any time: press and hold the top edge of the screen for a second (or press D on a keyboard).</p>
+</div></div>
   <div class="device"><div class="screen" id="screen">
     <div class="island"></div>
     <div class="statusbar" id="sb"><span>9:41</span><span class="icons">
@@ -304,18 +325,58 @@ body.rec.bare .haptic{top:8px}
 </div>
 
 <script>
-/* ================= helpers ================= */
-let K = 1;                                   // motion multiplier
+/* =====================================================================
+   Uride licence scan prototype · motion system
+   - Springs (duration + bounce, like SwiftUI) compiled to CSS linear()
+   - Enter = decelerate, exit = accelerate, feedback on press < 100 ms
+   - Every async flow carries a run token, so restarts never leak
+   ===================================================================== */
+let K = 1;                                   // pace multiplier (1 = real time)
 const $ = (s, r=document) => r.querySelector(s);
 const screen = $('#screen');
 const wait = ms => new Promise(r => setTimeout(r, ms * K));
-let RUN = 0;                                 // run token: cancels stale async flows
+let RUN = 0;
 const alive = t => t === RUN;
-function anim(el, kf, ms, easing='cubic-bezier(.2,.8,.2,1)', extra={}) {
-  if (!el) return Promise.resolve();
-  const a = el.animate(kf, {duration: ms * K, easing, fill: 'forwards', ...extra});
+
+/* ---------- easing tokens ---------- */
+const EASE = {
+  out:'cubic-bezier(.2,.8,.2,1)',
+  decel:'cubic-bezier(.05,.7,.1,1)',     // M3 emphasized decelerate: things arriving
+  accel:'cubic-bezier(.3,0,.8,.15)',     // M3 emphasized accelerate: things leaving
+  std:'cubic-bezier(.2,0,0,1)',          // M3 standard
+  inout:'cubic-bezier(.65,0,.35,1)',
+};
+const LINEAR_OK = window.CSS && CSS.supports && CSS.supports('transition-timing-function','linear(0, 1)');
+/* spring(duration s, bounce 0..1) -> {e: easing, ms: settle time} */
+function spring(duration, bounce=0){
+  const w = 2*Math.PI/duration, z = 1 - bounce;
+  let x=0, v=0, t=0; const dt=1/600, pts=[[0,0]];
+  while(t < 4){
+    const a = -w*w*(x-1) - 2*z*w*v; v += a*dt; x += v*dt; t += dt; pts.push([t,x]);
+    if(t > duration*.4 && Math.abs(x-1) < .0015 && Math.abs(v) < .02) break;
+  }
+  const T = t, n = 48, out = ['0'];
+  for(let i=1;i<n;i++){ const p = pts[Math.round(i*(pts.length-1)/n)]; out.push(`${p[1].toFixed(4)} ${(p[0]/T*100).toFixed(2)}%`); }
+  out.push('1 100%');
+  return LINEAR_OK ? {e:`linear(${out.join(', ')})`, ms:Math.round(T*1000)} : {e:EASE.decel, ms:Math.round(duration*1000)};
+}
+const SPR = {
+  push:   spring(.55, 0),    // screen push / pop
+  sheet:  spring(.6, 0),     // camera rises
+  settle: spring(.7, 0),     // card comes to rest
+  snap:   spring(.45, .15),  // frame corners lock on
+  pop:    spring(.4, .25),   // ticks, status icons
+  flip:   spring(.9, .06),   // card turns over
+  toast:  spring(.55, .12),
+  release:spring(.35, .2),   // press release
+};
+function anim(el, kf, d, easing=EASE.out, extra={}){
+  if(!el) return Promise.resolve();
+  let ms = d; if(typeof d === 'object'){ ms = d.ms; easing = d.e; }
+  const a = el.animate(kf, {duration: Math.max(1, ms*K), easing, fill:'forwards', ...extra});
   return a.finished.catch(()=>{});
 }
+
 const ICON = {
   back:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   close:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
@@ -325,9 +386,9 @@ const ICON = {
   arrow:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   alert:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15"/><path d="M12 7v6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1.4" fill="currentColor"/></svg>',
   cam:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.3-2h6l1.3 2h1.2A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-8Z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12.5" r="3.2" stroke="currentColor" stroke-width="2"/></svg>',
-  id:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="11" r="2" stroke="currentColor" stroke-width="2"/><path d="M6 16c.6-1.4 1.7-2 3-2s2.4.6 3 2M14 10h4M14 13.5h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   lock:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="10.5" width="14" height="10" rx="2.5" stroke="currentColor" stroke-width="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="currentColor" stroke-width="2"/></svg>',
   sun:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  hand:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v9M8.5 5.5V12M15.5 5.5V12M5 9v5a7 7 0 0 0 14 0V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
 };
 
 /* ================= sample licence (fictional) ================= */
@@ -365,8 +426,8 @@ function cardFront(exp){
 </svg>`;
 }
 function cardBack(){
-  let bars='';let x=18;const seed=[3,1,2,1,4,2,1,3,1,1,2,3,1,2,1,4,1,2,2,1,3,1,1,2,4,1,2,1,3,2,1,1,2,3,1,2,1,1,4,2,1,3,2,1,2,1,3,1,1,2];
-  for(let r=0;r<4;r++){x=18;for(let i=0;i<seed.length;i++){const w=seed[(i+r*7)%seed.length];if(i%2===0)bars+=`<rect x="${x}" y="${92+r*15}" width="${w*1.6}" height="13" fill="#1E2B38"/>`;x+=w*1.6+1.2;if(x>292)break;}}
+  let bars='';const seed=[3,1,2,1,4,2,1,3,1,1,2,3,1,2,1,4,1,2,2,1,3,1,1,2,4,1,2,1,3,2,1,1,2,3,1,2,1,1,4,2,1,3,2,1,2,1,3,1,1,2];
+  for(let r=0;r<4;r++){let x=18;for(let i=0;i<seed.length;i++){const w=seed[(i+r*7)%seed.length];if(i%2===0)bars+=`<rect x="${x}" y="${92+r*15}" width="${w*1.6}" height="13" fill="#1E2B38"/>`;x+=w*1.6+1.2;if(x>292)break;}}
   return `<svg viewBox="0 0 312 197" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-label="Sample driver licence, back">
   <rect width="312" height="197" rx="12" fill="#E9EEF2"/>
   <rect y="18" width="312" height="30" fill="#2E3A44"/>
@@ -381,39 +442,42 @@ function cardBack(){
 
 /* ================= scenarios ================= */
 const SCEN = {
-  happy:{name:'Happy path', note:'Card found, captured and read without help.', dot:'#1E8E3E'},
-  glare:{name:'Glare on the card', note:'A light reflection hides the text. The app asks to tilt.', dot:'#E8A317'},
-  blur:{name:'Shaky hands', note:'The image is blurry, so capture waits until it is sharp.', dot:'#E8A317'},
-  unsure:{name:'Unclear field', note:'OCR is not sure about one value. The driver confirms it.', dot:'#E8A317'},
-  expired:{name:'Expired licence', note:'The read works, but the licence is no longer valid.', dot:'#D93025'},
-  manual:{name:'Manual entry', note:'No camera or the driver prefers typing. Live format checks.', dot:'#6E62A5'},
+  story:  {name:'Full story', note:'One take: glare on the front, shaky hands on the back, one unclear field.', dot:'#1F2A37', f:{glare:'front', blur:'back', unsure:1}},
+  happy:  {name:'Happy path', note:'Card found, captured and read without help.', dot:'#1E8E3E', f:{}},
+  glare:  {name:'Glare on the card', note:'A light reflection hides the text. The app asks to tilt.', dot:'#E8A317', f:{glare:'front'}},
+  blur:   {name:'Shaky hands', note:'The image is blurry, so capture waits until it is sharp.', dot:'#E8A317', f:{blur:'front'}},
+  unsure: {name:'Unclear field', note:'OCR is not sure about one value. The driver confirms it.', dot:'#E8A317', f:{unsure:1}},
+  expired:{name:'Expired licence', note:'The read works, but the licence is no longer valid.', dot:'#D93025', f:{expired:1}},
+  manual: {name:'Manual entry', note:'No camera or the driver prefers typing. Live format checks.', dot:'#6E62A5', f:{manual:1}},
 };
 let scenario='happy';
-const EXP = () => scenario==='expired' ? '2025/03/12' : '2029/06/14';
+const F = () => SCEN[scenario].f;
+const EXP = () => F().expired ? '2025/03/12' : '2029/06/14';
 
-/* ================= spec panel content ================= */
+/* ================= spec panel ================= */
+const sp = k => `spring ${k}`;
 const SPEC = {
-  list:{t:'Registration checklist', d:'One list for all ten steps. Each item has its own status, so a driver always knows what is done, what is checked and what is next.', why:'<b>2024 problem:</b> rejected items still showed a green tick, and status labels were too pale to read.', rows:[['Item press','120ms','ease-out'],['Next-step highlight','240ms','ease-out'],['Progress ring','600ms','ease-in-out']], hap:'Light tap on item press.'},
-  intro:{t:'Licence: what we need and why', d:'Says why we ask, in plain words, and offers the fastest path first: scan. Manual entry is always one tap away.', why:'<b>2024 problem:</b> “Accordingly to local bylaws…” and two empty photo boxes with no guidance.', rows:[['Push transition','320ms','cubic(.2,.8,.2,1)'],['Card ghost fade-in','280ms','ease-out']], hap:'None.'},
-  camera:{t:'Camera: find, lock, capture', d:'The frame looks for the card. When all four edges are found, the corners snap in and turn green, and the shutter fills itself. No need to press anything.', why:'<b>Why auto-capture:</b> pressing the shutter shakes the phone, which is the main cause of blurry document photos.', rows:[['Card enters frame','900ms','ease-out'],['Corner snap','260ms','spring(1.56)'],['Hold-still ring','700ms','linear'],['Shutter flash','160ms','ease-out'],['Capture → thumbnail','420ms','cubic(.2,.8,.2,1)']], hap:'Medium impact on capture.'},
-  glare:{t:'Glare detected', d:'A bright spot covers part of the text. Instead of a vague error, the hint says exactly what to do: tilt the card. Capture waits until the reflection is gone.', why:'<b>Edge case from support tickets:</b> glossy licences under ceiling lights were the most common failed upload.', rows:[['Hint colour change','200ms','ease'],['Corners turn amber','200ms','ease'],['Glare drift (tilt)','1400ms','ease-in-out']], hap:'Warning pattern (2 light taps) once, not on loop.'},
-  blur:{t:'Too blurry to read', d:'The frame stays open and the hint asks to hold steady. Capture only happens on a sharp image, so OCR never reads a blurry photo.', why:'<b>Design rule:</b> never punish the user with a failed read after the fact if the camera can tell up front.', rows:[['Blur → sharp','1200ms','ease-out'],['Hint swap','200ms','ease']], hap:'None until capture.'},
-  flip:{t:'Now the back', d:'The card flips in place, so the driver understands what to do without reading. The back is captured the same way.', why:'<b>Show, don’t tell:</b> one animation replaces a paragraph of instructions.', rows:[['Card flip (Y axis)','700ms','cubic(.65,0,.35,1)'],['Hint cross-fade','200ms','ease']], hap:'Light tap when the flip prompt appears.'},
-  read:{t:'Reading the licence', d:'A scan line passes over the photo and each value lights up on the card as it lands in its field. The driver sees where every value came from.', why:'<b>Trust:</b> linking the box on the card to the field makes autofill feel checkable, not magic.', rows:[['Scan line sweep','1100ms','ease-in-out'],['OCR box draw','220ms','ease-out'],['Field fill (stagger)','90ms each','ease-out'],['Check mark pop','320ms','spring(1.56)']], hap:'Success notification when all fields are filled.'},
-  unsure:{t:'One value needs a check', d:'OCR is not sure about the expiry date. The field turns amber and says why. The driver fixes it in place, and Continue unlocks.', why:'<b>Rule:</b> never silently guess a legal value. Ask only about the one field we are unsure of.', rows:[['Amber state','200ms','ease'],['Inline edit focus','200ms','ease-out'],['Value typed','40ms / char','linear']], hap:'Light tap on confirm.'},
-  expired:{t:'Licence has expired', d:'The scan worked, so we say what is wrong with the document, not with the photo. One clear action: scan a valid licence.', why:'<b>2024 problem:</b> the expired warning was a small yellow note that was easy to dismiss.', rows:[['Error banner in','280ms','cubic(.2,.8,.2,1)'],['Field shake','360ms','ease-in-out']], hap:'Error pattern (3 short taps).'},
-  manual:{t:'Manual entry', d:'Real inputs you can type into. The licence number formats itself as you type, dates use the format printed on the card, and errors appear on blur, not on every key.', why:'<b>Accessibility:</b> labels above fields, 16px text, and errors in words, not only in red.', rows:[['Focus ring','150ms','ease-out'],['Error reveal','200ms','ease-out'],['Button enable','160ms','ease']], hap:'None.'},
-  saved:{t:'Saved and back to the list', d:'The licence moves to “In review”, the progress ring fills, and the next step is highlighted. A toast confirms progress is saved, so the driver can leave and come back.', why:'<b>2024 problem:</b> there was no save and resume, and most drop-offs happened at document upload.', rows:[['Pop back','320ms','cubic(.2,.8,.2,1)'],['Status cross-fade','240ms','ease'],['Ring fill','600ms','ease-in-out'],['Toast in / out','360ms / 280ms','spring / ease-in']], hap:'Success notification.'},
+  list:{t:'Registration checklist', d:'One list for all ten steps. Each item has its own status, so a driver always knows what is done, what is being checked and what is next.', why:'<b>2024 problem:</b> rejected items still showed a green tick, and status labels were too pale to read.', rows:[['Press down','100ms','ease-out'],['Release','350ms',sp('· bounce .2')],['Screen push','550ms',sp('· bounce 0')]], hap:'None. Taps on lists stay quiet.'},
+  intro:{t:'Licence: what we need and why', d:'Says why we ask, in plain words, and offers the fastest path first: scan. Manual entry is always one tap away.', why:'<b>2024 problem:</b> “Accordingly to local bylaws…”, a Skip button on a legal step, and two empty photo boxes with no guidance.', rows:[['Screen push','550ms',sp('· bounce 0')],['Camera rises','600ms',sp('· bounce 0')]], hap:'None.'},
+  camera:{t:'Camera: find, lock, capture', d:'The frame looks for the card. When all four edges are found, the card settles, the corners close in and turn green, and the ring fills. The photo is taken for you.', why:'<b>Why auto-capture:</b> pressing a shutter shakes the phone, the main cause of blurry document photos.', rows:[['Card comes into view','1200ms','emphasized decel'],['Hand-held drift','5s loop','ease-in-out, ±2px'],['Card settles','700ms',sp('· bounce 0')],['Corners lock','450ms',sp('· bounce .15')],['Hold-still ring','1000ms','linear (it is a timer)'],['Flash','320ms','ease-out, 45% white']], hap:'Medium impact on capture. Nothing before it.'},
+  glare:{t:'Glare detected', d:'A bright spot covers part of the text. The hint says exactly what to do: tilt the card. As the driver tilts, the reflection slides away and capture continues.', why:'<b>Edge case from support:</b> glossy licences under ceiling lights were the most common failed upload.', rows:[['Hint colour change','240ms','standard'],['Corners turn amber','240ms','standard'],['Tilt and glare slide away','1600ms','ease-in-out']], hap:'Warning (two light taps), once, not on a loop.'},
+  blur:{t:'Too blurry to read', d:'The frame stays open and the hint asks to hold steady. Capture only happens on a sharp image, so OCR never reads a blurry photo.', why:'<b>Design rule:</b> if the camera can tell up front, never fail the read afterwards.', rows:[['Blur clears','1400ms','emphasized decel'],['Hint swap','240ms','standard']], hap:'None until capture.'},
+  flip:{t:'Now the back', d:'The card turns over in place, so the driver understands what to do without reading anything.', why:'<b>Show, don’t tell:</b> one movement replaces a paragraph of instructions.', rows:[['Card flip','900ms',sp('· bounce .06')],['Hint cross-fade','240ms','standard']], hap:'Light tap when the flip prompt appears.'},
+  read:{t:'Reading the licence', d:'A scan line passes over the photo. Each value lights up on the card at the moment it lands in its field, so the driver sees where every value came from.', why:'<b>Trust:</b> linking the box on the card to the field makes autofill feel checkable, not magic.', rows:[['Photo hand-off','550ms',sp('· bounce 0')],['Scan line','1500ms','ease-in-out'],['Field fill stagger','260ms each','emphasized decel'],['Tick','400ms',sp('· bounce .25')]], hap:'Success when all fields are filled.'},
+  unsure:{t:'One value needs a check', d:'OCR is not sure about the expiry date. Only that field turns amber and says why. The driver fixes it in place, and Continue unlocks.', why:'<b>Rule:</b> never silently guess a legal value. Ask only about the one field we are unsure of.', rows:[['Scroll to the field','smooth','browser default'],['Fix button nudge','2 × 700ms','ease-in-out'],['Edit focus ring','200ms','standard'],['Button unlocks','300ms','standard']], hap:'Light tap on Done.'},
+  expired:{t:'Licence has expired', d:'The scan worked, so we say what is wrong with the document, not with the photo. One clear action: scan a valid licence.', why:'<b>2024 problem:</b> the expired warning could be closed and Continue still worked.', rows:[['Banner in','400ms','emphasized decel'],['Field shake','420ms','ease-in-out, 3 swings']], hap:'Error (three short taps).'},
+  manual:{t:'Manual entry', d:'Real inputs. The licence number formats itself as you type, dates use the format printed on the card, and errors appear when you leave a field, not on every key.', why:'<b>Accessibility:</b> labels above fields, 16px text, and errors in words, not only in red.', rows:[['Focus ring','200ms','standard'],['Error reveal','240ms','emphasized decel'],['Button unlocks','300ms','standard']], hap:'None.'},
+  saved:{t:'Saved and back to the list', d:'You come back to the list first, then the licence item changes to “In review”, the ring fills and the highlight moves to the next step. Each change happens one after another, so the eye can follow it.', why:'<b>2024 problem:</b> no save and resume, and most drop-offs happened at document upload.', rows:[['Pop back','550ms',sp('· bounce 0')],['Status swap','160ms out · 400ms in',sp('· bounce .25')],['Ring fill','900ms','ease-in-out'],['Toast','550ms in · 3.2s · 250ms out',sp('· bounce .12')]], hap:'Success.'},
 };
 function spec(key){
-  const s=SPEC[key]; const el=$('#spec');
+  const s=SPEC[key]; const el=$('#spec'); if(!el) return;
   el.innerHTML=`<h2>What you are seeing</h2><h3>${s.t}</h3><p>${s.d}</p><div class="why">${s.why}</div>
   <table><tr><th>Motion</th><th>Duration</th><th>Easing</th></tr>${s.rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</table>
   <div class="hap"><span>📳</span><span><b>Haptics:</b> ${s.hap}</span></div>`;
-  anim(el,[{opacity:.4},{opacity:1}],200);
+  anim(el,[{opacity:.5},{opacity:1}],240,EASE.std);
 }
 
-/* ================= view management ================= */
+/* ================= views ================= */
 let current=null;
 async function show(html, dir='push', dark=false){
   const v=document.createElement('div'); v.className='view'; v.innerHTML=html;
@@ -422,19 +486,24 @@ async function show(html, dir='push', dark=false){
   const old=current; current=v;
   if(old){
     if(dir==='push'){
-      anim(old,[{transform:'translateX(0)',filter:'brightness(1)'},{transform:'translateX(-28%)',filter:'brightness(.92)'}],320);
-      await anim(v,[{transform:'translateX(100%)'},{transform:'translateX(0)'}],320);
+      anim(old,[{transform:'translateX(0)',filter:'brightness(1)'},{transform:'translateX(-25%)',filter:'brightness(.94)'}],SPR.push);
+      await anim(v,[{transform:'translateX(100%)',boxShadow:'-8px 0 24px rgba(0,0,0,0)'},{transform:'translateX(0)',boxShadow:'-8px 0 24px rgba(0,0,0,.08)'}],SPR.push);
     } else if(dir==='pop'){
       v.style.zIndex=0; old.style.zIndex=1;
-      anim(v,[{transform:'translateX(-28%)'},{transform:'translateX(0)'}],320);
-      await anim(old,[{transform:'translateX(0)'},{transform:'translateX(100%)'}],320);
+      anim(v,[{transform:'translateX(-25%)',filter:'brightness(.94)'},{transform:'translateX(0)',filter:'brightness(1)'}],SPR.push);
+      await anim(old,[{transform:'translateX(0)'},{transform:'translateX(100%)'}],SPR.push);
     } else if(dir==='up'){
-      await anim(v,[{transform:'translateY(100%)'},{transform:'translateY(0)'}],380);
+      anim(old,[{filter:'brightness(1)'},{filter:'brightness(.85)'}],SPR.sheet);
+      await anim(v,[{transform:'translateY(100%)'},{transform:'translateY(0)'}],SPR.sheet);
     } else if(dir==='down'){
       v.style.zIndex=0; old.style.zIndex=1;
-      await anim(old,[{transform:'translateY(0)'},{transform:'translateY(100%)'}],320,'cubic-bezier(.4,0,1,1)');
+      await anim(old,[{transform:'translateY(0)'},{transform:'translateY(100%)'}],280,EASE.accel);
+    } else if(dir==='handoff'){
+      // camera fades away while the captured photo carries over
+      v.style.zIndex=0; old.style.zIndex=1;
+      await anim(old,[{opacity:1},{opacity:0}],420,EASE.std);
     } else {
-      await anim(v,[{opacity:0},{opacity:1}],240);
+      await anim(v,[{opacity:0},{opacity:1}],300,EASE.std);
     }
     old.remove();
   }
@@ -443,63 +512,96 @@ async function show(html, dir='push', dark=false){
 function haptic(label){
   let h=$('.haptic',screen); if(!h){h=document.createElement('div');h.className='haptic';screen.appendChild(h);}
   h.innerHTML=`<i></i>Haptic · ${label}`;
-  anim(h,[{opacity:0,minWidth:'96px'},{opacity:1,minWidth:'150px',offset:.18},{opacity:1,minWidth:'150px',offset:.82},{opacity:0,minWidth:'96px'}],1300,'cubic-bezier(.34,1.3,.64,1)');
+  anim(h,[{opacity:0,minWidth:'96px'},{opacity:1,minWidth:'150px',offset:.15},{opacity:1,minWidth:'150px',offset:.85},{opacity:0,minWidth:'96px'}],1600,EASE.std);
 }
 async function toast(html){
+  screen.querySelectorAll('.toast').forEach(n=>n.remove());
   const t=document.createElement('div'); t.className='toast'; t.innerHTML=html; screen.appendChild(t);
-  await anim(t,[{transform:'translateY(-140%)'},{transform:'translateY(0)'}],360,'cubic-bezier(.34,1.4,.64,1)');
-  await wait(2200);
-  await anim(t,[{transform:'translateY(0)',opacity:1},{transform:'translateY(-140%)',opacity:0}],280,'cubic-bezier(.4,0,1,1)');
+  await anim(t,[{transform:'translateY(-140%)'},{transform:'translateY(0)'}],SPR.toast);
+  await wait(3200);
+  await anim(t,[{transform:'translateY(0)',opacity:1},{transform:'translateY(-140%)',opacity:0}],250,EASE.accel);
   t.remove();
 }
+
+/* ---------- touch feedback: press < 100 ms, spring release ---------- */
+const PRESSABLE='.btn,.item,.iconbtn,.fix,.thumb button,.shutter,#toscan,.slot';
+const ratio=()=>screen.getBoundingClientRect().width/screen.offsetWidth;
+function tapRing(x,y){
+  const d=document.createElement('div'); d.className='tap'; d.style.left=x+'px'; d.style.top=y+'px'; screen.appendChild(d);
+  anim(d,[{transform:'scale(1.25)',opacity:0},{transform:'scale(1)',opacity:1,offset:.25},{transform:'scale(.92)',opacity:1,offset:.55},{transform:'scale(1.15)',opacity:0}],620,EASE.std).then(()=>d.remove());
+}
+function pressDown(el){
+  if(!el || el.disabled) return;
+  const s = el.classList.contains('item')||el.classList.contains('slot') ? .98 : .96;
+  el._pa && el._pa.cancel();
+  el._pa = el.animate([{transform:'scale(1)'},{transform:`scale(${s})`}],{duration:100*K,easing:EASE.out,fill:'forwards'});
+}
+function pressUp(el){
+  if(!el || !el._pa) return;
+  const cur=getComputedStyle(el).transform; el._pa.cancel();
+  el._pa = el.animate([{transform:cur==='none'?'scale(.97)':cur},{transform:'scale(1)'}],{duration:SPR.release.ms*K,easing:SPR.release.e});
+}
 screen.addEventListener('pointerdown',e=>{
-  const r=screen.getBoundingClientRect(); const d=document.createElement('div'); d.className='tap';
-  d.style.left=(e.clientX-r.left)+'px'; d.style.top=(e.clientY-r.top)+'px'; screen.appendChild(d);
-  anim(d,[{transform:'scale(.4)',opacity:1},{transform:'scale(1.3)',opacity:0}],450).then(()=>d.remove());
+  const r=screen.getBoundingClientRect(), q=ratio();
+  tapRing((e.clientX-r.left)/q,(e.clientY-r.top)/q);
+  const el=e.target.closest(PRESSABLE); if(!el) return; pressDown(el);
+  const up=()=>{pressUp(el);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);};
+  addEventListener('pointerup',up); addEventListener('pointercancel',up);
 });
 
-/* ================= screen: checklist ================= */
+/* ================= checklist ================= */
 const STEPS=['Personal information','Driver’s licence','Work eligibility','Driver’s abstract','Background check','Vehicle information','Vehicle insurance','Vehicle safety','Vehicle photos','Profile photo'];
+const STATE={
+  ok:['st-ok',ICON.check,'Approved'],
+  rev:['st-rev',ICON.clock,'In review · usually within 24 h'],
+  next:['st-next',ICON.dot,'Next step · about 2 min'],
+  todo:['st-todo',ICON.dot,'Not started'],
+};
+const itemInner=(i,st)=>`<span class="ic">${STATE[st][1]}</span><span class="tx"><b>${STEPS[i]}</b><small>${STATE[st][2]}</small></span>${st==='next'?'<span class="go">Start</span>':`<span class="chev">${ICON.arrow}</span>`}`;
+const item=(i,st)=>`<button class="item ${STATE[st][0]} ${st==='next'?'next':''}" data-i="${i}">${itemInner(i,st)}</button>`;
+async function morph(el,i,st){
+  const parts=[...el.querySelectorAll('.ic,.tx,.go,.chev')];
+  await Promise.all(parts.map(p=>anim(p,[{opacity:1,transform:'none'},{opacity:0,transform:'translateY(-3px)'}],160,EASE.accel)));
+  el.className=`item ${STATE[st][0]} ${st==='next'?'next':''}`; el.innerHTML=itemInner(i,st);
+  anim($('.ic',el),[{opacity:0,transform:'scale(.5)'},{opacity:1,transform:'scale(1)'}],SPR.pop);
+  el.querySelectorAll('.tx,.go,.chev').forEach(p=>anim(p,[{opacity:0,transform:'translateY(4px)'},{opacity:1,transform:'none'}],320,EASE.decel));
+}
 function ring(frac,label){
   const c=2*Math.PI*24;
-  return `<div class="ring"><svg width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" stroke="#E6EBEE" stroke-width="6" fill="none"/><circle class="arc" cx="28" cy="28" r="24" stroke="#1E8E3E" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-frac)}"/></svg><span>${label}</span></div>`;
-}
-function item(i,state){
-  const map={
-    ok:['st-ok',ICON.check,'Approved'],
-    rev:['st-rev',ICON.clock,'In review · usually within 24 h'],
-    next:['st-next',ICON.dot,'Next step · about 2 min'],
-    todo:['st-todo',ICON.dot,'Not started'],
-  };
-  const [cls,ic,sub]=map[state];
-  return `<button class="item ${cls} ${state==='next'?'next':''}" data-i="${i}"><span class="ic">${ic}</span><span class="tx"><b>${STEPS[i]}</b><small>${sub}</small></span>${state==='next'?'<span class="go">Start</span>':`<span style="color:var(--hint)">${ICON.arrow}</span>`}</button>`;
+  return `<div class="ring"><svg width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" stroke="#E6EBEE" stroke-width="6" fill="none"/><circle class="arc" cx="28" cy="28" r="24" stroke="#1E8E3E" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-frac)}"/></svg><span class="rl">${label}</span></div>`;
 }
 async function checklist(saved=false, dir='fade'){
+  const t=RUN;
   spec(saved?'saved':'list');
-  const st=i=> i===0?'ok': i===1?(saved?'rev':'next'): (saved&&i===2?'next':'todo');
+  const st=i=> i===0?'ok': i===1?'next':'todo';
   const html=`<div class="top"><button class="iconbtn" aria-label="Back">${ICON.back}</button><h1>Driver registration</h1></div>
   <div class="body">
-    <div class="sumrow">${ring(saved?.1:.1, saved?'2/10':'1/10')}<div><b id="sumt">${saved?'2 of 10 steps sent':'1 of 10 steps done'}</b><small>Progress saves after every step</small></div></div>
+    <div class="sumrow">${ring(.1,'1/10')}<div><b id="sumt">1 of 10 steps done</b><small>Progress saves after every step</small></div></div>
     <div class="list">${STEPS.map((_,i)=>item(i,st(i))).join('')}</div>
   </div>`;
   const v=await show(html,dir);
-  const lic=$('[data-i="1"]',v);
-  if(!saved){ lic.onclick=()=>licenceIntro(); }
-  else {
-    const t=RUN;
-    await wait(150);
-    // status change already rendered; animate ring 1/10 -> 2/10 and highlight next
-    const arc=$('.arc',v), c=2*Math.PI*24;
-    anim(arc,[{strokeDashoffset:c*.9},{strokeDashoffset:c*.8}],600,'cubic-bezier(.65,0,.35,1)');
-    anim(lic,[{background:'#E8F0FE'},{background:'#fff'}],900);
-    anim($('.ic',lic),[{transform:'scale(.6)'},{transform:'scale(1)'}],320,'cubic-bezier(.34,1.56,.64,1)');
-    anim($('[data-i="2"]',v),[{transform:'translateY(6px)',opacity:.6},{transform:'none',opacity:1}],320);
-    haptic('success');
-    if(alive(t)) toast(`${ICON.check}<span><b>Licence sent for review.</b> Your progress is saved, you can come back anytime.</span>`);
-  }
+  v.querySelectorAll('.item').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i;
+    if(i===1 && !saved) return licenceIntro();
+    anim(b,[{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(3px)'},{transform:'translateX(0)'}],360,EASE.inout);
+    toast(`<span>This prototype covers the <b>driver’s licence</b> step.</span>`);
+  });
+  if(!saved) return;
+  // sequenced feedback: status → ring → highlight → toast
+  await wait(250); if(!alive(t))return;
+  const lic=$('[data-i="1"]',v), nxt=$('[data-i="2"]',v);
+  await morph(lic,1,'rev'); haptic('success'); if(!alive(t))return;
+  const arc=$('.arc',v), c=2*Math.PI*24;
+  anim(arc,[{strokeDashoffset:c*.9},{strokeDashoffset:c*.8}],900,EASE.inout);
+  setTimeout(()=>{ if(!alive(t))return; $('.rl',v).textContent='2/10'; $('#sumt',v).textContent='2 of 10 steps sent';
+    anim($('#sumt',v),[{opacity:0,transform:'translateY(4px)'},{opacity:1,transform:'none'}],320,EASE.decel); },450*K);
+  await wait(500); if(!alive(t))return;
+  await morph(nxt,2,'next');
+  await wait(200); if(!alive(t))return;
+  toast(`${ICON.check}<span><b>Licence sent for review.</b> Progress is saved, you can come back anytime.</span>`);
 }
 
-/* ================= screen: licence intro ================= */
+/* ================= licence intro ================= */
 async function licenceIntro(dir='push'){
   spec('intro');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Driver’s licence</h1><span class="stepper">Step 2 of 10</span></div>
@@ -521,91 +623,117 @@ async function licenceIntro(dir='push'){
     <p class="help">Need help? <b>Chat with us</b></p>
   </div>`;
   const v=await show(html,dir);
-  $('#bk',v).onclick=()=>checklist(false,'pop');
+  $('#bk',v).onclick=()=>{RUN++;checklist(false,'pop');};
   $('#scan',v).onclick=()=>camera();
   $('#man',v).onclick=()=>manual();
-  if(scenario==='manual'){ const t=RUN; await wait(900); if(alive(t)) { pulse($('#man',v)); } }
+  v.querySelectorAll('.slot').forEach(s=>s.onclick=()=>camera());
+  // the tips arrive one by one, so the eye reads them in order
+  if(dir==='push') v.querySelectorAll('.needs > div').forEach((d,i)=>anim(d,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],360,EASE.decel,{delay:(200+i*90)*K}));
 }
-function pulse(el){anim(el,[{background:'rgba(110,98,165,0)'},{background:'rgba(110,98,165,.14)'},{background:'rgba(110,98,165,0)'}],1000,'ease-in-out',{iterations:2});}
 
-/* ================= screen: camera ================= */
+/* ================= camera ================= */
+function setPill(p,cls,html){
+  p.className='pill '+cls; p.innerHTML=html;
+  anim(p,[{opacity:.2,transform:'translateX(-50%) translateY(4px) scale(.97)'},{opacity:1,transform:'translateX(-50%) translateY(0) scale(1)'}],280,EASE.decel);
+}
+function setHint(el,txt){ el.textContent=txt; anim(el,[{opacity:0},{opacity:1}],240,EASE.std); }
+const DRIFT_FRONT=[{transform:'translate(0,0) rotate(0deg)'},{transform:'translate(-2px,1.5px) rotate(-.5deg)'},{transform:'translate(1.5px,-1px) rotate(.4deg)'},{transform:'translate(0,0) rotate(0deg)'}];
+const DRIFT_BACK=DRIFT_FRONT.map(f=>({transform:'rotateY(180deg) '+f.transform}));
 async function camera(){
-  const t=RUN;
+  const t=RUN; const f=F();
   spec('camera');
   const html=`<div class="cam">
     <div class="feed"></div><div class="grain"></div>
-    <svg class="shade" width="360" height="800"><defs><mask id="hole"><rect width="360" height="800" fill="#fff"/><rect x="24" y="228" width="312" height="197" rx="14" fill="#000"/></mask></defs><rect width="360" height="800" fill="rgba(0,0,0,.55)" mask="url(#hole)"/></svg>
+    <div class="cardwrap" id="cw"><div class="card3d" id="c3"><div class="face front">${cardFront(EXP())}</div><div class="face back">${cardBack()}</div></div><div class="glare" id="gl"></div></div>
+    <div class="hole"></div>
     <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><b id="side">Front of licence</b><span style="width:44px"></span></div>
     <div class="pill" id="pill">Place the front of your licence in the frame</div>
-    <div class="cardwrap" id="cw"><div class="card3d" id="c3"><div class="face front">${cardFront(EXP())}</div><div class="face back">${cardBack()}</div></div><div class="glare" id="gl"></div></div>
     <div class="guide" id="gd"><span class="cn tl"></span><span class="cn tr"></span><span class="cn bl"></span><span class="cn br"></span></div>
     <p class="camhint" id="ch">Use a dark surface and avoid direct light</p>
     <div class="autolabel" id="al">Auto-capture is on</div>
     <div class="shutterbar"><span class="camside">Flash<br>Auto</span>
-      <button class="shutter" id="sh" aria-label="Take photo"><svg width="76" height="76"><circle cx="38" cy="38" r="35" stroke="rgba(255,255,255,.5)" stroke-width="4" fill="none"/><circle id="prog" cx="38" cy="38" r="35" stroke="#5BD17E" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/></svg><span class="core"></span></button>
+      <button class="shutter" id="sh" aria-label="Take photo"><svg width="76" height="76"><circle cx="38" cy="38" r="35" stroke="rgba(255,255,255,.45)" stroke-width="4" fill="none"/><circle id="prog" cx="38" cy="38" r="35" stroke="#5BD17E" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/></svg><span class="core"></span></button>
       <span class="camside">Tips</span></div>
     <div class="flash" id="fl"></div>
   </div>`;
   const v=await show(html,'up',true);
+  const cam=$('.cam',v); cam.style.setProperty('--gt', Math.round(screen.clientHeight*.43-98)+'px');
   $('#cx',v).onclick=()=>{RUN++;licenceIntro('down');};
-  const cw=$('#cw',v), c3=$('#c3',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v);
-  // card moves into view with hand-held drift
-  c3.style.opacity=0;
-  await wait(500); if(!alive(t))return;
-  c3.style.opacity=1;
-  await anim(c3,[{transform:'translate(40px,220px) rotate(-14deg) scale(.82)'},{transform:'translate(6px,8px) rotate(-3deg) scale(.97)'}],900,'cubic-bezier(.2,.8,.2,1)');
+  const c3=$('#c3',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v);
+  const cwr=$('#cw',v); cwr.style.opacity=0;
+  await wait(700); if(!alive(t))return;
+  // the card is brought in by a hand: decelerates and settles, no bounce
+  // (opacity lives on the wrapper: opacity on the 3D element would flatten the flip)
+  cwr.style.transition=`opacity ${400*K}ms ${EASE.std}`; cwr.style.opacity=1;
+  await anim(c3,[{transform:'translate(30px,260px) rotate(-12deg) scale(.86)'},{transform:'translate(0,0) rotate(0deg) scale(1)'}],1200,EASE.decel);
   if(!alive(t))return;
-  const drift=c3.animate([{transform:'translate(6px,8px) rotate(-3deg) scale(.97)'},{transform:'translate(-4px,3px) rotate(1.5deg) scale(.985)'},{transform:'translate(3px,-2px) rotate(-1deg) scale(.98)'},{transform:'translate(6px,8px) rotate(-3deg) scale(.97)'}],{duration:2600*K,iterations:Infinity,easing:'ease-in-out'});
-  if(scenario==='glare'){
-    spec('glare');
-    gl.style.left='130px'; gl.style.top='30px';
-    await anim(gl,[{opacity:0},{opacity:1}],300);
-    setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); gd.classList.add('warn'); haptic('warning');
-    ch.textContent='The light is reflecting on the card';
-    await wait(2200); if(!alive(t))return;
-    await anim(gl,[{transform:'translate(0,0)',opacity:1},{transform:'translate(150px,-40px)',opacity:0}],1400,'cubic-bezier(.65,0,.35,1)');
-    gd.classList.remove('warn');
-  }
-  if(scenario==='blur'){
-    spec('blur');
-    $('.front',v).style.filter='blur(3.5px)';
-    setPill(pill,'warn',`<span>Hold your phone steady</span>`); gd.classList.add('warn');
-    ch.textContent='Rest your elbows on the table if you can';
-    await wait(1800); if(!alive(t))return;
-    await anim($('.front',v),[{filter:'blur(3.5px)'},{filter:'blur(0px)'}],1200);
-    gd.classList.remove('warn');
-  }
-  await lockAndCapture(v,drift,'front'); if(!alive(t))return;
-  // flip to back
+  let drift=c3.animate(DRIFT_FRONT,{duration:5000*K,iterations:Infinity,easing:'ease-in-out'});
+  await issues(v,'front',drift,t); if(!alive(t))return;
+  await lockAndCapture(v,drift,'front',t); if(!alive(t))return;
+  // flip
   spec('flip');
-  setPill(pill,'',`<span>Great. Now flip it over</span>`); ch.textContent='Same position, back side up';
+  setPill(pill,'',`<span>Great. Now turn it over</span>`); setHint(ch,'Same place, back side up');
   $('#side',v).textContent='Back of licence';
-  gd.classList.remove('locked'); $('#prog',v).style.strokeDashoffset=220;
+  gd.classList.remove('locked'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
   haptic('light');
-  await anim(c3,[{transform:'translate(0,0) rotateY(0deg)'},{transform:'translate(0,-14px) rotateY(90deg) scale(1.03)',offset:.5},{transform:'translate(0,0) rotateY(180deg)'}],700,'cubic-bezier(.65,0,.35,1)');
+  await wait(500); if(!alive(t))return;
+  await anim(c3,[{transform:'rotateY(0deg) translateZ(0)'},{transform:'rotateY(180deg) translateZ(0)'}],SPR.flip);
   if(!alive(t))return;
-  const drift2=c3.animate([{transform:'rotateY(180deg) translate(2px,2px) rotate(1deg)'},{transform:'rotateY(180deg) translate(-3px,-2px) rotate(-1deg)'},{transform:'rotateY(180deg) translate(2px,2px) rotate(1deg)'}],{duration:2400*K,iterations:Infinity,easing:'ease-in-out'});
-  await wait(900); if(!alive(t))return;
-  await lockAndCapture(v,drift2,'back'); if(!alive(t))return;
-  await wait(250); if(!alive(t))return;
+  drift=c3.animate(DRIFT_BACK,{duration:5000*K,iterations:Infinity,easing:'ease-in-out'});
+  await wait(700); if(!alive(t))return;
+  await issues(v,'back',drift,t); if(!alive(t))return;
+  await lockAndCapture(v,drift,'back',t); if(!alive(t))return;
+  await wait(300); if(!alive(t))return;
   reading();
 }
-function setPill(p,cls,html){p.className='pill '+cls; p.innerHTML=html; anim(p,[{opacity:.3,transform:'translateX(-50%) scale(.96)'},{opacity:1,transform:'translateX(-50%) scale(1)'}],200);}
-async function lockAndCapture(v,drift,side){
-  const t=RUN, gd=$('#gd',v), pill=$('#pill',v), prog=$('#prog',v), fl=$('#fl',v), c3=$('#c3',v);
-  await wait(500); if(!alive(t))return;
-  drift.pause(); const cur=getComputedStyle(c3).transform; drift.cancel();
-  await anim(c3,[{transform:cur},{transform: side==='back'?'rotateY(180deg)':'none'}],260,'cubic-bezier(.34,1.56,.64,1)');
-  gd.classList.add('locked');
-  setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`);
-  await anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],700,'linear'); if(!alive(t))return;
-  await anim(fl,[{opacity:.85},{opacity:0}],160,'ease-out');
-  haptic('medium impact');
-  setPill(pill,'ok',`${ICON.check}<span>${side==='front'?'Front captured':'Back captured'}</span>`);
-  await anim(c3,[{transform: side==='back'?'rotateY(180deg)':'none'},{transform:(side==='back'?'rotateY(180deg) ':'')+'scale(.96)'},{transform: side==='back'?'rotateY(180deg)':'none'}],260);
-  await wait(450);
+async function issues(v,side,drift,t){
+  const f=F(), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v), cw=$('#cw',v);
+  if(f.glare===side){
+    spec('glare');
+    gl.style.left='120px'; gl.style.top='24px';
+    await anim(gl,[{opacity:0,transform:'scale(.8)'},{opacity:1,transform:'scale(1)'}],500,EASE.decel); if(!alive(t))return;
+    gd.classList.add('warn'); setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); haptic('warning');
+    setHint(ch,'The light is reflecting on the card');
+    await wait(2400); if(!alive(t))return;
+    // the driver tilts: card leans back a little, the reflection slides off
+    anim(cw,[{transform:'none'},{transform:'perspective(700px) rotateX(9deg)',offset:.5},{transform:'none'}],1600,EASE.inout);
+    await anim(gl,[{transform:'translate(0,0)',opacity:1},{transform:'translate(160px,-50px)',opacity:0}],1600,EASE.inout); if(!alive(t))return;
+    gd.classList.remove('warn'); setPill(pill,'',`<span>That’s better</span>`); setHint(ch,'Keep it there');
+    await wait(500);
+  }
+  if(f.blur===side){
+    spec('blur');
+    const face=$(side==='front'?'.front':'.back',v);
+    face.style.filter='blur(3px)';
+    await wait(300); if(!alive(t))return;
+    gd.classList.add('warn'); setPill(pill,'warn',`${ICON.hand}<span>Hold your phone steady</span>`);
+    setHint(ch,'Rest your elbows on the table if you can');
+    await wait(2000); if(!alive(t))return;
+    await anim(face,[{filter:'blur(3px)'},{filter:'blur(0px)'}],1400,EASE.decel); face.style.filter='';
+    gd.classList.remove('warn'); setPill(pill,'',`<span>Sharp. Keep still</span>`);
+    await wait(400);
+  }
 }
-/* ================= screen: reading + review ================= */
+async function lockAndCapture(v,drift,side,t){
+  const gd=$('#gd',v), pill=$('#pill',v), prog=$('#prog',v), fl=$('#fl',v), c3=$('#c3',v);
+  const rest = side==='back'?'rotateY(180deg)':'none';
+  await wait(600); if(!alive(t))return;
+  const cur=getComputedStyle(c3).transform; drift.cancel();
+  await anim(c3,[{transform:cur},{transform:rest}],SPR.settle); if(!alive(t))return;
+  gd.classList.add('locked');                         // corners close in (CSS spring-ish transition)
+  gd.querySelectorAll('.cn').forEach(c=>c.style.transitionDuration=(SPR.snap.ms*K)+'ms');
+  gd.querySelectorAll('.cn').forEach(c=>c.style.transitionTimingFunction=SPR.snap.e);
+  setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`);
+  await wait(250); if(!alive(t))return;
+  await anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],1000,'linear'); if(!alive(t))return;
+  anim(fl,[{opacity:.45},{opacity:0}],320,EASE.out);
+  haptic('medium impact');
+  anim(c3,[{transform:rest},{transform:rest==='none'?'scale(.975)':rest+' scale(.975)'},{transform:rest}],420,EASE.std);
+  setPill(pill,'ok',`${ICON.check}<span>${side==='front'?'Front captured':'Back captured'}</span>`);
+  await wait(900);
+}
+
+/* ================= reading + review ================= */
 const FIELDS=[
   {k:'name',label:'Full name',v:'Alex Morgan',box:[94,88,110,14]},
   {k:'num',label:'Licence number',v:'M1234-56789-01234',box:[94,58,132,14]},
@@ -614,92 +742,92 @@ const FIELDS=[
   {k:'exp',label:'Expiry date',v:'14 Jun 2029',box:[184,118,74,14]},
 ];
 async function reading(){
-  const t=RUN; spec('read');
+  const t=RUN, f=F(); spec('read');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Check details</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
     <div class="scanimg" id="si"><div class="face">${cardFront(EXP())}</div><div class="scanline" id="sl"></div></div>
     <div class="thumbs">
-      <div class="thumb"><div class="mini"><div class="face">${cardFront(EXP())}</div></div>Front<button>Retake</button></div>
-      <div class="thumb"><div class="mini"><div class="face">${cardBack()}</div></div>Back<button>Retake</button></div>
+      <div class="thumb"><div class="mini"><div class="face">${cardFront(EXP())}</div></div>Front<button class="rt">Retake</button></div>
+      <div class="thumb"><div class="mini"><div class="face">${cardBack()}</div></div>Back<button class="rt">Retake</button></div>
     </div>
     <div id="bn"></div>
     <div class="status" id="stt"><span class="spinner"></span>Reading your licence…</div>
-    <div class="fields" id="fs">${FIELDS.map(f=>`<div class="field" data-k="${f.k}"><label>${f.label}</label><div class="val"><span class="v"><span class="skel"></span></span><span class="ok">${ICON.check}</span></div><span class="note"></span></div>`).join('')}</div>
+    <div class="fields" id="fs">${FIELDS.map(x=>`<div class="field" data-k="${x.k}"><label>${x.label}</label><div class="val"><span class="v"><span class="skel"></span></span><span class="ok">${ICON.check}</span></div><span class="note"></span></div>`).join('')}</div>
   </div>
   <div class="foot"><button class="btn primary" id="go" disabled>Looks right, continue</button></div>`;
-  const v=await show(html,'fade',false);
+  const v=await show(html,'handoff',false);
   $('#bk',v).onclick=()=>{RUN++;licenceIntro('pop');};
+  v.querySelectorAll('.rt').forEach(b=>b.onclick=()=>{RUN++;camera();});
   const si=$('#si',v), sl=$('#sl',v), go=$('#go',v);
-  // scale-in hand-off from camera
-  anim(si,[{transform:'scale(1.12) translateY(40px)',opacity:.6},{transform:'none',opacity:1}],420);
-  await wait(300); if(!alive(t))return;
-  anim(sl,[{top:'-56px'},{top:'100%'}],1100,'cubic-bezier(.65,0,.35,1)');
-  // OCR boxes appear in reading order, fields fill
+  // shared-element hand-off: the photo moves up from where the card was in the frame
+  anim(si,[{transform:'translateY(150px) scale(1.06)'},{transform:'none'}],SPR.push);
+  v.querySelectorAll('.thumbs,.status,.fields').forEach((n,i)=>anim(n,[{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],420,EASE.decel,{delay:(150+i*70)*K}));
+  await wait(500); if(!alive(t))return;
+  anim(sl,[{top:'-56px'},{top:'100%'}],1500,EASE.inout);
   const scale=si.clientWidth/312;
-  for(const f of FIELDS){
-    await wait(f===FIELDS[0]?380:170); if(!alive(t))return;
-    const b=document.createElement('div'); b.className='ocrbox';
-    const unsure = scenario==='unsure' && f.k==='exp';
-    const bad = scenario==='expired' && f.k==='exp';
-    if(unsure) b.classList.add('unsure'); if(bad) b.classList.add('bad');
-    Object.assign(b.style,{left:f.box[0]*scale-3+'px',top:f.box[1]*scale-3+'px',width:f.box[2]*scale+6+'px',height:f.box[3]*scale+6+'px'});
+  for(const x of FIELDS){
+    await wait(x===FIELDS[0]?420:260); if(!alive(t))return;
+    const unsure = f.unsure && x.k==='exp', bad = f.expired && x.k==='exp';
+    const b=document.createElement('div'); b.className='ocrbox'+(unsure?' unsure':'')+(bad?' bad':'');
+    Object.assign(b.style,{left:x.box[0]*scale-3+'px',top:x.box[1]*scale-3+'px',width:x.box[2]*scale+6+'px',height:x.box[3]*scale+6+'px'});
     si.appendChild(b);
-    anim(b,[{opacity:0,transform:'scale(1.25)'},{opacity:1,transform:'scale(1)'}],220);
-    const fe=$(`[data-k="${f.k}"]`,v), val=$('.v',fe);
-    let txt=f.v; if(unsure) txt='14 Jun 202?'; if(bad) txt='12 Mar 2025';
-    val.textContent=txt;
-    anim(val,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],220);
+    anim(b,[{opacity:0,transform:'scale(1.18)'},{opacity:1,transform:'scale(1)'}],SPR.snap);
+    const fe=$(`[data-k="${x.k}"]`,v), val=$('.v',fe);
+    val.textContent = unsure ? '14 Jun 202?' : bad ? '12 Mar 2025' : x.v;
+    anim(val,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],360,EASE.decel);
     if(unsure){ fe.classList.add('unsure'); $('.note',fe).textContent='We couldn’t read the last digit. Please check.'; $('.ok',fe).outerHTML=`<button class="fix" id="fix">Fix</button>`; }
     else if(bad){ fe.classList.add('bad'); $('.note',fe).textContent='Expired on 12 Mar 2025'; $('.ok',fe).outerHTML=`<span style="color:var(--red-text)">${ICON.alert}</span>`; }
-    else fe.classList.add('filled');
+    else { fe.classList.add('filled'); anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop); }
   }
-  await wait(300); if(!alive(t))return;
-  // fade boxes a little so the photo reads clean again
-  si.querySelectorAll('.ocrbox:not(.unsure):not(.bad)').forEach(b=>anim(b,[{opacity:1},{opacity:.35}],400));
+  await wait(450); if(!alive(t))return;
+  si.querySelectorAll('.ocrbox:not(.unsure):not(.bad)').forEach(b=>anim(b,[{opacity:1},{opacity:.3}],600,EASE.std));
   const stt=$('#stt',v);
-  if(scenario==='expired'){
+  const status=(html)=>{ stt.innerHTML=html; anim(stt,[{opacity:0,transform:'translateY(3px)'},{opacity:1,transform:'none'}],280,EASE.decel); };
+  const enable=()=>{ go.disabled=false; anim(go,[{filter:'saturate(.2) brightness(1.4)'},{filter:'none'}],300,EASE.std); };
+  if(f.expired){
     spec('expired');
-    stt.innerHTML=`<span style="color:var(--red-text)">${ICON.alert}</span>We read your licence, but it has expired`;
+    status(`<span style="color:var(--red-text)">${ICON.alert}</span>We read your licence, but it has expired`);
     const bn=$('#bn',v);
     bn.innerHTML=`<div class="banner err" style="margin-top:14px"><span style="color:var(--red-text)">${ICON.alert}</span><div><b>This licence expired on 12 Mar 2025</b>You need a valid licence to drive with Uride. If you’ve renewed it, scan the new card.</div></div>`;
-    anim(bn,[{opacity:0,transform:'translateY(-8px)'},{opacity:1,transform:'none'}],280);
-    anim($('[data-k="exp"]',v),[{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(5px)'},{transform:'translateX(-3px)'},{transform:'translateX(0)'}],360,'ease-in-out');
+    anim(bn,[{opacity:0,transform:'translateY(-8px)'},{opacity:1,transform:'none'}],400,EASE.decel);
+    anim($('[data-k="exp"]',v),[{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(5px)'},{transform:'translateX(-3px)'},{transform:'translateX(0)'}],420,EASE.inout,{delay:200*K});
     haptic('error');
-    go.disabled=false; go.innerHTML=`${ICON.cam} Scan a valid licence`;
+    go.innerHTML=`${ICON.cam} Scan a valid licence`; enable();
     go.onclick=()=>{ scenario='happy'; markScen(); camera(); };
     return;
   }
-  if(scenario==='unsure'){
+  if(f.unsure){
     spec('unsure');
-    stt.innerHTML=`<span style="color:var(--amber)">${ICON.alert}</span>Almost done. Please check one value`;
-    const fx=$('#fix',v), fe=$('[data-k="exp"]',v);
-    const bd=$('.body',v); bd.scrollTo({top:bd.scrollHeight,behavior:K>2?'auto':'smooth'});
-    anim(fx,[{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],500,'ease-in-out',{iterations:2,delay:400*K});
+    status(`<span style="color:var(--amber)">${ICON.alert}</span>Almost done. Please check one value`);
+    const fx=$('#fix',v), fe=$('[data-k="exp"]',v), bd=$('.body',v);
+    bd.scrollTo({top:bd.scrollHeight,behavior:'smooth'});
+    anim(fx,[{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],700,EASE.inout,{iterations:2,delay:600*K});
     fx.onclick=async()=>{
       fe.classList.remove('unsure'); fe.classList.add('editing');
       const vv=$('.val',fe); vv.innerHTML=`<input id="ein" value="14 Jun 202" aria-label="Expiry date"><button class="fix" id="ok2" style="color:var(--ink)">Done</button>`;
       $('.note',fe).textContent='';
-      const inp=$('#ein',fe); inp.focus(); inp.setSelectionRange(99,99);
-      await wait(500); inp.value+='9'; anim(inp,[{color:'#1A73E8'},{color:'#1F2A37'}],400);
+      const inp=$('#ein',fe); inp.focus({preventScroll:true}); inp.setSelectionRange(99,99);
+      await wait(700); inp.value+='9'; anim(inp,[{color:'#1A73E8'},{color:'#1F2A37'}],500,EASE.std);
       $('#ok2',fe).onclick=()=>{
         vv.innerHTML=`<span class="v">${inp.value}</span><span class="ok">${ICON.check}</span>`;
         fe.classList.remove('editing'); fe.classList.add('filled'); haptic('light');
-        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.35}],400);}
-        stt.innerHTML=`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`;
-        go.disabled=false;
+        anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop);
+        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);}
+        status(`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`);
+        enable();
       };
     };
   } else {
-    stt.innerHTML=`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`;
+    status(`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`);
     haptic('success');
-    go.disabled=false;
+    enable();
   }
   go.onclick=()=>checklist(true,'pop');
 }
 
-/* ================= screen: manual entry ================= */
+/* ================= manual entry ================= */
 async function manual(){
-  spec('manual');
+  const t=RUN; spec('manual');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Enter details</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
     <p class="lead">Type the details exactly as they appear on your licence.</p>
@@ -722,20 +850,48 @@ async function manual(){
     let out=L+D.slice(0,4); if(D.length>4) out+='-'+D.slice(4,9); if(D.length>9) out+='-'+D.slice(9,14); num.value=out; mark(num,null); check(); });
   exp.addEventListener('input',()=>{ let d=exp.value.replace(/\D/g,'').slice(0,8); let o=d.slice(0,4); if(d.length>4)o+='/'+d.slice(4,6); if(d.length>6)o+='/'+d.slice(6,8); exp.value=o; mark(exp,null); check(); });
   cls.addEventListener('input',()=>{cls.value=cls.value.toUpperCase(); mark(cls,null); check();});
-  function mark(inp,ok){ const f=inp.closest('.field'); f.classList.toggle('invalid',ok===false); f.classList.toggle('valid',ok===true); if(ok===false) anim($('.err',f),[{opacity:0,transform:'translateY(-4px)'},{opacity:1,transform:'none'}],200); }
+  function mark(inp,ok){ const fd=inp.closest('.field'); fd.classList.toggle('invalid',ok===false); fd.classList.toggle('valid',ok===true); if(ok===false) anim($('.err',fd),[{opacity:0,transform:'translateY(-4px)'},{opacity:1,transform:'none'}],240,EASE.decel); }
   num.addEventListener('blur',()=>num.value&&mark(num,okNum(num.value)));
   cls.addEventListener('blur',()=>cls.value&&mark(cls,okCls(cls.value)));
   exp.addEventListener('blur',()=>{ if(!exp.value)return; const r=okExp(exp.value); $('#exp-err',v).textContent= r==='past'?'This date has passed. You need a valid licence to drive with Uride.':'Use the format YYYY/MM/DD'; mark(exp,r==='ok'); });
   [num,cls,exp].forEach(i=>{ i.addEventListener('focus',()=>i.closest('.field').classList.add('editing')); i.addEventListener('blur',()=>i.closest('.field').classList.remove('editing')); });
-  function check(){ go.disabled=!(okNum(num.value)&&okCls(cls.value)&&okExp(exp.value)==='ok'); }
+  let was=false;
+  function check(){ const ok=okNum(num.value)&&okCls(cls.value)&&okExp(exp.value)==='ok'; go.disabled=!ok; if(ok&&!was) anim(go,[{filter:'saturate(.2) brightness(1.4)'},{filter:'none'}],300,EASE.std); was=ok; }
   go.onclick=()=>checklist(true,'pop');
-  // demo typing
-  if(scenario==='manual'){ const t=RUN; await wait(600); if(!alive(t))return; await typeInto(num,'M12345678901234',t); await typeInto(cls,'G',t); await typeInto(exp,'20290614',t); }
+  if(F().manual && AUTO){ await wait(700); if(!alive(t))return; await typeInto(num,'M12345678901234',t); await typeInto(cls,'G',t); await typeInto(exp,'20290614',t); }
 }
 async function typeInto(inp,str,t){
-  inp.focus();
-  for(const ch of str){ if(!alive(t))return; inp.value+=ch; inp.dispatchEvent(new Event('input')); await wait(55); }
-  await wait(200); inp.blur();
+  inp.focus({preventScroll:true});
+  for(const ch of str){ if(!alive(t))return; inp.value+=ch; inp.dispatchEvent(new Event('input')); await wait(70+Math.random()*50); }
+  await wait(250); inp.blur();
+}
+
+/* ================= autoplay (hands-free recording) ================= */
+let AUTO=false;
+async function waitFor(sel,t,timeout=40000){
+  const t0=Date.now();
+  while(alive(t)){ const el=current&&current.querySelector(sel); if(el) return el; if(Date.now()-t0>timeout*K) break; await new Promise(r=>setTimeout(r,80)); }
+  throw 'stop';
+}
+async function tapEl(sel,t,before=800){
+  const el=await waitFor(sel,t);
+  await wait(before); if(!alive(t)) throw 'stop';
+  const r=el.getBoundingClientRect(), s=screen.getBoundingClientRect(), q=ratio();
+  tapRing((r.left+r.width/2-s.left)/q,(r.top+r.height/2-s.top)/q);
+  pressDown(el); await new Promise(r=>setTimeout(r,130)); pressUp(el);
+  el.click();
+}
+async function autopilot(){
+  const t=RUN, f=F();
+  try{
+    await tapEl('[data-i="1"]',t,1600);
+    if(f.manual){ await tapEl('#man',t,2200); await waitFor('#go:not([disabled])',t); await tapEl('#go',t,1000); return; }
+    await tapEl('#scan',t,2400);
+    if(f.expired){ await waitFor('.banner.err',t); return; }
+    if(f.unsure){ await tapEl('#fix',t,1600); await tapEl('#ok2',t,1500); }
+    await waitFor('#go:not([disabled])',t);
+    await tapEl('#go',t,1500);
+  }catch(e){}
 }
 
 /* ================= wiring ================= */
@@ -743,25 +899,63 @@ function markScen(){ document.querySelectorAll('#scen button').forEach(b=>b.setA
 function start(){
   RUN++;
   current && current.remove(); current=null;
-  screen.querySelectorAll('.toast,.haptic').forEach(n=>n.remove());
+  screen.querySelectorAll('.toast,.haptic,.tap').forEach(n=>n.remove());
   checklist(false,'fade');
+  if(AUTO) autopilot();
 }
 $('#scen').innerHTML=Object.entries(SCEN).map(([k,s])=>`<button data-s="${k}" aria-pressed="${k===scenario}"><span class="dot" style="background:${s.dot}"></span><span><b>${s.name}</b><small>${s.note}</small></span></button>`).join('');
 $('#scen').onclick=e=>{const b=e.target.closest('button'); if(!b)return; scenario=b.dataset.s; markScen(); start(); };
 $('#restart').onclick=start;
-$('#slow').onclick=e=>{const on=e.currentTarget.getAttribute('aria-checked')!=='true'; e.currentTarget.setAttribute('aria-checked',on); K=on?4:1; document.documentElement.style.setProperty('--k',K);};
+function setPace(k){ K=k; document.documentElement.style.setProperty('--k',K); $('#slow').setAttribute('aria-checked',K>=2); }
+$('#slow').onclick=e=>{ setPace(K>=2?1:4); };
 $('#taps').onclick=e=>{const on=e.currentTarget.getAttribute('aria-checked')!=='true'; e.currentTarget.setAttribute('aria-checked',on); document.body.classList.toggle('show-taps',on);};
-if(matchMedia('(prefers-reduced-motion: reduce)').matches){ K=.01; }
+
+/* ---------- record mode + director menu ---------- */
 const Q=new URLSearchParams(location.search);
-if(Q.has('record')){document.body.classList.add('rec'); if(innerWidth<600) document.body.classList.add('bare');}
-if(Q.get('s') && SCEN[Q.get('s')]) { scenario=Q.get('s'); markScen(); }
-if(Q.get('slow')) { K=+Q.get('slow')||4; document.documentElement.style.setProperty('--k',K); }
-function fit(){const d=$('.device'); const rec=document.body.classList.contains('rec'), bare=document.body.classList.contains('bare');
-  if(bare){ d.style.zoom=Math.min(innerWidth/360, innerHeight/800); return; }
+const REC=Q.has('record');
+let saved={}; try{ saved=JSON.parse(localStorage.getItem('urideRec')||'{}'); }catch(e){}
+if(REC){
+  document.body.classList.add('rec'); if(innerWidth<600) document.body.classList.add('bare');
+  scenario = saved.s && SCEN[saved.s] ? saved.s : 'story';
+  AUTO = !!saved.auto; if(saved.pace) setPace(+saved.pace);
+}
+if(Q.get('s') && SCEN[Q.get('s')]) scenario=Q.get('s');
+if(Q.has('auto')) AUTO = Q.get('auto')!=='0';
+if(Q.get('slow')) setPace(+Q.get('slow')||2);
+markScen();
+
+const dir=$('#dir');
+function dirSync(){
+  $('#dirS').innerHTML=Object.entries(SCEN).map(([k,s])=>`<button data-v="${k}" aria-pressed="${k===scenario}">${s.name}</button>`).join('');
+  $('#dirA').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.v==='1')===AUTO));
+  $('#dirP').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===K));
+}
+function openDir(){ RUN++; dirSync(); dir.classList.add('on'); anim($('.sheet',dir),[{transform:'translateY(100%)'},{transform:'none'}],SPR.sheet); }
+$('#dirS').onclick=e=>{const b=e.target.closest('button'); if(b){scenario=b.dataset.v; dirSync();}};
+$('#dirA').onclick=e=>{const b=e.target.closest('button'); if(b){AUTO=b.dataset.v==='1'; dirSync();}};
+$('#dirP').onclick=e=>{const b=e.target.closest('button'); if(b){setPace(+b.dataset.v); dirSync();}};
+$('#dirGo').onclick=()=>{ dir.classList.remove('on'); try{localStorage.setItem('urideRec',JSON.stringify({s:scenario,auto:AUTO,pace:K}));}catch(e){} markScen(); start(); };
+// long-press the top edge (60 px) to open the menu
+let lp=null;
+screen.addEventListener('pointerdown',e=>{ const r=screen.getBoundingClientRect(); if((e.clientY-r.top)/ratio()<60){ lp=setTimeout(openDir,900); } },true);
+['pointerup','pointercancel','pointerleave'].forEach(n=>screen.addEventListener(n,()=>{clearTimeout(lp);},true));
+addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT')return; if(e.key==='d'||e.key==='D') openDir(); if(e.key==='r'||e.key==='R') start(); });
+
+/* ---------- sizing ---------- */
+function fit(){
+  const d=$('.device'), sc=screen, rec=document.body.classList.contains('rec'), bare=document.body.classList.contains('bare');
+  if(bare){ const z=innerWidth/360; d.style.zoom=z; const h=Math.round(innerHeight/z); d.style.height=h+'px'; sc.style.height=h+'px'; return; }
+  d.style.height=''; sc.style.height='';
   if(rec){ d.style.zoom=Math.min(1,(innerHeight-40)/832,(innerWidth-40)/392); return; }
-  const w=innerWidth-16; d.style.zoom=w<392?(w/392):''; }
-addEventListener('resize',fit);fit();
+  const w=innerWidth-16; d.style.zoom=w<392?(w/392):'';
+}
+addEventListener('resize',fit); fit();
+if(matchMedia('(prefers-reduced-motion: reduce)').matches) setPace(.01);
 start();
+if(REC){ let seen=false; try{seen=localStorage.getItem('urideHint')==='1';}catch(e){}
+  if(!seen){ const h=document.createElement('div'); h.className='hint1'; h.textContent='Hold the top edge for the menu'; document.body.appendChild(h);
+    setTimeout(()=>h.remove(),3500); try{localStorage.setItem('urideHint','1');}catch(e){} } }
 </script>
+
 </body>
 </html>
