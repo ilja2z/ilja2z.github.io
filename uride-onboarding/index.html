@@ -117,6 +117,28 @@ input{font:inherit;color:inherit}
 .notify{margin-top:20px;align-self:stretch;height:48px;border-radius:12px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:500;color:var(--ink);transition:background calc(300ms*var(--k)),border-color calc(300ms*var(--k))}
 .notify.on{background:var(--green-soft);border-color:#A6D8B4;color:var(--green)}
 .notify .bell{display:inline-block;transform-origin:50% 10%}
+
+/* intro: three short tips instead of three paragraphs */
+.tips3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}
+.tips3 div{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 4px;border-radius:12px;background:var(--bg);text-align:center}
+.tips3 i{width:36px;height:36px;border-radius:10px;background:#fff;color:var(--violet);display:grid;place-items:center;font-style:normal}
+.tips3 b{font-size:13.5px;line-height:17px;font-weight:500;color:var(--ink)}
+.privacy{display:flex;align-items:center;gap:8px;justify-content:center;font-size:13.5px;color:var(--muted);margin-top:16px}
+.privacy svg{flex:none}
+/* camera controls */
+.camctl{width:64px;display:flex;flex-direction:column;align-items:center;gap:4px;color:#fff}
+.camctl .cc{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;transition:background calc(200ms*var(--k))}
+.camctl small{font-size:12px;opacity:.85}
+.camctl.on small{color:#FFD60A;opacity:1}
+.camchip{position:absolute;left:50%;bottom:150px;transform:translateX(-50%);z-index:6;background:rgba(20,22,25,.8);color:#fff;font-size:13px;padding:6px 12px;border-radius:14px;opacity:0;pointer-events:none;white-space:nowrap}
+.tshade{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:29}
+.tsheet h3{margin-bottom:12px}
+.tlist{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.tlist div{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;line-height:20px;text-align:left}
+.tlist i{width:36px;height:36px;border-radius:10px;background:var(--violet-soft);color:var(--violet);display:grid;place-items:center;flex:none;font-style:normal}
+.tlist b{display:block;color:var(--ink);font-weight:500;font-size:15px}
+.urtl .line i{transform:scaleY(0)}
+.ti{opacity:0}
 /* director menu */
 .dir{position:fixed;inset:0;z-index:200;background:rgba(16,20,24,.45);display:none;align-items:flex-end;justify-content:center}
 .dir.on{display:flex}
@@ -382,7 +404,9 @@ body.rec.bare .haptic{top:6px}
 let K = 1;                                   // pace multiplier (1 = real time)
 const $ = (s, r=document) => r.querySelector(s);
 const screen = $('#screen');
-const wait = ms => new Promise(r => setTimeout(r, ms * K));
+let PAUSED=false;                    // e.g. while the camera tips are open
+const wait = ms => new Promise(r=>{ let left=ms*K, last=performance.now();
+  (function tick(){ const now=performance.now(); if(!PAUSED) left-=now-last; last=now; if(left<=0) r(); else setTimeout(tick,Math.min(40,left)); })(); });
 let RUN = 0;
 const alive = t => t === RUN;
 
@@ -425,6 +449,13 @@ function anim(el, kf, d, easing=EASE.out, extra={}){
   return a.finished.catch(()=>{});
 }
 
+const BOLT='M13.2 2.5 5 13.6h6l-1.2 7.9 8.2-11.1h-6l1.2-7.9Z';
+const FLASH = {
+  auto:`<svg width="22" height="22" viewBox="0 0 24 24"><path d="${BOLT}" fill="currentColor"/><circle cx="19" cy="18.5" r="5" fill="#15181B"/><text x="19" y="21.3" text-anchor="middle" font-family="Google Sans,Arial" font-size="7.5" font-weight="700" fill="currentColor">A</text></svg>`,
+  on:`<svg width="22" height="22" viewBox="0 0 24 24"><path d="${BOLT}" fill="#FFD60A"/></svg>`,
+  off:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="${BOLT}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 3l16 18" stroke="#15181B" stroke-width="4"/><path d="M4 3l16 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+};
+let FLASH_MODE='auto';
 const ICON = {
   back:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   close:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
@@ -436,6 +467,9 @@ const ICON = {
   cam:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.3-2h6l1.3 2h1.2A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-8Z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12.5" r="3.2" stroke="currentColor" stroke-width="2"/></svg>',
   lock:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="5" y="10.5" width="14" height="10" rx="2.5" stroke="currentColor" stroke-width="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="currentColor" stroke-width="2"/></svg>',
   sun:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  surface:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 17l4-8h14l-4 8H3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 11.5h6l-1.5 3h-6l1.5-3Z" fill="currentColor"/></svg>',
+  auto:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>',
+  bulb:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',
   hand:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v9M8.5 5.5V12M15.5 5.5V12M5 9v5a7 7 0 0 0 14 0V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
 };
 
@@ -580,7 +614,7 @@ async function toast(html){
 }
 
 /* ---------- touch feedback: press < 100 ms, spring release ---------- */
-const PRESSABLE='.btn,.item,.iconbtn,.fix,.thumb button,.shutter,#toscan,.slot,.notify';
+const PRESSABLE='.btn,.item,.iconbtn,.fix,.thumb button,.shutter,#toscan,.slot,.notify,.camctl';
 const ratio=()=>screen.getBoundingClientRect().width/screen.offsetWidth;
 function tapRing(x,y){
   const d=document.createElement('div'); d.className='tap'; d.style.left=x+'px'; d.style.top=y+'px'; screen.appendChild(d);
@@ -662,16 +696,17 @@ async function licenceIntro(dir='push'){
   spec('intro');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Driver’s licence</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
-    <p class="lead">By law, we need your licence number, class and expiry date. Scan both sides and we’ll fill them in for you.</p>
+    <p class="lead">By law, we need your licence details. Scan both sides and we’ll fill them in for you.</p>
     <div class="slots">
       <div class="slot"><svg class="card-ghost" width="62" height="40" viewBox="0 0 62 40"><rect x="1" y="1" width="60" height="38" rx="5" fill="none" stroke="#97ADB6" stroke-width="2"/><rect x="7" y="9" width="14" height="18" rx="2" fill="#C9D3D9"/><rect x="26" y="11" width="28" height="3" rx="1.5" fill="#C9D3D9"/><rect x="26" y="18" width="20" height="3" rx="1.5" fill="#C9D3D9"/><rect x="26" y="25" width="24" height="3" rx="1.5" fill="#C9D3D9"/></svg><span>Front</span></div>
       <div class="slot"><svg class="card-ghost" width="62" height="40" viewBox="0 0 62 40"><rect x="1" y="1" width="60" height="38" rx="5" fill="none" stroke="#97ADB6" stroke-width="2"/><rect x="1" y="6" width="60" height="6" fill="#C9D3D9"/><g fill="#C9D3D9"><rect x="7" y="20" width="2" height="12"/><rect x="11" y="20" width="4" height="12"/><rect x="17" y="20" width="2" height="12"/><rect x="21" y="20" width="3" height="12"/><rect x="26" y="20" width="2" height="12"/><rect x="30" y="20" width="5" height="12"/><rect x="37" y="20" width="2" height="12"/><rect x="41" y="20" width="3" height="12"/><rect x="46" y="20" width="2" height="12"/><rect x="50" y="20" width="4" height="12"/></g></svg><span>Back</span></div>
     </div>
-    <div class="needs">
-      <div><i>${ICON.sun}</i><span>Find good light and put the card on a dark, flat surface.</span></div>
-      <div><i>${ICON.cam}</i><span>Hold the phone above it. We take the photo for you when it’s sharp.</span></div>
-      <div><i>${ICON.lock}</i><span>We only use this to check you can drive with Uride.</span></div>
+    <div class="tips3">
+      <div><i>${ICON.sun}</i><b>Good light</b></div>
+      <div><i>${ICON.surface}</i><b>Dark surface</b></div>
+      <div><i>${ICON.auto}</i><b>Auto photo</b></div>
     </div>
+    <p class="privacy">${ICON.lock}<span>Only used to check you can drive with Uride</span></p>
   </div>
   <div class="foot">
     <button class="btn primary" id="scan">${ICON.cam} Scan front of licence</button>
@@ -698,23 +733,26 @@ async function camera(retry=false){
   const t=RUN; const f=F();
   cardOld = !retry && !!(f.expired || f.expiredFirst);
   spec('camera');
-  const html=`<div class="cam">
+  const gt=Math.round(screen.clientHeight*.43-98);
+  const html=`<div class="cam" style="--gt:${gt}px">
     <div class="feed"></div><div class="grain"></div>
-    <div class="cardwrap" id="cw"><div class="card3d" id="c3"><div class="face front"><div class="art">${cardFront(EXP(),{old:cardOld,holo:f.unsure&&!cardOld})}</div><div class="glare" id="gl"><i class="sheen"></i><i class="core"></i></div></div><div class="face back">${cardBack()}</div></div></div>
+    <div class="cardwrap" id="cw" style="opacity:0"><div class="card3d" id="c3"><div class="face front"><div class="art">${cardFront(EXP(),{old:cardOld,holo:f.unsure&&!cardOld})}</div><div class="glare" id="gl"><i class="sheen"></i><i class="core"></i></div></div><div class="face back">${cardBack()}</div></div></div>
     <div class="hole"></div>
     <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><b id="side">Front of licence</b><span style="width:44px"></span></div>
     <div class="pill" id="pill">Place the front of your licence in the frame</div>
     <div class="guide" id="gd"><span class="cn tl"></span><span class="cn tr"></span><span class="cn bl"></span><span class="cn br"></span></div>
     <p class="camhint" id="ch">Use a dark surface and avoid direct light</p>
     <div class="autolabel" id="al">Auto-capture is on</div>
-    <div class="shutterbar"><span class="camside">Flash<br>Auto</span>
+    <div class="shutterbar"><button class="camctl" id="flb" aria-label="Flash: Auto"><span class="cc">${FLASH[FLASH_MODE]}</span><small>${FLASH_MODE[0].toUpperCase()+FLASH_MODE.slice(1)}</small></button>
       <button class="shutter" id="sh" aria-label="Take photo"><svg width="76" height="76"><circle cx="38" cy="38" r="35" stroke="rgba(255,255,255,.45)" stroke-width="4" fill="none"/><circle id="prog" cx="38" cy="38" r="35" stroke="#5BD17E" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/></svg><span class="core"></span></button>
-      <span class="camside">Tips</span></div>
+      <button class="camctl" id="tpb" aria-label="Tips"><span class="cc">${ICON.bulb}</span><small>Tips</small></button></div>
+    <div class="camchip" id="cchip"></div>
     <div class="flash" id="fl"></div>
   </div>`;
   const v=await show(html,'up',true);
   const cam=$('.cam',v); cam.style.setProperty('--gt', Math.round(screen.clientHeight*.43-98)+'px');
-  $('#cx',v).onclick=()=>{RUN++;licenceIntro('down');};
+  $('#cx',v).onclick=()=>{RUN++;PAUSED=false;licenceIntro('down');};
+  wireCamControls(v);
   const c3=$('#c3',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v);
   const cwr=$('#cw',v); cwr.style.opacity=0;
   await wait(700); if(!alive(t))return;
@@ -755,6 +793,44 @@ async function camera(retry=false){
   await wait(300); if(!alive(t))return;
   reading();
 }
+/* camera controls: flash cycles like the iOS camera, tips pause the flow */
+const TIPS=[
+  [ICON.sun,'Good light','Daylight or a bright room. Avoid a lamp right above the card.'],
+  [ICON.surface,'Dark, flat surface','The edges stand out, so we find the card faster.'],
+  [ICON.auto,'Hold, don’t tap','When all four edges are found, we take the photo for you.'],
+];
+function wireCamControls(v){
+  const flb=$('#flb',v), tpb=$('#tpb',v), chip=$('#cchip',v), feed=$('.feed',v);
+  const setFeed=()=>anim(feed,[{filter:getComputedStyle(feed).filter},{filter:FLASH_MODE==='on'?'saturate(.9) brightness(1.35)':'saturate(.9) brightness(1)'}],300,EASE.std);
+  setFeed();
+  flb.onclick=()=>{
+    FLASH_MODE={auto:'on',on:'off',off:'auto'}[FLASH_MODE];
+    const cc=$('.cc',flb), lb=$('small',flb);
+    anim(cc,[{transform:'scale(1)'},{transform:'scale(.6)',opacity:.3}],120,EASE.accel).then(()=>{ cc.innerHTML=FLASH[FLASH_MODE]; anim(cc,[{transform:'scale(.6)',opacity:.3},{transform:'scale(1)',opacity:1}],SPR.pop); });
+    lb.textContent=FLASH_MODE[0].toUpperCase()+FLASH_MODE.slice(1);
+    flb.setAttribute('aria-label','Flash: '+lb.textContent); flb.classList.toggle('on',FLASH_MODE==='on');
+    chip.textContent={auto:'Flash auto',on:'Flash on',off:'Flash off'}[FLASH_MODE];
+    chip.getAnimations().forEach(a=>a.cancel());
+    anim(chip,[{opacity:0,transform:'translateX(-50%) translateY(4px)'},{opacity:1,transform:'translateX(-50%)',offset:.15},{opacity:1,transform:'translateX(-50%)',offset:.8},{opacity:0,transform:'translateX(-50%)'}],1400,EASE.std);
+    haptic('selection'); setFeed();
+  };
+  tpb.onclick=()=>{
+    if($('.tsheet',v)) return;
+    const running=current.getAnimations({subtree:true}).filter(a=>a.playState==='running'&&a.effect&&a.effect.getComputedTiming().iterations===Infinity||a.playState==='running');
+    running.forEach(a=>a.pause()); PAUSED=true;
+    const sh=document.createElement('div'); sh.className='xsheet tsheet';
+    sh.innerHTML=`<div class="grab"></div><h3>Tips for a sharp photo</h3>
+      <div class="tlist">${TIPS.map(t=>`<div><i>${t[0]}</i><span><b>${t[1]}</b>${t[2]}</span></div>`).join('')}</div>
+      <button class="btn primary" id="tgo">Got it</button>`;
+    const shade=document.createElement('div'); shade.className='tshade';
+    $('.cam',v).append(shade,sh);
+    anim(shade,[{opacity:0},{opacity:1}],300,EASE.std);
+    anim(sh,[{transform:'translateY(105%)'},{transform:'none'}],SPR.sheet);
+    const close=async()=>{ anim(shade,[{opacity:1},{opacity:0}],250,EASE.accel); await anim(sh,[{transform:'none'},{transform:'translateY(105%)'}],280,EASE.accel); sh.remove(); shade.remove(); running.forEach(a=>{try{a.play()}catch(e){}}); PAUSED=false; };
+    $('#tgo',sh).onclick=close; shade.onclick=close;
+  };
+}
+
 /* expired: say it right after the front photo, so the driver does not flip a card we cannot accept */
 async function expiredSheet(v,t){
   const pill=$('#pill',v), gd=$('#gd',v);
@@ -823,7 +899,7 @@ async function lockAndCapture(v,drift,side,t){
   setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`);
   await wait(250); if(!alive(t))return;
   await anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],1000,'linear'); if(!alive(t))return;
-  anim(fl,[{opacity:.45},{opacity:0}],320,EASE.out);
+  if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
   haptic('medium impact');
   anim(c3,[{transform:rest},{transform:rest==='none'?'scale(.975)':rest+' scale(.975)'},{transform:rest}],420,EASE.std);
   setPill(pill,'ok',`${ICON.check}<span>${side==='front'?'Front captured':'Back captured'}</span>`);
@@ -910,7 +986,7 @@ async function reading(){
       setTimeout(()=>bd.scrollTo({top:bd.scrollHeight,behavior:'smooth'}),60);
       inp.addEventListener('input',()=>{                       // only digits after "14 Jun ", max 4 for the year
         const m=/^14 Jun (\d{0,4})/.exec(inp.value.replace(/[^\d A-Za-z]/g,'')); const y=(inp.value.match(/(\d+)\s*$/)||['',''])[1].slice(0,4);
-        inp.value='14 Jun '+y; fe.classList.remove('invalid');
+        inp.value='14 Jun '+y; fe.classList.remove('invalid'); $('.note',fe).textContent='Add the last digit of the year';
       });
       let done=false;
       const confirm=()=>{
@@ -1066,7 +1142,7 @@ async function autopilot(){
 /* ================= wiring ================= */
 function markScen(){ document.querySelectorAll('#scen button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===scenario)); }
 function start(){
-  RUN++;
+  RUN++; PAUSED=false;
   current && current.remove(); current=null;
   screen.querySelectorAll('.toast,.haptic,.tap').forEach(n=>n.remove());
   checklist(false,'fade');
