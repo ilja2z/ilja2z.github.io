@@ -961,7 +961,7 @@ async function underReview(){
     </div>
     <button class="notify" id="nt"><span class="bell">🔔</span><span class="nl">Notify me when it’s done</span></button>
   </div>
-  <div class="foot"><button class="btn primary" id="urGo">Continue registration</button><p class="help">8 steps left · about 15 min</p></div>`;
+  <div class="foot"><button class="btn primary" id="urGo">Continue registration</button><p class="help">Next: Work eligibility · 8 steps left, about 15 min</p></div>`;
   const v=await show(html,'fade');
   if(screen.clientHeight<720) $('.ur',v).classList.add('compact');
   $('#urGo',v).onclick=()=>checklist(true,'pop');
