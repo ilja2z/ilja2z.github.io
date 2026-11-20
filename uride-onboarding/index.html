@@ -174,6 +174,19 @@ input{font:inherit;color:inherit}
 .chips span{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 10px 6px 8px;font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap}
 .chips svg{width:15px;height:15px;color:var(--violet);flex:none}
 body.rec.bare .foot{padding-bottom:12px}
+/* pen-drawn timeline */
+.urtl .pen{position:absolute;left:0;top:0;overflow:visible}
+.urtl .ti .d{border-color:transparent!important;background:transparent!important}
+.urtl .ti .d::after,.urtl .ti .d i{display:none}
+/* tips story on the intro card */
+.hc-surface{position:absolute;inset:4px;border-radius:10px;opacity:0;background:radial-gradient(120% 90% at 30% 20%,#4A4038 0%,#2E2824 55%,#1E1A17 100%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
+.hc-wash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 80% at 62% 40%,rgba(255,255,255,.95),rgba(255,255,255,.7) 45%,rgba(255,255,255,.35) 80%);mix-blend-mode:screen}
+.hc-frame path{transition:stroke calc(400ms*var(--k)) ease}
+.hc-frame.ok path{stroke:#1E8E3E}
+.chips span i{display:inline-grid;place-items:center;width:16px;height:16px;font-style:normal}
+.chips span{transition:border-color calc(300ms*var(--k)),background calc(300ms*var(--k)),color calc(300ms*var(--k));cursor:pointer}
+.chips span.done{border-color:#A6D8B4;background:var(--green-soft);color:#1B5E30}
+.chips span.done svg{color:var(--green)}
 /* director menu */
 .dir{position:fixed;inset:0;z-index:200;background:rgba(16,20,24,.45);display:none;align-items:flex-end;justify-content:center}
 .dir.on{display:flex}
@@ -570,7 +583,7 @@ function cardFront(exp,o={}){
       <text x="190" y="146" font-size="7.6">12 LAKESHORE RD</text><text x="190" y="155" font-size="7.6">TORONTO ON</text>
     </g>
   </g>
-  <g transform="translate(3 -6) skewX(-10)" fill="none" stroke="#1D2C44" stroke-linecap="round" stroke-linejoin="round">
+  <g transform="translate(3 -9) translate(40 165) skewX(-10) translate(-40 -165)" fill="none" stroke="#1D2C44" stroke-linecap="round" stroke-linejoin="round">
     <path stroke-width=".9" d="M17 170c3.2-6.5 7.4-15.2 9.6-16.8 1.1-.8 1.3.6.9 2.2-1 4.4-1.8 9.6-1.1 13.1"/><path stroke-width=".7" d="M19.6 164.6c2.6-.9 5.4-1.2 8.6-.9"/>
     <path stroke-width=".85" d="M29.2 168.2c1.4-3.6 2.5-6.3 3.4-6.1.9.2-.2 4.6.2 5 .6.5 2.4-5.4 3.5-5.2 1 .2-.4 5.2.3 5.6.8.5 1.9-2.9 3.3-3.1 1.6-.2 1.4 2.9.1 3.2-1.3.3-1.6-2.4.3-3.2 1.1-.4 1.8.9 2.4.5.7-.5.4-1.4 1.4-1.4.8 0 .1 2.3.8 2.6.9.3 1.8-2.7 3.1-2.8 1.5-.1 1.6 2.5.4 2.9-1.4.5-1.5-1.5-.2-1.9 1.1-.4 1.4 1.3 1.2 3.5-.3 3.4-2.5 5.6-3.9 4.9-1.3-.7.6-3.1 3.4-4.6 2.3-1.2 3.8-2.5 5-2.4.9.1-.1 2.3.5 2.6.8.4 1.6-2.4 2.8-2.4 1.1 0 .4 2.2 1.2 2.4 1 .3 2.8-1.6 4.4-2.3"/>
     <path stroke-width=".5" d="M15.5 173.6c11.2-.9 26.8-2.6 49.5-6.4"/></g>
@@ -792,10 +805,11 @@ async function licenceIntro(dir='push'){
   <div class="body">
     <p class="lead">By law, we need your licence details. Scan both sides and we’ll fill them in for you.</p>
     <div class="hero-card" aria-hidden="true">
-      <div class="hc-card"><div class="face">${cardFront('2029/06/14')}</div><div class="hc-beam"></div></div>
+      <div class="hc-surface"></div>
+      <div class="hc-card"><div class="face">${cardFront('2029/06/14')}</div><div class="hc-wash"></div><div class="hc-beam"></div></div>
       <svg class="hc-frame" viewBox="0 0 296 194" fill="none" stroke="#1F2A37" stroke-width="3" stroke-linecap="round"><path d="M2 26V12A10 10 0 0 1 12 2H26"/><path d="M270 2H284A10 10 0 0 1 294 12V26"/><path d="M2 168V182A10 10 0 0 0 12 192H26"/><path d="M270 192H284A10 10 0 0 0 294 182V168"/></svg>
     </div>
-    <div class="chips"><span>${ICON.sun}Good light</span><span>${ICON.surface}Dark surface</span><span>${ICON.hand}Hold still</span></div>
+    <div class="chips"><span data-c="0"><i>${ICON.sun}</i>Good light</span><span data-c="1"><i>${ICON.surface}</i>Dark surface</span><span data-c="2"><i>${ICON.hand}</i>Hold still</span></div>
     <p class="privacy">${ICON.lock}<span>Only used to check you can drive with Uride</span></p>
   </div>
   <div class="foot">
@@ -806,9 +820,39 @@ async function licenceIntro(dir='push'){
   $('#bk',v).onclick=()=>{RUN++;checklist(false,'pop');};
   $('#scan',v).onclick=()=>camera();
   $('#man',v).onclick=()=>manual();
-  // a slow, quiet scan sweep across the example card: shows what will happen, without asking for attention
-  const hb=$('.hc-beam',v); if(hb) hb.animate([{transform:'translateY(-10px)',opacity:0},{opacity:.9,offset:.1},{opacity:.9,offset:.85},{transform:'translateY(182px)',opacity:0}],{duration:2600*K,delay:900*K,iterations:Infinity,easing:'cubic-bezier(.45,0,.55,1)',endDelay:0});
+  tipsStory(v);
+  v.querySelector('.chips').onclick=()=>tipsStory(v);       // tap a tip to watch it again
   // no extra entrance for the content: it travels with the screen, one motion only
+}
+
+/* the three tips, shown on the example card one after another:
+   washed-out card → good light; pale table → dark surface; card moving → hold still */
+async function tipsStory(v){
+  const t=RUN, my=(v._story=(v._story||0)+1), ok=()=>alive(t)&&v._story===my&&v.isConnected;
+  const card=$('.hc-card',v), wash=$('.hc-wash',v), surf=$('.hc-surface',v), frame=$('.hc-frame',v), chips=[...v.querySelectorAll('.chips span')];
+  const soft='cubic-bezier(.4,0,.2,1)';
+  if(v._hand) v._hand.stop();
+  card.getAnimations().forEach(a=>a.cancel()); [wash,surf,frame].forEach(e=>e.getAnimations().forEach(a=>a.cancel()));
+  chips.forEach(c=>{ c.classList.remove('done'); c.querySelector('i').innerHTML=[ICON.sun,ICON.surface,ICON.hand][+c.dataset.c]; });
+  frame.classList.remove('ok'); wash.style.opacity=1; surf.style.opacity=0;
+  const base='rotate(-6deg) scale(1.07) ';
+  v._hand=hand(card,base); v._hand.shake(true);
+  const done=async i=>{ const c=chips[i], ic=c.querySelector('i');
+    c.classList.add('done'); await anim(ic,[{transform:'scale(1)',opacity:1},{transform:'scale(.4)',opacity:0}],140,EASE.accel);
+    ic.innerHTML=ICON.check; anim(ic,[{transform:'scale(.4)',opacity:0},{transform:'scale(1)',opacity:1}],SPR.pop); };
+  await wait(900); if(!ok()) return;
+  // 1 · good light: the glare fades and the card gets its colours back
+  anim(wash,[{opacity:1},{opacity:0}],1100,soft); wash.style.opacity=0; done(0);
+  await wait(1500); if(!ok()) return;
+  // 2 · dark surface: a dark table appears under the card, the edges stand out
+  anim(surf,[{opacity:0},{opacity:1}],1100,soft); surf.style.opacity=1; done(1);
+  await wait(1500); if(!ok()) return;
+  // 3 · hold still: the movement calms down, the card settles straight inside the frame
+  v._hand.settle(); await wait(700); if(!ok()) return; v._hand.stop();
+  await anim(card,[{transform:base},{transform:'rotate(0deg) scale(1)'}],SPR.settle); if(!ok()) return;
+  frame.classList.add('ok'); done(2);
+  const hb=$('.hc-beam',v); await wait(400); if(!ok()) return;
+  hb.animate([{transform:'translateY(-10px)',opacity:0},{opacity:.9,offset:.1},{opacity:.9,offset:.88},{transform:'translateY(172px)',opacity:0}],{duration:2000*K,easing:'linear'});
 }
 
 /* ================= camera ================= */
@@ -821,7 +865,7 @@ function setHint(el,txt){ el.textContent=txt; anim(el,[{opacity:0},{opacity:1}],
    and a settle that eases the movement to zero (no jump between two transforms) */
 function hand(c3,base=''){
   let amp=1,ampT=1,tr=0,trT=0,run=true,t=0,last=performance.now(),cb=null;
-  function frame(now){ if(!run) return; const dt=Math.min(.05,(now-last)/1000); last=now; if(!PAUSED) t+=dt/K;
+  function frame(now){ if(!run||!c3.isConnected) return; const dt=Math.min(.05,(now-last)/1000); last=now; if(!PAUSED) t+=dt/K;
     amp+=(ampT-amp)*Math.min(1,dt*3.2/K); tr+=(trT-tr)*Math.min(1,dt*2.4/K);
     const x=amp*(1.8*Math.sin(t*.9)+.9*Math.sin(t*2.1+1.3)) + tr*(2.4*Math.sin(t*9.7)+1.5*Math.sin(t*14.3+2));
     const y=amp*(1.3*Math.sin(t*.7+2)+.7*Math.sin(t*1.8)) + tr*(1.9*Math.sin(t*8.3+1)+1.3*Math.sin(t*12.9));
@@ -1148,9 +1192,9 @@ async function underReview(){
     </div>
     <h2 class="urt">Licence sent for review</h2>
     <p class="urp">We check it with the issuing office. It usually takes less than 24 hours, and you can keep going in the meantime.</p>
-    <div class="urtl"><span class="line"><i></i></span>
-      <div class="ti done"><span class="d">${ICON.check}</span><div><b>Sent</b><small>Today, 9:41</small></div></div>
-      <div class="ti now"><span class="d"><i></i></span><div><b>Checking your licence</b><small>Usually within 24 h</small></div></div>
+    <div class="urtl"><svg class="pen" width="24"></svg>
+      <div class="ti done"><span class="d"></span><div><b>Sent</b><small>Today, 9:41</small></div></div>
+      <div class="ti now"><span class="d"></span><div><b>Checking your licence</b><small>Usually within 24 h</small></div></div>
       <div class="ti"><span class="d"></span><div><b>We’ll let you know</b><small>Notification and email</small></div></div>
     </div>
     <button class="notify" id="nt"><span class="bell">🔔</span><span class="nl">Notify me when it’s done</span></button>
@@ -1167,19 +1211,34 @@ async function underReview(){
   $('.urring .arc',v).animate([{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],{duration:6000,iterations:Infinity,easing:'linear'});
   $('.halo',v).animate([{transform:'scale(.92)',opacity:.35},{transform:'scale(1.06)',opacity:.7},{transform:'scale(.92)',opacity:.35}],{duration:5000,iterations:Infinity,easing:'ease-in-out'});
   haptic('success');
-  // the timeline unfolds slowly: step 1 fades in and its tick draws, the green line grows to step 2,
-  // step 2 fades in and starts to breathe, then step 3 appears. Opacity only, no jumps.
-  const line=$('.urtl .line i',v), items=[...v.querySelectorAll('.ti')], soft='cubic-bezier(.4,0,.2,1)';
-  const fade=(el,ms=700)=>anim(el,[{opacity:0},{opacity:1}],ms,soft);
-  await wait(450); if(!alive(t))return;
-  fade(items[0]);
-  const tick=$('.ti.done .d svg path',v); if(tick){ tick.style.strokeDasharray=24; anim(tick,[{strokeDashoffset:24},{strokeDashoffset:0}],600,soft,{delay:250*K}); }
-  await wait(700); if(!alive(t))return;
-  await anim(line,[{transform:'scaleY(0)'},{transform:'scaleY(1)'}],1100,soft); if(!alive(t))return;
-  fade(items[1]);
-  $('.ti.now .d i',v).animate([{transform:'scale(.7)',opacity:.9},{transform:'scale(1.9)',opacity:0}],{duration:2400,iterations:Infinity,easing:'ease-out',delay:400});
-  await wait(600); if(!alive(t))return;
-  fade(items[2],900);
+  // the timeline is drawn like one pen line that never leaves the paper:
+  // circle 1 → tick → line down → circle 2 → its dot → line down → circle 3. Each step's text fades in as the pen reaches it.
+  const tl=$('.urtl',v), svg=$('.pen',v), items=[...v.querySelectorAll('.ti')];
+  const tr=tl.getBoundingClientRect(), q=ratio();
+  const cy=items.map(it=>{ const r=it.querySelector('.d').getBoundingClientRect(); return (r.top+r.height/2-tr.top)/q; });
+  const H=cy[2]+14; svg.setAttribute('height',H); svg.setAttribute('viewBox',`0 0 24 ${H}`);
+  const R=10.5, CR=2*Math.PI*R, NS='http://www.w3.org/2000/svg';
+  const el=(tag,attrs)=>{ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); svg.appendChild(e); return e; };
+  const ring=(y,col)=>el('circle',{cx:12,cy:y,r:R,fill:'none',stroke:col,'stroke-width':2,'stroke-dasharray':CR,'stroke-dashoffset':CR,transform:`rotate(-90 12 ${y})`,'stroke-linecap':'round'});
+  const seg=(y1,y2,col)=>el('line',{x1:12,y1,x2:12,y2,stroke:col,'stroke-width':2,'stroke-dasharray':y2-y1,'stroke-dashoffset':y2-y1,'stroke-linecap':'round'});
+  const pen='cubic-bezier(.45,0,.55,1)';
+  const draw=(e,len,ms)=>anim(e,[{strokeDashoffset:len},{strokeDashoffset:0}],ms,pen);
+  const fade=(n,ms=600)=>anim(n,[{opacity:0},{opacity:1}],ms,'cubic-bezier(.4,0,.2,1)');
+  const G='#1E8E3E', B='#1A5FB4', L='#C9D3D9';
+  const c1=ring(cy[0],G), fill1=el('circle',{cx:12,cy:cy[0],r:R,fill:G,opacity:0});
+  const tick=el('path',{d:`M7.5 ${cy[0]+.3}l3 3 6-6.2`,fill:'none',stroke:'#fff','stroke-width':2.2,'stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':14,'stroke-dashoffset':14});
+  const s1=seg(cy[0]+R+1,cy[1]-R-1,G), c2=ring(cy[1],B);
+  const dot=el('circle',{cx:12,cy:cy[1],r:4,fill:B,opacity:0}), halo=el('circle',{cx:12,cy:cy[1],r:4,fill:B,opacity:0});
+  const s2=seg(cy[1]+R+1,cy[2]-R-1,L), c3r=ring(cy[2],L);
+  await wait(400); if(!alive(t))return;
+  fade(items[0]); await draw(c1,CR,750); if(!alive(t))return;
+  anim(fill1,[{opacity:0},{opacity:1}],300,'ease'); await draw(tick,14,380); if(!alive(t))return;
+  await draw(s1,cy[1]-cy[0]-2*R-2,900); if(!alive(t))return;
+  fade(items[1]); await draw(c2,CR,750); if(!alive(t))return;
+  await anim(dot,[{opacity:0},{opacity:1}],350,'ease'); if(!alive(t))return;
+  halo.animate([{r:4,opacity:.45},{r:10,opacity:0}],{duration:2400,iterations:Infinity,easing:'ease-out'});
+  await draw(s2,cy[2]-cy[1]-2*R-2,800); if(!alive(t))return;
+  fade(items[2],700); await draw(c3r,CR,700); if(!alive(t))return;
   const nt=$('#nt',v); anim(nt,[{opacity:0},{opacity:1}],700,'ease');
   nt.onclick=()=>{
     if(nt.classList.contains('on')) return;
@@ -1252,14 +1311,14 @@ async function autopilot(){
   try{
     await tapEl('[data-i="1"]',t,1600);
     if(f.manual){ await tapEl('#man',t,2200); await waitFor('#go:not([disabled])',t); await tapEl('#go',t,1000); return; }
-    await tapEl('#scan',t,2400);
+    await tapEl('#scan',t,6800);          // let the tips play out on the example card first
     if(f.expired){ await waitFor('#exSc',t); return; }
     if(f.expiredFirst){ await tapEl('#exSc',t,3200); }
     if(f.unsure){ await tapEl('#fix',t,1600); const inp=await waitFor('#ein',t); await wait(900); inp.value+='9'; inp.dispatchEvent(new Event('input'));
       await wait(700); inp.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'})); }
     await waitFor('#go:not([disabled])',t);
     await tapEl('#go',t,1500);
-    await tapEl('#nt',t,3200);
+    await tapEl('#nt',t,6200);            // after the timeline has finished drawing
     await tapEl('#urGo',t,2200);
   }catch(e){}
 }
