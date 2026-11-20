@@ -164,14 +164,14 @@ input{font:inherit;color:inherit}
 .st-todo .ic{background:var(--bg);color:#8395A2}
 .item.next{border-color:#AEBBC6;box-shadow:0 6px 16px -10px rgba(31,42,55,.35)}
 /* intro hero */
-.hero-card{position:relative;width:296px;height:194px;margin:22px auto 4px;perspective:900px}
-.hc-card{position:absolute;left:14px;top:14px;width:268px;height:169px;border-radius:10px;overflow:hidden;transform:rotate(-1.5deg);box-shadow:0 16px 28px -14px rgba(16,24,40,.42),0 1px 3px rgba(16,24,40,.18)}
+.hero-card{position:relative;width:296px;height:203px;margin:20px auto 4px}
+.hc-card{position:absolute;left:22px;top:22px;width:252px;height:159px;border-radius:9px;overflow:hidden;box-shadow:0 16px 28px -14px rgba(16,24,40,.42),0 1px 3px rgba(16,24,40,.18)}
 .hc-card .face{position:absolute;inset:0}
 .hc-frame{position:absolute;inset:0;width:100%;height:100%}
 .hc-beam{position:absolute;left:0;right:0;top:0;height:2px;opacity:0;mix-blend-mode:screen;background:linear-gradient(90deg,rgba(60,255,140,0),#B8FFD2 20%,#EFFFF4 50%,#B8FFD2 80%,rgba(60,255,140,0));box-shadow:0 0 6px 1px rgba(40,230,120,.85)}
 .hc-beam::before{content:"";position:absolute;left:0;right:0;bottom:2px;height:40px;background:linear-gradient(to top,rgba(40,230,120,.16),rgba(40,230,120,0))}
-.chips{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;margin-top:18px}
-.chips span{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 10px 6px 8px;font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px 6px;justify-content:center;margin-top:18px}
+.chips span{display:inline-flex;letter-spacing:-.1px;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 10px 6px 8px;font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap}
 .chips svg{width:15px;height:15px;color:var(--violet);flex:none}
 body.rec.bare .foot{padding-bottom:12px}
 /* pen-drawn timeline */
@@ -179,8 +179,11 @@ body.rec.bare .foot{padding-bottom:12px}
 .urtl .ti .d{border-color:transparent!important;background:transparent!important}
 .urtl .ti .d::after,.urtl .ti .d i{display:none}
 /* tips story on the intro card */
-.hc-surface{position:absolute;inset:4px;border-radius:10px;opacity:0;background:radial-gradient(120% 90% at 30% 20%,#4A4038 0%,#2E2824 55%,#1E1A17 100%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
-.hc-wash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 80% at 62% 40%,rgba(255,255,255,.95),rgba(255,255,255,.7) 45%,rgba(255,255,255,.35) 80%);mix-blend-mode:screen}
+.hc-surface{position:absolute;inset:10px;border-radius:21px;background:#E3E8EC;transition:background calc(1900ms*var(--k)) cubic-bezier(.45,0,.55,1)}
+.hc-surface.dark{background:#2C3136}
+.hc-dim{position:absolute;inset:10px;border-radius:21px;background:#0E1114;opacity:.72;pointer-events:none}
+.hc-warm{position:absolute;inset:10px;border-radius:21px;background:radial-gradient(80% 80% at 50% 30%,#FFB86B,rgba(255,184,107,0));mix-blend-mode:soft-light;pointer-events:none}
+.hc-wash-unused{position:absolute;inset:0;pointer-events:none;background:radial-gradient(70% 80% at 62% 40%,rgba(255,255,255,.95),rgba(255,255,255,.7) 45%,rgba(255,255,255,.35) 80%);mix-blend-mode:screen}
 .hc-frame path{transition:stroke calc(400ms*var(--k)) ease}
 .hc-frame.ok path{stroke:#1E8E3E}
 .chips span i{display:inline-grid;place-items:center;width:16px;height:16px;font-style:normal}
@@ -757,10 +760,10 @@ const itemInner=(i,st)=>`<span class="ic">${STEP_IC[i]}${BADGE[st]||''}</span><s
 const item=(i,st)=>`<button class="item ${STATE[st][0]} ${st==='next'?'next':''}" data-i="${i}">${itemInner(i,st)}</button>`;
 async function morph(el,i,st){
   const parts=[...el.querySelectorAll('.ic,.tx,.go,.chev')];
-  await Promise.all(parts.map(p=>anim(p,[{opacity:1,transform:'none'},{opacity:0,transform:'translateY(-3px)'}],160,EASE.accel)));
+  await Promise.all(parts.map(p=>anim(p,[{opacity:1},{opacity:0}],260,'cubic-bezier(.4,0,.2,1)')));
   el.className=`item ${STATE[st][0]} ${st==='next'?'next':''}`; el.innerHTML=itemInner(i,st);
-  anim($('.ic',el),[{opacity:0},{opacity:1}],200,EASE.std); const bd=$('.bdg',el); if(bd) anim(bd,[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:120*K});
-  el.querySelectorAll('.tx,.go,.chev').forEach(p=>anim(p,[{opacity:0,transform:'translateY(4px)'},{opacity:1,transform:'none'}],320,EASE.decel));
+  anim($('.ic',el),[{opacity:0},{opacity:1}],420,'cubic-bezier(.4,0,.2,1)'); const bd=$('.bdg',el); if(bd) anim(bd,[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:120*K});
+  el.querySelectorAll('.tx,.go,.chev').forEach(p=>anim(p,[{opacity:0},{opacity:1}],480,'cubic-bezier(.4,0,.2,1)'));
 }
 function ring(frac,label){
   const c=2*Math.PI*24;
@@ -785,16 +788,16 @@ async function checklist(saved=false, dir='fade'){
   });
   if(!saved) return;
   // sequenced feedback: status → ring → highlight → toast
-  await wait(250); if(!alive(t))return;
-  const lic=$('[data-i="1"]',v), nxt=$('[data-i="2"]',v);
-  await morph(lic,1,'rev'); haptic('success'); if(!alive(t))return;
-  const arc=$('.arc',v), c=2*Math.PI*24;
-  anim(arc,[{strokeDashoffset:c*.9},{strokeDashoffset:c*.8}],900,EASE.inout);
-  setTimeout(()=>{ if(!alive(t))return; $('.rl',v).textContent='2/10'; $('#sumt',v).textContent='2 of 10 steps sent';
-    anim($('#sumt',v),[{opacity:0,transform:'translateY(4px)'},{opacity:1,transform:'none'}],320,EASE.decel); },450*K);
   await wait(500); if(!alive(t))return;
-  await morph(nxt,2,'next');
-  await wait(200); if(!alive(t))return;
+  const lic=$('[data-i="1"]',v), nxt=$('[data-i="2"]',v);
+  await morph(lic,1,'rev'); haptic('success'); if(!alive(t))return;         // 1 · the licence turns blue
+  await wait(600); if(!alive(t))return;
+  const arc=$('.arc',v), c=2*Math.PI*24;                                     // 2 · the ring fills, the counter changes
+  const tx=$('#sumt',v); anim(tx,[{opacity:1},{opacity:0}],250,EASE.accel).then(()=>{ $('.rl',v).textContent='2/10'; tx.textContent='2 of 10 steps sent'; anim(tx,[{opacity:0},{opacity:1}],450,'cubic-bezier(.4,0,.2,1)'); });
+  await anim(arc,[{strokeDashoffset:c*.9},{strokeDashoffset:c*.8}],1100,'cubic-bezier(.4,0,.2,1)'); if(!alive(t))return;
+  await wait(500); if(!alive(t))return;
+  await morph(nxt,2,'next'); if(!alive(t))return;                            // 3 · the next step lights up
+  await wait(1100); if(!alive(t))return;                                     // 4 · only then, the toast
   toast(`${ICON.check}<span><b>Licence sent for review.</b> Progress is saved, you can come back anytime.</span>`);
 }
 
@@ -806,10 +809,11 @@ async function licenceIntro(dir='push'){
     <p class="lead">By law, we need your licence details. Scan both sides and we’ll fill them in for you.</p>
     <div class="hero-card" aria-hidden="true">
       <div class="hc-surface"></div>
-      <div class="hc-card"><div class="face">${cardFront('2029/06/14')}</div><div class="hc-wash"></div><div class="hc-beam"></div></div>
-      <svg class="hc-frame" viewBox="0 0 296 194" fill="none" stroke="#1F2A37" stroke-width="3" stroke-linecap="round"><path d="M2 26V12A10 10 0 0 1 12 2H26"/><path d="M270 2H284A10 10 0 0 1 294 12V26"/><path d="M2 168V182A10 10 0 0 0 12 192H26"/><path d="M270 192H284A10 10 0 0 0 294 182V168"/></svg>
+      <div class="hc-card"><div class="face">${cardFront('2029/06/14')}</div><div class="hc-beam"></div></div>
+      <div class="hc-dim"></div><div class="hc-warm"></div>
+      <svg class="hc-frame" viewBox="0 0 296 203" fill="none" stroke="#1F2A37" stroke-width="3" stroke-linecap="round"><path d="M1.5 36V29.5A28 28 0 0 1 29.5 1.5H36"/><path d="M260 1.5H266.5A28 28 0 0 1 294.5 29.5V36"/><path d="M1.5 167V173.5A28 28 0 0 0 29.5 201.5H36"/><path d="M260 201.5H266.5A28 28 0 0 0 294.5 173.5V167"/></svg>
     </div>
-    <div class="chips"><span data-c="0"><i>${ICON.sun}</i>Good light</span><span data-c="1"><i>${ICON.surface}</i>Dark surface</span><span data-c="2"><i>${ICON.hand}</i>Hold still</span></div>
+    <div class="chips"><span data-c="0"><i>${ICON.sun}</i>Good light</span><span data-c="1"><i>${ICON.surface}</i>Contrasting surface</span><span data-c="2"><i>${ICON.hand}</i>Hold still</span></div>
     <p class="privacy">${ICON.lock}<span>Only used to check you can drive with Uride</span></p>
   </div>
   <div class="foot">
@@ -829,30 +833,29 @@ async function licenceIntro(dir='push'){
    washed-out card → good light; pale table → dark surface; card moving → hold still */
 async function tipsStory(v){
   const t=RUN, my=(v._story=(v._story||0)+1), ok=()=>alive(t)&&v._story===my&&v.isConnected;
-  const card=$('.hc-card',v), wash=$('.hc-wash',v), surf=$('.hc-surface',v), frame=$('.hc-frame',v), chips=[...v.querySelectorAll('.chips span')];
-  const soft='cubic-bezier(.4,0,.2,1)';
-  if(v._hand) v._hand.stop();
-  card.getAnimations().forEach(a=>a.cancel()); [wash,surf,frame].forEach(e=>e.getAnimations().forEach(a=>a.cancel()));
+  const card=$('.hc-card',v), surf=$('.hc-surface',v), dim=$('.hc-dim',v), warm=$('.hc-warm',v), frame=$('.hc-frame',v), chips=[...v.querySelectorAll('.chips span')];
+  const calm='cubic-bezier(.45,0,.55,1)';
+  [card,surf,dim,warm,frame].forEach(e=>e.getAnimations().forEach(a=>a.cancel()));
   chips.forEach(c=>{ c.classList.remove('done'); c.querySelector('i').innerHTML=[ICON.sun,ICON.surface,ICON.hand][+c.dataset.c]; });
-  frame.classList.remove('ok'); wash.style.opacity=1; surf.style.opacity=0;
-  const base='rotate(-6deg) scale(1.07) ';
-  v._hand=hand(card,base); v._hand.shake(true);
+  frame.classList.remove('ok'); dim.style.opacity=.72; warm.style.opacity=0; surf.classList.remove('dark'); card.style.filter=''; card.style.transform='';
   const done=async i=>{ const c=chips[i], ic=c.querySelector('i');
-    c.classList.add('done'); await anim(ic,[{transform:'scale(1)',opacity:1},{transform:'scale(.4)',opacity:0}],140,EASE.accel);
-    ic.innerHTML=ICON.check; anim(ic,[{transform:'scale(.4)',opacity:0},{transform:'scale(1)',opacity:1}],SPR.pop); };
+    c.classList.add('done'); await anim(ic,[{opacity:1},{opacity:0}],220,calm);
+    ic.innerHTML=ICON.check; anim(ic,[{transform:'scale(.6)',opacity:0},{transform:'scale(1)',opacity:1}],SPR.pop); };
   await wait(900); if(!ok()) return;
-  // 1 · good light: the glare fades and the card gets its colours back
-  anim(wash,[{opacity:1},{opacity:0}],1100,soft); wash.style.opacity=0; done(0);
-  await wait(1500); if(!ok()) return;
-  // 2 · dark surface: a dark table appears under the card, the edges stand out
-  anim(surf,[{opacity:0},{opacity:1}],1100,soft); surf.style.opacity=1; done(1);
-  await wait(1500); if(!ok()) return;
-  // 3 · hold still: the movement calms down, the card settles straight inside the frame
-  v._hand.settle(); await wait(700); if(!ok()) return; v._hand.stop();
-  await anim(card,[{transform:base},{transform:'rotate(0deg) scale(1)'}],SPR.settle); if(!ok()) return;
+  // 1 · good light: like an old bulb warming up. Slow start, warm tint, then clear even light
+  anim(warm,[{opacity:0},{opacity:.22,offset:.45},{opacity:0}],2200,calm);
+  await anim(dim,[{opacity:.72},{opacity:.5,offset:.35},{opacity:0}],2000,'cubic-bezier(.6,0,.35,1)'); dim.style.opacity=0; if(!ok()) return;
+  done(0);
+  await wait(900); if(!ok()) return;
+  // 2 · contrasting surface: the table under the card slowly gets darker, the card edges stand out
+  surf.classList.add('dark'); done(1);
+  await wait(1900); if(!ok()) return;
+  // 3 · hold still: the card drifts and goes a little out of focus, then comes back sharp and settles straight
+  await anim(card,[{transform:'rotate(0deg)',filter:'blur(0px)'},{transform:'rotate(-3.5deg) translate(-3px,2px)',filter:'blur(1.6px)'}],1100,calm); if(!ok()) return;
+  await anim(card,[{transform:'rotate(-3.5deg) translate(-3px,2px)',filter:'blur(1.6px)'},{transform:'rotate(0deg)',filter:'blur(0px)'}],1400,calm); if(!ok()) return;
   frame.classList.add('ok'); done(2);
-  const hb=$('.hc-beam',v); await wait(400); if(!ok()) return;
-  hb.animate([{transform:'translateY(-10px)',opacity:0},{opacity:.9,offset:.1},{opacity:.9,offset:.88},{transform:'translateY(172px)',opacity:0}],{duration:2000*K,easing:'linear'});
+  const hb=$('.hc-beam',v); await wait(500); if(!ok()) return;
+  hb.animate([{transform:'translateY(-10px)',opacity:0},{opacity:.9,offset:.1},{opacity:.9,offset:.88},{transform:'translateY(160px)',opacity:0}],{duration:2000*K,easing:'linear'});
 }
 
 /* ================= camera ================= */
@@ -864,7 +867,7 @@ function setHint(el,txt){ el.textContent=txt; anim(el,[{opacity:0},{opacity:1}],
 /* the card is held by a hand: slow drift from two low-frequency waves, a tremor that fades in and out,
    and a settle that eases the movement to zero (no jump between two transforms) */
 function hand(c3,base=''){
-  let amp=1,ampT=1,tr=0,trT=0,run=true,t=0,last=performance.now(),cb=null;
+  let amp=0,ampT=1,tr=0,trT=0,run=true,t=0,last=performance.now(),cb=null;
   function frame(now){ if(!run||!c3.isConnected) return; const dt=Math.min(.05,(now-last)/1000); last=now; if(!PAUSED) t+=dt/K;
     amp+=(ampT-amp)*Math.min(1,dt*3.2/K); tr+=(trT-tr)*Math.min(1,dt*2.4/K);
     const x=amp*(1.8*Math.sin(t*.9)+.9*Math.sin(t*2.1+1.3)) + tr*(2.4*Math.sin(t*9.7)+1.5*Math.sin(t*14.3+2));
@@ -893,7 +896,7 @@ async function camera(retry=false){
     <div class="guide" id="gd"><svg width="312" height="197" viewBox="0 0 312 197" overflow="visible" fill="none" stroke-width="3.5" stroke-linecap="round">
       <path class="cn tl" d="M-2 24V12A14 14 0 0 1 12 -2H26"/><path class="cn tr" d="M286 -2H300A14 14 0 0 1 314 12V24"/>
       <path class="cn bl" d="M-2 173V185A14 14 0 0 0 12 199H26"/><path class="cn br" d="M286 199H300A14 14 0 0 0 314 185V173"/></svg></div>
-    <p class="camhint" id="ch">Use a dark surface and avoid direct light</p>
+    <p class="camhint" id="ch">Use a plain, contrasting surface and avoid direct light</p>
     <div class="autolabel" id="al">Auto-capture is on</div>
     <div class="shutterbar"><button class="camctl" id="flb" aria-label="Flash: Auto"><span class="cc">${FLASH[FLASH_MODE]}</span><small>${FLASH_MODE[0].toUpperCase()+FLASH_MODE.slice(1)}</small></button>
       <button class="shutter" id="sh" aria-label="Take photo"><svg width="76" height="76"><circle cx="38" cy="38" r="35" stroke="rgba(255,255,255,.45)" stroke-width="4" fill="none"/><circle id="prog" cx="38" cy="38" r="35" stroke="#5BD17E" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/></svg><span class="core"></span></button>
@@ -911,21 +914,23 @@ async function camera(retry=false){
   await wait(700); if(!alive(t))return;
   // the card is brought in by a hand: decelerates and settles, no bounce
   // (opacity lives on the wrapper: opacity on the 3D element would flatten the flip)
-  cwr.style.transition=`opacity ${400*K}ms ${EASE.std}`; cwr.style.opacity=1;
-  await anim(c3,[{transform:'translate(30px,260px) rotate(-12deg) scale(.86)'},{transform:'translate(0,0) rotate(0deg) scale(1)'}],1200,EASE.decel);
+  cwr.style.transition=`opacity ${900*K}ms ${EASE.std}`; cwr.style.opacity=1;
+  await anim(c3,[{transform:'translate(20px,170px) rotate(-8deg) scale(.92)'},{transform:'translate(0,0) rotate(0deg) scale(1)'}],1500,EASE.decel);
   if(!alive(t))return;
   let drift=hand(c3,'');
   if(cardOld){
     await lockAndCapture(v,drift,'front',t); if(!alive(t))return;
     const ok = await expiredSheet(v,t); if(!alive(t)||!ok) return;
     // the old card leaves, the new one comes in
-    await anim(cwr,[{transform:'none',opacity:1},{transform:'translate(-40px,280px) rotate(10deg)',opacity:0}],520,EASE.accel); if(!alive(t))return;
+    drift.settle(); await anim(cwr,[{transform:'none',opacity:1},{transform:'translate(-24px,150px) rotate(6deg)',opacity:0}],1100,'cubic-bezier(.45,0,.55,1)'); if(!alive(t))return;
     cwr.getAnimations().forEach(a=>a.cancel()); drift.stop(); c3.getAnimations().forEach(a=>a.cancel());
     cardOld=false; $('.art',v).innerHTML=cardFront(EXP(),{holo:f.unsure});
     gd.classList.remove('locked','warn'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
-    setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a dark surface and avoid direct light');
-    await wait(500); if(!alive(t))return;
-    await anim(c3,[{transform:'translate(30px,260px) rotate(-12deg) scale(.86)'},{transform:'translate(0,0) rotate(0deg) scale(1)'}],1200,EASE.decel); if(!alive(t))return;
+    setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a plain, contrasting surface and avoid direct light');
+    cwr.style.transition='none'; cwr.style.opacity=0;
+    await wait(400); if(!alive(t))return;
+    cwr.style.transition=`opacity ${900*K}ms ${EASE.std}`; cwr.style.opacity=1;
+    await anim(c3,[{transform:'translate(20px,170px) rotate(-8deg) scale(.92)'},{transform:'translate(0,0) rotate(0deg) scale(1)'}],1500,EASE.decel); if(!alive(t))return;
     drift=hand(c3,'');
   }
   await issues(v,'front',drift,t); if(!alive(t))return;
@@ -950,7 +955,7 @@ async function camera(retry=false){
 /* camera controls: flash cycles like the iOS camera, tips pause the flow */
 const TIPS=[
   [ICON.sun,'Bright, even light. No lamp right above'],
-  [ICON.surface,'A dark, flat surface under the card'],
+  [ICON.surface,'A plain surface that contrasts with the card'],
   [ICON.hand,'Hold still. We take the photo for you'],
 ];
 function camChip(v,txt){ const chip=$('#cchip',v); if(!chip) return; chip.textContent=txt; chip.getAnimations().forEach(a=>a.cancel());
@@ -1014,17 +1019,18 @@ async function issues(v,side,drift,t){
     spec('glare');
     // the card drifts into the lamp's reflection: the hot spot grows over the name and dates
     const core=$('.core',gl), sheen=$('.sheen',gl);
-    anim(cw,[{transform:'none'},{transform:'perspective(700px) rotateY(-5deg) rotateX(-3deg)'}],900,EASE.inout);
-    anim(core,[{transform:'translate(60px,-30px) scale(.6)'},{transform:'translate(0,0) scale(1)'}],900,EASE.inout);
-    await anim(gl,[{opacity:0},{opacity:1}],900,EASE.inout); if(!alive(t))return;
+    anim(cw,[{transform:'none'},{transform:'perspective(700px) rotateY(-5deg) rotateX(-3deg)'}],1400,EASE.inout);
+    anim(core,[{transform:'translate(70px,-34px) scale(.6)'},{transform:'translate(0,0) scale(1)'}],1400,EASE.inout);
+    await anim(gl,[{opacity:0},{opacity:1}],1400,EASE.inout); if(!alive(t))return;
     gd.classList.add('warn'); setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); haptic('warning');
     setHint(ch,'The light is reflecting on the card');
-    await wait(3600); if(!alive(t))return;
+    await wait(2600); if(!alive(t))return;
     // the driver tilts the card: the reflection travels to the edge of the card and fades,
     // it never leaves the card, because it is a reflection on the card's surface
-    anim(cw,[{transform:'perspective(700px) rotateY(-5deg) rotateX(-3deg)'},{transform:'perspective(700px) rotateY(4deg) rotateX(6deg)',offset:.55},{transform:'none'}],1800,EASE.inout);
-    anim(sheen,[{opacity:1,transform:'translateX(0)'},{opacity:.25,transform:'translateX(60px)'}],1800,EASE.inout);
-    await anim(core,[{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate(-120px,62px) scale(.55)',opacity:.12}],1800,EASE.inout); if(!alive(t))return;
+    const D2=2200, glide='cubic-bezier(.45,0,.55,1)';
+    anim(cw,[{transform:'perspective(700px) rotateY(-5deg) rotateX(-3deg)'},{transform:'perspective(700px) rotateY(4deg) rotateX(6deg)',offset:.55},{transform:'none'}],D2,glide);
+    anim(sheen,[{opacity:1,transform:'translate(0,0)'},{opacity:.6,transform:'translate(-60px,40px)',offset:.6},{opacity:0,transform:'translate(-110px,70px)'}],D2,glide);
+    await anim(core,[{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate(-130px,70px) scale(.85)',opacity:.85,offset:.6},{transform:'translate(-230px,120px) scale(.7)',opacity:0}],D2,glide); if(!alive(t))return;
     gd.classList.remove('warn'); setPill(pill,'',`<span>That’s better</span>`); setHint(ch,'Keep it there');
     await wait(200);
   }
@@ -1036,7 +1042,7 @@ async function issues(v,side,drift,t){
     await wait(700); if(!alive(t))return;
     gd.classList.add('warn'); setPill(pill,'warn',`${ICON.hand}<span>Hold your phone steady</span>`);
     setHint(ch,'Rest your elbows on the table if you can');
-    await wait(3000); if(!alive(t))return;
+    await wait(2400); if(!alive(t))return;
     drift.shake(false);                                 // the hand calms down, the image sharpens with it
     await wait(1400); if(!alive(t))return; drift.onFrame(null); face.style.filter='';
     gd.classList.remove('warn'); setPill(pill,'',`<span>Sharp. Keep still</span>`);
@@ -1220,24 +1226,24 @@ async function underReview(){
   const R=10.5, CR=2*Math.PI*R, NS='http://www.w3.org/2000/svg';
   const el=(tag,attrs)=>{ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); svg.appendChild(e); return e; };
   const ring=(y,col)=>el('circle',{cx:12,cy:y,r:R,fill:'none',stroke:col,'stroke-width':2,'stroke-dasharray':CR,'stroke-dashoffset':CR,transform:`rotate(-90 12 ${y})`,'stroke-linecap':'round'});
-  const seg=(y1,y2,col)=>el('line',{x1:12,y1,x2:12,y2,stroke:col,'stroke-width':2,'stroke-dasharray':y2-y1,'stroke-dashoffset':y2-y1,'stroke-linecap':'round'});
+  const seg=(y1,y2,col)=>el('line',{x1:12,y1,x2:12,y2,stroke:col,'stroke-width':2,'stroke-dasharray':y2-y1,'stroke-dashoffset':y2-y1,'stroke-linecap':'butt'});
   const pen='cubic-bezier(.45,0,.55,1)';
   const draw=(e,len,ms)=>anim(e,[{strokeDashoffset:len},{strokeDashoffset:0}],ms,pen);
   const fade=(n,ms=600)=>anim(n,[{opacity:0},{opacity:1}],ms,'cubic-bezier(.4,0,.2,1)');
   const G='#1E8E3E', B='#1A5FB4', L='#C9D3D9';
   const c1=ring(cy[0],G), fill1=el('circle',{cx:12,cy:cy[0],r:R,fill:G,opacity:0});
   const tick=el('path',{d:`M7.5 ${cy[0]+.3}l3 3 6-6.2`,fill:'none',stroke:'#fff','stroke-width':2.2,'stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':14,'stroke-dashoffset':14});
-  const s1=seg(cy[0]+R+1,cy[1]-R-1,G), c2=ring(cy[1],B);
+  const s1=seg(cy[0]+R+2,cy[1]-R-2,G), c2=ring(cy[1],B);
   const dot=el('circle',{cx:12,cy:cy[1],r:4,fill:B,opacity:0}), halo=el('circle',{cx:12,cy:cy[1],r:4,fill:B,opacity:0});
-  const s2=seg(cy[1]+R+1,cy[2]-R-1,L), c3r=ring(cy[2],L);
+  const s2=seg(cy[1]+R+2,cy[2]-R-2,L), c3r=ring(cy[2],L);
   await wait(400); if(!alive(t))return;
   fade(items[0]); await draw(c1,CR,750); if(!alive(t))return;
   anim(fill1,[{opacity:0},{opacity:1}],300,'ease'); await draw(tick,14,380); if(!alive(t))return;
-  await draw(s1,cy[1]-cy[0]-2*R-2,900); if(!alive(t))return;
+  await draw(s1,cy[1]-cy[0]-2*R-4,900); if(!alive(t))return;
   fade(items[1]); await draw(c2,CR,750); if(!alive(t))return;
   await anim(dot,[{opacity:0},{opacity:1}],350,'ease'); if(!alive(t))return;
   halo.animate([{r:4,opacity:.45},{r:10,opacity:0}],{duration:2400,iterations:Infinity,easing:'ease-out'});
-  await draw(s2,cy[2]-cy[1]-2*R-2,800); if(!alive(t))return;
+  await draw(s2,cy[2]-cy[1]-2*R-4,800); if(!alive(t))return;
   fade(items[2],700); await draw(c3r,CR,700); if(!alive(t))return;
   const nt=$('#nt',v); anim(nt,[{opacity:0},{opacity:1}],700,'ease');
   nt.onclick=()=>{
@@ -1311,7 +1317,7 @@ async function autopilot(){
   try{
     await tapEl('[data-i="1"]',t,1600);
     if(f.manual){ await tapEl('#man',t,2200); await waitFor('#go:not([disabled])',t); await tapEl('#go',t,1000); return; }
-    await tapEl('#scan',t,6800);          // let the tips play out on the example card first
+    await tapEl('#scan',t,8600);          // let the tips play out on the example card first
     if(f.expired){ await waitFor('#exSc',t); return; }
     if(f.expiredFirst){ await tapEl('#exSc',t,3200); }
     if(f.unsure){ await tapEl('#fix',t,1600); const inp=await waitFor('#ein',t); await wait(900); inp.value+='9'; inp.dispatchEvent(new Event('input'));
