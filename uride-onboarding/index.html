@@ -151,6 +151,12 @@ input{font:inherit;color:inherit}
   background:linear-gradient(90deg,rgba(120,180,255,0),#DDEBFF 18%,#fff 50%,#DDEBFF 82%,rgba(120,180,255,0));
   box-shadow:0 0 8px 2px rgba(70,150,255,.8),0 0 26px 8px rgba(70,150,255,.3)}
 .beam::before{content:"";position:absolute;left:0;right:0;bottom:2px;height:64px;background:linear-gradient(to top,rgba(70,150,255,.24),rgba(70,150,255,0))}
+.study{position:fixed;inset:0;z-index:300;background:rgba(16,20,24,.55);display:flex;align-items:flex-end;justify-content:center}
+.study .sheet{background:#fff;width:100%;max-width:440px;border-radius:22px 22px 0 0;padding:22px 20px 30px;color:var(--body)}
+.study h3{font-size:20px;line-height:26px;color:var(--ink);margin-bottom:10px}
+.study p{font-size:15px;line-height:22px;margin-bottom:10px}
+.study p.small{font-size:12.5px;line-height:18px;color:var(--muted)}
+.study .go{margin-top:8px;width:100%;height:50px;border-radius:14px;background:var(--ink);color:#fff;font-weight:700;font-size:17px}
 /* director menu */
 .dir{position:fixed;inset:0;z-index:200;background:rgba(16,20,24,.45);display:none;align-items:flex-end;justify-content:center}
 .dir.on{display:flex}
@@ -429,6 +435,9 @@ const GHOST='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgH
 let K = 1;                                   // pace multiplier (1 = real time)
 const $ = (s, r=document) => r.querySelector(s);
 const screen = $('#screen');
+const STUDY = new URLSearchParams(location.search).has('study');
+const T0 = {t:0};
+function ptrack(name,params={}){ if(!STUDY) return; try{ (window.track && window.track!==ptrack) && window.track(name,Object.assign({scenario:scenario},params)); }catch(e){} }
 let PAUSED=false;                    // e.g. while the camera tips are open
 const wait = ms => new Promise(r=>{ let left=ms*K, last=performance.now();
   (function tick(){ const now=performance.now(); if(!PAUSED) left-=now-last; last=now; if(left<=0) r(); else setTimeout(tick,Math.min(40,left)); })(); });
@@ -613,6 +622,8 @@ async function show(html, dir='push', dark=false){
   screen.insertBefore(v, $('#sb'));
   $('#sb').classList.toggle('dark',dark); $('#hb').classList.toggle('light',dark);
   const old=current; current=v;
+  if(STUDY){ const nm=(v.querySelector('h1')&&v.querySelector('h1').textContent.trim())||(v.querySelector('.cam')?'Camera':v.querySelector('.ur')?'Under review':'?');
+    ptrack('proto_screen',{screen:nm, t:T0.t?Math.round((performance.now()-T0.t)/1000):0}); try{ window.clarity&&window.clarity('set','proto_screen',nm);}catch(e){} }
   if(old){
     if(dir==='push'){
       anim(old,[{transform:'translateX(0)',filter:'brightness(1)'},{transform:'translateX(-25%)',filter:'brightness(.94)'}],SPR.push);
@@ -673,6 +684,9 @@ function pressUp(el){
   el._pa = el.animate([{transform:cur==='none'?'scale(.97)':cur},{transform:'scale(1)'}],{duration:SPR.release.ms*K,easing:SPR.release.e});
 }
 screen.addEventListener('pointerdown',e=>{
+  if(STUDY){ const el=e.target.closest(PRESSABLE+',input,button,a,[onclick]');
+    const lbl=el?(el.id||el.getAttribute('aria-label')||el.textContent.trim().slice(0,32)):((e.target.closest('[class]')||{}).className||'').toString().split(' ')[0];
+    ptrack('proto_tap',{target:lbl, interactive:!!el, screen:(current&&current.querySelector('h1')&&current.querySelector('h1').textContent.trim())||(current&&current.querySelector('.cam')?'Camera':'')}); if(!T0.t) T0.t=performance.now(); }
   const r=screen.getBoundingClientRect(), q=ratio();
   tapRing((e.clientX-r.left)/q,(e.clientY-r.top)/q);
   const el=e.target.closest(PRESSABLE); if(!el) return; pressDown(el);
@@ -1087,6 +1101,7 @@ async function underReview(){
   </div>
   <div class="foot"><button class="btn primary" id="urGo">Continue registration</button><p class="help">Next: Work eligibility · 8 steps left, about 15 min</p></div>`;
   const v=await show(html,'fade');
+  ptrack('proto_complete',{seconds:T0.t?Math.round((performance.now()-T0.t)/1000):0});
   if(screen.clientHeight<720) $('.ur',v).classList.add('compact');
   $('#urGo',v).onclick=()=>checklist(true,'pop');
   // the photo carries over from "Check details" and settles into the middle
@@ -1243,9 +1258,23 @@ function fit(){
   const w=innerWidth-16; d.style.zoom=w<392?(w/392):'';
 }
 addEventListener('resize',fit); fit();
+if(STUDY){
+  if(!REC){ document.body.classList.add('rec'); if(innerWidth<600) document.body.classList.add('bare'); fit(); }
+  scenario='story'; AUTO=false; markScen();
+  const ov=document.createElement('div'); ov.className='study';
+  ov.innerHTML=`<div class="sheet"><h3>Thanks for helping me test</h3>
+    <p>Imagine you are signing up to drive for <b>Uride</b>, a ride-sharing app. Your task: <b>add your driver’s licence</b>.</p>
+    <p>Please think out loud: say what you expect and what surprises you. There are no wrong answers, I’m testing the design, not you.</p>
+    <p class="small">The camera is simulated. This page records taps and screens anonymously (Clarity, Google Analytics, Amplitude) to improve the design. No personal data.</p>
+    <button class="go" id="stGo">Start</button></div>`;
+  document.body.appendChild(ov);
+  $('#stGo').onclick=()=>{ try{localStorage.setItem('iv-consent','granted');}catch(e){}
+    const sc=document.createElement('script'); sc.src='/assets/analytics.js'; document.head.appendChild(sc);
+    ov.remove(); T0.t=performance.now(); start(); setTimeout(()=>ptrack('proto_study_start',{w:innerWidth,h:innerHeight}),1500); };
+}
 if(matchMedia('(prefers-reduced-motion: reduce)').matches) setPace(.01);
-start();
-if(REC){ let seen=false; try{seen=localStorage.getItem('urideHint')==='1';}catch(e){}
+if(!STUDY) start();
+if(REC&&!STUDY){ let seen=false; try{seen=localStorage.getItem('urideHint')==='1';}catch(e){}
   if(!seen){ const h=document.createElement('div'); h.className='hint1'; h.textContent='Hold the top edge for the menu'; document.body.appendChild(h);
     setTimeout(()=>h.remove(),3500); try{localStorage.setItem('urideHint','1');}catch(e){} } }
 </script>
