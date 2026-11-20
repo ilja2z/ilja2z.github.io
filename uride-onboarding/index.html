@@ -628,7 +628,7 @@ function cardBack(){
 /* ================= scenarios ================= */
 const SCEN = {
   story:  {name:'Full story', note:'One take: an expired card first, then glare, shaky hands, one unclear digit and the review screen.', dot:'#1F2A37', f:{expiredFirst:1, glare:'front', blur:'back', unsure:1}},
-  real:   {name:'Real camera', note:'Filmed on an iPhone: a printed specimen card under a desk lamp. The glare is real; the app waits, then captures both sides.', dot:'#0B6E4F', f:{real:1}},
+  real:   {name:'Real camera', note:'One take on an iPhone with printed specimen cards: an expired card first, then the current one under real lamp glare, both sides.', dot:'#0B6E4F', f:{real:1}},
   happy:  {name:'Happy path', note:'Card found, captured and read without help.', dot:'#1E8E3E', f:{}},
   glare:  {name:'Glare on the card', note:'A light reflection hides the text. The app asks to tilt.', dot:'#E8A317', f:{glare:'front'}},
   blur:   {name:'Shaky hands', note:'The image is blurry, so capture waits until it is sharp.', dot:'#E8A317', f:{blur:'front'}},
@@ -987,56 +987,63 @@ async function camera(retry=false){
   await wait(300); if(!alive(t))return;
   reading();
 }
-/* real camera: footage filmed on an iPhone (printed specimen card, desk lamp). The video was stabilised so the card
-   sits near the frame, the way a phone corrects small hand movement; the overlay reacts to what the video shows:
-   glare 1.3–5.9 s, sharp front 6.7–7.6 s, flip ~9.6–10.8 s, sharp back 11.9–12.9 s */
+/* real camera: one take filmed on an iPhone with printed specimen cards under a desk lamp.
+   The video is lightly stabilised (the card is eased towards the frame, hand tremor stays).
+   Cues follow what the footage shows: expired card held 1–6.5 s, swap 7–10 s, glare on the new card 11.4–14.3 s,
+   sharp front 14.9–15.7 s, flip ~17.8 s, sharp back 19–20.3 s */
 async function realCamera(v,t){
   const wd=$('#wd',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), prog=$('#prog',v), fl=$('#fl',v), cam=$('.cam',v);
   const gt=parseFloat(cam.style.getPropertyValue('--gt'))||228;
-  $('#cw',v).style.display='none';
   wd.innerHTML=`<video id="rv" muted playsinline webkit-playsinline preload="auto" poster="real/poster.jpg"><source src="real/scan.mp4" type="video/mp4"><source src="real/scan.webm" type="video/webm"></video>`;
   const vid=$('#rv',wd);
   Object.assign(vid.style,{position:'absolute',left:'0',top:(gt+98.5-326.5)+'px',width:'360px',height:'880px',objectFit:'cover',opacity:0,background:'#3b2416'});
   setPill(pill,'',`<span class="spinner" style="border-color:rgba(255,255,255,.25);border-top-color:#fff"></span><span>Starting camera…</span>`);
   await new Promise(r=>{ if(vid.readyState>=3) return r(); vid.addEventListener('canplaythrough',r,{once:true}); setTimeout(r,6000); });
   if(!alive(t)) return;
+  let hold=false;                                         // freeze the feed while a sheet waits for the driver
   vid.playbackRate=Math.max(.5,1/K);
   try{ await vid.play(); }catch(e){}
   anim(vid,[{opacity:0,filter:'blur(6px) brightness(.6)'},{opacity:1,filter:'none'}],500,EASE.decel);
   setPill(pill,'',`<span>Place the front of your licence in the frame</span>`);
   const at=s=>new Promise(r=>{ const tick=()=>{
       if(!alive(t)||!vid.isConnected){ vid.pause(); return r(); }
-      if(PAUSED){ if(!vid.paused) vid.pause(); } else if(vid.paused && !vid.ended) vid.play().catch(()=>{});
+      if(PAUSED||hold){ if(!vid.paused) vid.pause(); } else if(vid.paused && !vid.ended) vid.play().catch(()=>{});
       if(vid.currentTime>=s||vid.ended) return r();
       requestAnimationFrame(tick); }; tick(); });
   const snap=()=>gd.querySelectorAll('.cn').forEach(c=>{ c.style.transitionDuration=(SPR.snap.ms*K)+'ms'; c.style.transitionTimingFunction=SPR.snap.e; });
-  // 1. glare from the desk lamp hides the name and dates
-  await at(1.3); if(!alive(t))return;
+  const lock=()=>{ spec('camera'); snap(); gd.classList.remove('warn'); gd.classList.add('locked'); setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`);
+    anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],800*K,'linear'); };
+  const capture=txt=>{ if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
+    haptic('medium impact'); setPill(pill,'ok',`${ICON.check}<span>${txt}</span>`); };
+  // 1. the driver shows the old card first
+  cardOld=true;
+  await at(2.9); if(!alive(t))return; lock();
+  await at(3.8); if(!alive(t))return; capture('Front captured');
+  await at(3.95); if(!alive(t))return;
+  // 2. we read the date straight away and stop before the flip; the camera stays live behind the sheet
+  const sheet=expiredSheet(v,t);
+  at(7.6).then(()=>{ if($('.xsheet',v)) hold=true; });     // card is off the table: wait here for the tap
+  const ok=await sheet; if(!alive(t)||!ok) return;
+  hold=false; cardOld=false;
+  gd.classList.remove('locked','warn'); anim(prog,[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
+  setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a plain, contrasting surface and avoid direct light');
+  // 3. the desk lamp reflects on the new card
+  await at(11.4); if(!alive(t))return;
   spec('glare'); gd.classList.add('warn'); setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); haptic('warning');
   setHint(ch,'The light is reflecting on the card');
-  // 2. the card is tilted, the text is readable again
-  await at(5.9); if(!alive(t))return;
+  await at(14.3); if(!alive(t))return;
   gd.classList.remove('warn'); setPill(pill,'',`<span>That’s better</span>`); setHint(ch,'Keep it there');
-  // 3. four edges found and the image is sharp: lock, fill the ring, capture
-  await at(6.7); if(!alive(t))return;
-  spec('camera'); snap(); gd.classList.add('locked'); setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`);
-  anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],850*K,'linear');
-  await at(7.6); if(!alive(t))return;
-  if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
-  haptic('medium impact'); setPill(pill,'ok',`${ICON.check}<span>Front captured</span>`);
-  // 4. now the back
-  await at(8.3); if(!alive(t))return;
+  await at(14.9); if(!alive(t))return; lock();
+  await at(15.7); if(!alive(t))return; capture('Front captured');
+  // 4. back
+  await at(16.2); if(!alive(t))return;
   spec('flip'); $('#sdF',v).classList.add('ok');
   setPill(pill,'',`<span>Great. Now turn it over</span>`); setHint(ch,'Same place, back side up');
   swapTitle($('#side',v),'Back of licence'); moveSide(v,1);
   gd.classList.remove('locked'); anim(prog,[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std); haptic('light');
-  await at(11.9); if(!alive(t))return;
-  spec('camera'); snap(); gd.classList.add('locked'); setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`); setHint(ch,'Keep it there');
-  anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],850*K,'linear');
-  await at(12.9); if(!alive(t))return;
-  if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
-  haptic('medium impact'); setPill(pill,'ok',`${ICON.check}<span>Back captured</span>`);
-  await at(13.6); if(!alive(t))return;
+  await at(19.0); if(!alive(t))return; lock(); setHint(ch,'Keep it there');
+  await at(20.3); if(!alive(t))return; capture('Back captured');
+  await at(20.75); if(!alive(t))return;
   vid.pause(); await wait(300); if(!alive(t))return;
   reading();
 }
@@ -1417,7 +1424,7 @@ async function autopilot(){
     if(f.manual){ await tapEl('#man',t,2200); await waitFor('#go:not([disabled])',t); await tapEl('#go',t,1000); return; }
     await tapEl('#scan',t,7800);          // let the tips play out on the example card first
     if(f.expired){ await waitFor('#exSc',t); return; }
-    if(f.expiredFirst){ await tapEl('#exSc',t,3200); }
+    if(f.expiredFirst||f.real){ await tapEl('#exSc',t,3200); }
     if(f.unsure){ await tapEl('#fix',t,1600); const inp=await waitFor('#ein',t); await wait(900); inp.value+='9'; inp.dispatchEvent(new Event('input'));
       await wait(700); inp.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'})); }
     await waitFor('#go:not([disabled])',t);
