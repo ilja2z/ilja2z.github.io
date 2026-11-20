@@ -139,6 +139,18 @@ input{font:inherit;color:inherit}
 .tlist b{display:block;color:var(--ink);font-weight:500;font-size:15px}
 .urtl .line i{transform:scaleY(0)}
 .ti{opacity:0}
+/* intro illustration + tips as plain tags (not buttons) */
+.hero-ill{display:flex;justify-content:center;margin:18px 0 6px}
+.tiprow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.tiprow .tlab{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);width:100%}
+.tiprow .tag{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--body)}
+.tiprow .tag svg{width:16px;height:16px;color:var(--violet)}
+.tlist div{align-items:center}
+/* scanner beam */
+.beam{position:absolute;left:0;right:0;top:0;height:2px;z-index:2;pointer-events:none;mix-blend-mode:screen;
+  background:linear-gradient(90deg,rgba(120,180,255,0),#DDEBFF 18%,#fff 50%,#DDEBFF 82%,rgba(120,180,255,0));
+  box-shadow:0 0 8px 2px rgba(70,150,255,.8),0 0 26px 8px rgba(70,150,255,.3)}
+.beam::before{content:"";position:absolute;left:0;right:0;bottom:2px;height:64px;background:linear-gradient(to top,rgba(70,150,255,.24),rgba(70,150,255,0))}
 /* director menu */
 .dir{position:fixed;inset:0;z-index:200;background:rgba(16,20,24,.45);display:none;align-items:flex-end;justify-content:center}
 .dir.on{display:flex}
@@ -191,7 +203,7 @@ input{font:inherit;color:inherit}
 .item .tx{flex:1;min-width:0}
 .item .tx b{display:block;font-size:16px;line-height:22px;color:var(--ink);font-weight:500}
 .item .tx small{display:block;font-size:13px;line-height:18px;margin-top:1px}
-.item .go{font-size:14px;font-weight:700;color:var(--red-text)}
+.item .go{font-size:13.5px;font-weight:700;color:#fff;background:var(--ink);padding:6px 12px;border-radius:14px}
 .st-ok .ic{background:var(--green-soft);color:var(--green)} .st-ok small{color:var(--green)}
 .st-rev .ic{background:var(--blue-soft);color:var(--blue)} .st-rev small{color:var(--blue)}
 .st-todo .ic{background:var(--bg);color:var(--hint)} .st-todo small{color:var(--muted)}
@@ -226,15 +238,12 @@ input{font:inherit;color:inherit}
 .cam .topbar b{font-size:16px;font-weight:500}
 .cam .iconbtn{background:rgba(255,255,255,.12);color:#fff}
 .guide{position:absolute;left:24px;top:var(--gt,228px);width:312px;height:197px;z-index:3}
-.guide .cn{position:absolute;width:30px;height:30px;border:3.5px solid #fff;transition:border-color calc(200ms*var(--k)),transform calc(260ms*var(--k)) var(--spring)}
-.guide .tl{left:-4px;top:-4px;border-right:0;border-bottom:0;border-radius:14px 0 0 0}
-.guide .tr{right:-4px;top:-4px;border-left:0;border-bottom:0;border-radius:0 14px 0 0}
-.guide .bl{left:-4px;bottom:-4px;border-right:0;border-top:0;border-radius:0 0 0 14px}
-.guide .br{right:-4px;bottom:-4px;border-left:0;border-top:0;border-radius:0 0 14px 0}
-.guide.locked .cn{border-color:#5BD17E}
+.guide svg{position:absolute;inset:0;overflow:visible}
+.guide .cn{stroke:#fff;transition:stroke calc(200ms*var(--k)),transform calc(260ms*var(--k)) var(--spring)}
+.guide.locked .cn{stroke:#5BD17E}
 .guide.locked .tl{transform:translate(5px,5px)} .guide.locked .tr{transform:translate(-5px,5px)}
 .guide.locked .bl{transform:translate(5px,-5px)} .guide.locked .br{transform:translate(-5px,-5px)}
-.guide.warn .cn{border-color:#FFC75F}
+.guide.warn .cn{stroke:#FFC75F}
 .cardwrap{position:absolute;left:24px;top:var(--gt,228px);width:312px;height:197px;z-index:2;perspective:900px}
 .cardwrap .card3d{width:100%;height:100%;position:relative;transform-style:preserve-3d}
 .cardwrap .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;overflow:hidden;box-shadow:0 18px 30px -12px rgba(0,0,0,.6)}
@@ -502,7 +511,7 @@ function cardFront(exp,o={}){
     <text x="186" y="159" font-size="8.5" font-weight="700">12 LAKESHORE RD</text>
     <text x="186" y="169" font-size="8.5" font-weight="700">TORONTO ON</text>
   </g>
-  <path d="M18 170c10-8 16 6 24-2s12-6 18 1 10-3 16-1" stroke="#2B4C6F" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <path d="M18 172c6-9 10-4 12 1s5 3 8-4 6-5 7 1 3 5 7 0 5-2 9 1" stroke="#2B4C6F" stroke-width=".9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <text x="156" y="120" text-anchor="middle" font-family="Google Sans,Arial" font-size="40" font-weight="700" fill="#2B4C6F" opacity=".09" transform="rotate(-14 156 110)">SAMPLE</text>
   <circle cx="276" cy="172" r="14" fill="none" stroke="#9DB3C4" stroke-width="1.2"/><circle cx="276" cy="172" r="9" fill="none" stroke="#9DB3C4" stroke-width="1"/>
   ${o.old?`<rect width="312" height="197" rx="12" fill="#C8A867" opacity=".16"/>
@@ -599,7 +608,9 @@ async function show(html, dir='push', dark=false){
   }
   return v;
 }
+const VIB={success:[12,60,18],warning:[18,80,18],error:[14,50,14,50,14],light:[8],'medium impact':[16],selection:[5]};
 function haptic(label){
+  try{ if(navigator.vibrate && VIB[label]) navigator.vibrate(VIB[label]); }catch(e){}
   let h=$('.haptic',screen); if(!h){h=document.createElement('div');h.className='haptic';screen.appendChild(h);}
   h.innerHTML=`<i></i>Haptic · ${label}`;
   anim(h,[{opacity:0,minWidth:'96px'},{opacity:1,minWidth:'150px',offset:.15},{opacity:1,minWidth:'150px',offset:.85},{opacity:0,minWidth:'96px'}],1600,EASE.std);
@@ -697,15 +708,13 @@ async function licenceIntro(dir='push'){
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Driver’s licence</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
     <p class="lead">By law, we need your licence details. Scan both sides and we’ll fill them in for you.</p>
-    <div class="slots">
-      <div class="slot"><svg class="card-ghost" width="62" height="40" viewBox="0 0 62 40"><rect x="1" y="1" width="60" height="38" rx="5" fill="none" stroke="#97ADB6" stroke-width="2"/><rect x="7" y="9" width="14" height="18" rx="2" fill="#C9D3D9"/><rect x="26" y="11" width="28" height="3" rx="1.5" fill="#C9D3D9"/><rect x="26" y="18" width="20" height="3" rx="1.5" fill="#C9D3D9"/><rect x="26" y="25" width="24" height="3" rx="1.5" fill="#C9D3D9"/></svg><span>Front</span></div>
-      <div class="slot"><svg class="card-ghost" width="62" height="40" viewBox="0 0 62 40"><rect x="1" y="1" width="60" height="38" rx="5" fill="none" stroke="#97ADB6" stroke-width="2"/><rect x="1" y="6" width="60" height="6" fill="#C9D3D9"/><g fill="#C9D3D9"><rect x="7" y="20" width="2" height="12"/><rect x="11" y="20" width="4" height="12"/><rect x="17" y="20" width="2" height="12"/><rect x="21" y="20" width="3" height="12"/><rect x="26" y="20" width="2" height="12"/><rect x="30" y="20" width="5" height="12"/><rect x="37" y="20" width="2" height="12"/><rect x="41" y="20" width="3" height="12"/><rect x="46" y="20" width="2" height="12"/><rect x="50" y="20" width="4" height="12"/></g></svg><span>Back</span></div>
-    </div>
-    <div class="tips3">
-      <div><i>${ICON.sun}</i><b>Good light</b></div>
-      <div><i>${ICON.surface}</i><b>Dark surface</b></div>
-      <div><i>${ICON.auto}</i><b>Auto photo</b></div>
-    </div>
+    <div class="hero-ill" aria-hidden="true"><svg width="220" height="150" viewBox="0 0 220 150" fill="none">
+      <rect x="38" y="30" width="144" height="91" rx="9" fill="#E8EEF3"/><rect x="38" y="30" width="144" height="17" rx="9" fill="#2B4C6F"/><rect x="38" y="40" width="144" height="7" fill="#2B4C6F"/>
+      <rect x="48" y="56" width="32" height="40" rx="4" fill="#C3D0DA"/><circle cx="64" cy="70" r="7" fill="#A3B5C3"/><path d="M52 96c1.5-9 6.5-13 12-13s10.5 4 12 13Z" fill="#A3B5C3"/>
+      <rect x="90" y="58" width="62" height="6" rx="3" fill="#C3D0DA"/><rect x="90" y="71" width="46" height="6" rx="3" fill="#C3D0DA"/><rect x="90" y="84" width="54" height="6" rx="3" fill="#C3D0DA"/>
+      <g stroke="#1F2A37" stroke-width="3" stroke-linecap="round"><path d="M26 40V28A8 8 0 0 1 34 20H46"/><path d="M174 20H186A8 8 0 0 1 194 28V40"/><path d="M26 111V123A8 8 0 0 0 34 131H46"/><path d="M174 131H186A8 8 0 0 0 194 123V111"/></g>
+    </svg></div>
+    <div class="tiprow"><span class="tlab">Tips</span><span class="tag">${ICON.sun}Good light</span><span class="tag">${ICON.surface}Dark surface</span><span class="tag">${ICON.hand}Hold still</span></div>
     <p class="privacy">${ICON.lock}<span>Only used to check you can drive with Uride</span></p>
   </div>
   <div class="foot">
@@ -717,7 +726,6 @@ async function licenceIntro(dir='push'){
   $('#bk',v).onclick=()=>{RUN++;checklist(false,'pop');};
   $('#scan',v).onclick=()=>camera();
   $('#man',v).onclick=()=>manual();
-  v.querySelectorAll('.slot').forEach(s=>s.onclick=()=>camera());
   // no extra entrance for the content: it travels with the screen, one motion only
 }
 
@@ -740,7 +748,9 @@ async function camera(retry=false){
     <div class="hole"></div>
     <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><b id="side">Front of licence</b><span style="width:44px"></span></div>
     <div class="pill" id="pill">Place the front of your licence in the frame</div>
-    <div class="guide" id="gd"><span class="cn tl"></span><span class="cn tr"></span><span class="cn bl"></span><span class="cn br"></span></div>
+    <div class="guide" id="gd"><svg width="312" height="197" viewBox="0 0 312 197" overflow="visible" fill="none" stroke-width="3.5" stroke-linecap="round">
+      <path class="cn tl" d="M-2 24V12A14 14 0 0 1 12 -2H26"/><path class="cn tr" d="M286 -2H300A14 14 0 0 1 314 12V24"/>
+      <path class="cn bl" d="M-2 173V185A14 14 0 0 0 12 199H26"/><path class="cn br" d="M286 199H300A14 14 0 0 0 314 185V173"/></svg></div>
     <p class="camhint" id="ch">Use a dark surface and avoid direct light</p>
     <div class="autolabel" id="al">Auto-capture is on</div>
     <div class="shutterbar"><button class="camctl" id="flb" aria-label="Flash: Auto"><span class="cc">${FLASH[FLASH_MODE]}</span><small>${FLASH_MODE[0].toUpperCase()+FLASH_MODE.slice(1)}</small></button>
@@ -753,6 +763,7 @@ async function camera(retry=false){
   const cam=$('.cam',v); cam.style.setProperty('--gt', Math.round(screen.clientHeight*.43-98)+'px');
   $('#cx',v).onclick=()=>{RUN++;PAUSED=false;licenceIntro('down');};
   wireCamControls(v);
+  $('#sh',v).onclick=()=>camChip(v,'Just hold still, we take the photo for you');
   const c3=$('#c3',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v);
   const cwr=$('#cw',v); cwr.style.opacity=0;
   await wait(700); if(!alive(t))return;
@@ -795,10 +806,12 @@ async function camera(retry=false){
 }
 /* camera controls: flash cycles like the iOS camera, tips pause the flow */
 const TIPS=[
-  [ICON.sun,'Good light','Daylight or a bright room. Avoid a lamp right above the card.'],
-  [ICON.surface,'Dark, flat surface','The edges stand out, so we find the card faster.'],
-  [ICON.auto,'Hold, don’t tap','When all four edges are found, we take the photo for you.'],
+  [ICON.sun,'Bright, even light. No lamp right above'],
+  [ICON.surface,'A dark, flat surface under the card'],
+  [ICON.hand,'Hold still. We take the photo for you'],
 ];
+function camChip(v,txt){ const chip=$('#cchip',v); if(!chip) return; chip.textContent=txt; chip.getAnimations().forEach(a=>a.cancel());
+  anim(chip,[{opacity:0,transform:'translateX(-50%) translateY(4px)'},{opacity:1,transform:'translateX(-50%)',offset:.12},{opacity:1,transform:'translateX(-50%)',offset:.85},{opacity:0,transform:'translateX(-50%)'}],1800,EASE.std); }
 function wireCamControls(v){
   const flb=$('#flb',v), tpb=$('#tpb',v), chip=$('#cchip',v), feed=$('.feed',v);
   const setFeed=()=>anim(feed,[{filter:getComputedStyle(feed).filter},{filter:FLASH_MODE==='on'?'saturate(.9) brightness(1.35)':'saturate(.9) brightness(1)'}],300,EASE.std);
@@ -809,9 +822,7 @@ function wireCamControls(v){
     anim(cc,[{transform:'scale(1)'},{transform:'scale(.6)',opacity:.3}],120,EASE.accel).then(()=>{ cc.innerHTML=FLASH[FLASH_MODE]; anim(cc,[{transform:'scale(.6)',opacity:.3},{transform:'scale(1)',opacity:1}],SPR.pop); });
     lb.textContent=FLASH_MODE[0].toUpperCase()+FLASH_MODE.slice(1);
     flb.setAttribute('aria-label','Flash: '+lb.textContent); flb.classList.toggle('on',FLASH_MODE==='on');
-    chip.textContent={auto:'Flash auto',on:'Flash on',off:'Flash off'}[FLASH_MODE];
-    chip.getAnimations().forEach(a=>a.cancel());
-    anim(chip,[{opacity:0,transform:'translateX(-50%) translateY(4px)'},{opacity:1,transform:'translateX(-50%)',offset:.15},{opacity:1,transform:'translateX(-50%)',offset:.8},{opacity:0,transform:'translateX(-50%)'}],1400,EASE.std);
+    camChip(v,{auto:'Flash auto',on:'Flash on',off:'Flash off'}[FLASH_MODE]);
     haptic('selection'); setFeed();
   };
   tpb.onclick=()=>{
@@ -820,7 +831,7 @@ function wireCamControls(v){
     running.forEach(a=>a.pause()); PAUSED=true;
     const sh=document.createElement('div'); sh.className='xsheet tsheet';
     sh.innerHTML=`<div class="grab"></div><h3>Tips for a sharp photo</h3>
-      <div class="tlist">${TIPS.map(t=>`<div><i>${t[0]}</i><span><b>${t[1]}</b>${t[2]}</span></div>`).join('')}</div>
+      <div class="tlist">${TIPS.map(t=>`<div><i>${t[0]}</i><span>${t[1]}</span></div>`).join('')}</div>
       <button class="btn primary" id="tgo">Got it</button>`;
     const shade=document.createElement('div'); shade.className='tshade';
     $('.cam',v).append(shade,sh);
@@ -918,7 +929,7 @@ async function reading(){
   const t=RUN, f=F(); spec('read');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Check details</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
-    <div class="scanimg" id="si"><div class="face">${cardFront(EXP(),{holo:f.unsure})}</div><div class="scanline" id="sl"></div></div>
+    <div class="scanimg" id="si"><div class="face">${cardFront(EXP(),{holo:f.unsure})}</div></div>
     <div class="thumbs">
       <div class="thumb"><div class="mini"><div class="face">${cardFront(EXP(),{holo:f.unsure})}</div></div>Front<button class="rt">Retake</button></div>
       <div class="thumb"><div class="mini"><div class="face">${cardBack()}</div></div>Back<button class="rt">Retake</button></div>
@@ -931,15 +942,18 @@ async function reading(){
   const v=await show(html,'handoff',false);
   $('#bk',v).onclick=()=>{RUN++;licenceIntro('pop');};
   v.querySelectorAll('.rt').forEach(b=>b.onclick=()=>{RUN++;camera(true);});
-  const si=$('#si',v), sl=$('#sl',v), go=$('#go',v);
+  const si=$('#si',v), go=$('#go',v);
   // shared-element hand-off: the photo moves up from where the card was in the frame
   anim(si,[{transform:'translateY(150px) scale(1.06)'},{transform:'none'}],SPR.push);
   v.querySelectorAll('.thumbs,.status,.fields').forEach((n,i)=>anim(n,[{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],420,EASE.decel,{delay:(150+i*70)*K}));
-  await wait(500); if(!alive(t))return;
-  anim(sl,[{top:'-56px'},{top:'100%'}],1500,EASE.inout);
-  const scale=si.clientWidth/312;
-  for(const x of FIELDS){
-    await wait(x===FIELDS[0]?420:260); if(!alive(t))return;
+  await wait(600); if(!alive(t))return;
+  // a scanner beam moves down at a steady speed; each value is found when the beam reaches it
+  const scale=si.clientWidth/312, H=si.clientHeight, D=2600;
+  const beam=document.createElement('div'); beam.className='beam'; si.appendChild(beam);
+  anim(beam,[{transform:'translateY(-8px)',opacity:0},{transform:`translateY(${H*.04}px)`,opacity:1,offset:.05},{transform:`translateY(${H*.96}px)`,opacity:1,offset:.95},{transform:`translateY(${H+8}px)`,opacity:0}],D,'linear').then(()=>beam.remove());
+  let prev=0;
+  for(const x of [...FIELDS].sort((a,b)=>a.box[1]-b.box[1])){
+    const at=((x.box[1]+x.box[3]/2)/197)*D; await wait(Math.max(0,at-prev)); prev=at; if(!alive(t))return;
     const unsure = f.unsure && x.k==='exp', bad = cardOld && x.k==='exp';
     const b=document.createElement('div'); b.className='ocrbox'+(unsure?' unsure':'')+(bad?' bad':'');
     Object.assign(b.style,{left:x.box[0]*scale-3+'px',top:x.box[1]*scale-3+'px',width:x.box[2]*scale+6+'px',height:x.box[3]*scale+6+'px'});
@@ -991,7 +1005,9 @@ async function reading(){
       let done=false;
       const confirm=()=>{
         if(done) return;
-        if(!/^14 Jun \d{4}$/.test(inp.value)){ fe.classList.add('invalid'); $('.note',fe).textContent='Enter the full year, for example 2029';
+        const yr=+((inp.value.match(/(\d{4})$/)||[])[1]||0);
+        const bad = !yr ? 'Enter the full year, for example 2029' : yr<2026 ? 'This date has passed. Check the card, or scan a valid licence' : yr>2040 ? 'That looks too far ahead. Check the card again' : '';
+        if(bad){ fe.classList.add('invalid'); $('.note',fe).textContent=bad;
           anim(fe,[{transform:'translateX(0)'},{transform:'translateX(-5px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],360,EASE.inout); return; }
         done=true;
         const val=inp.value; inp.blur();
@@ -1003,7 +1019,7 @@ async function reading(){
         enable();
       };
       inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); confirm(); } });
-      inp.addEventListener('blur',()=>{ if(/^14 Jun \d{4}$/.test(inp.value)) confirm(); });   // iOS keypad "Done" in the bar above the keyboard
+      inp.addEventListener('blur',()=>{ if(/^14 Jun \d{4}$/.test(inp.value)) confirm(); });   // confirm() validates the year itself   // iOS keypad "Done" in the bar above the keyboard
       $('#ok2',fe).addEventListener('pointerdown',e=>e.preventDefault());                        // keep focus while pressing Done
       $('#ok2',fe).onclick=confirm;
     };
