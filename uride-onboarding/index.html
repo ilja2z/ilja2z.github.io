@@ -131,7 +131,7 @@ input{font:inherit;color:inherit}
 .st-ok .ic{background:var(--green-soft);color:var(--green)} .st-ok small{color:var(--green)}
 .st-rev .ic{background:var(--blue-soft);color:var(--blue)} .st-rev small{color:var(--blue)}
 .st-todo .ic{background:var(--bg);color:var(--hint)} .st-todo small{color:var(--muted)}
-.st-next .ic{background:var(--red-soft);color:var(--red-text)} .st-next small{color:var(--red-text)}
+.st-next .ic{background:var(--ink);color:#fff} .st-next small{color:var(--ink);font-weight:500}
 .st-bad .ic{background:var(--red-soft);color:var(--red-text)} .st-bad small{color:var(--red-text)}
 .group{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.4px;text-transform:uppercase;margin:16px 2px 8px}
 
@@ -318,6 +318,7 @@ body.rec.bare .haptic{top:auto;bottom:6px}
         <li><b>Contrast.</b> Green and grey labels were about 1.6:1. All text now passes WCAG AA, including the disabled button.</li>
         <li><b>The photo stays visible.</b> The camera button no longer covers the document, so you can see if the shot is sharp.</li>
         <li><b>Plain words.</b> “Accordingly to local bylaws” → “By law, we need…”. “Need an assistance?” → “Need help?”.</li>
+        <li><b>Red is the brand, not an error.</b> Uride red marks actions (Start, Scan, Continue). Errors never rely on colour alone: they always have an icon and words.</li>
         <li><b>Unhappy paths.</b> Glare, blur, an unclear field, an expired licence and manual entry each have a designed state.</li>
       </ul>
     </div>
@@ -627,8 +628,7 @@ async function licenceIntro(dir='push'){
   $('#scan',v).onclick=()=>camera();
   $('#man',v).onclick=()=>manual();
   v.querySelectorAll('.slot').forEach(s=>s.onclick=()=>camera());
-  // the tips arrive one by one, so the eye reads them in order
-  if(dir==='push') v.querySelectorAll('.needs > div').forEach((d,i)=>anim(d,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],360,EASE.decel,{delay:(200+i*90)*K}));
+  // no extra entrance for the content: it travels with the screen, one motion only
 }
 
 /* ================= camera ================= */
