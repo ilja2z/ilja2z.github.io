@@ -75,6 +75,48 @@ input{font:inherit;color:inherit}
 .hole{position:absolute;left:24px;top:var(--gt,228px);width:312px;height:197px;border-radius:14px;box-shadow:0 0 0 1200px rgba(0,0,0,.52);z-index:3;pointer-events:none}
 .item .chev{color:var(--hint);display:flex}
 .item{will-change:transform}
+
+.face .art{position:absolute;inset:0}
+/* expired sheet over the camera */
+.xsheet{position:absolute;left:0;right:0;bottom:0;z-index:30;background:#fff;border-radius:24px 24px 0 0;padding:10px 20px 30px;box-shadow:0 -10px 30px rgba(0,0,0,.35);color:var(--body)}
+.xsheet .grab{width:36px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto 14px}
+.xsheet .xs-ic{width:44px;height:44px;border-radius:50%;background:var(--red-soft);color:var(--red-text);display:grid;place-items:center;margin-bottom:12px}
+.xsheet h3{font-size:20px;line-height:26px;color:var(--ink);font-weight:700}
+.xsheet p{font-size:15px;line-height:22px;margin:6px 0 18px}
+.xsheet .btn{width:100%}
+.pill .spinner{width:14px;height:14px;border-width:2px}
+/* under review */
+.ur{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:8px}
+.ur > *{flex-shrink:0}
+.urhero{position:relative;width:176px;height:176px;margin:6px 0 18px;display:grid;place-items:center}
+.urhero .halo{position:absolute;inset:14px;border-radius:50%;background:radial-gradient(closest-side,rgba(26,95,180,.16),rgba(26,95,180,0))}
+.urring{position:absolute;inset:0}
+.urring .arc{transform-origin:88px 88px}
+.urcard{position:relative;width:112px;height:71px;border-radius:8px;box-shadow:0 10px 24px -10px rgba(16,24,40,.45)}
+.urcard .face{position:absolute;inset:0;border-radius:8px;overflow:hidden}
+.urbadge{position:absolute;right:-12px;bottom:-12px;width:32px;height:32px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;border:3px solid #fff}
+.ur.compact .urhero{width:140px;height:140px;margin:0 0 12px}
+.ur.compact .urring{width:140px;height:140px}
+.ur.compact .urcard{transform:scale(.85)}
+.ur.compact .urp{font-size:14px;line-height:20px}
+.ur.compact .urtl{margin-top:16px;gap:12px}
+.urt{font-size:22px;line-height:28px;color:var(--ink);font-weight:700}
+.urp{font-size:15px;line-height:22px;margin-top:8px;max-width:300px}
+.urtl{position:relative;align-self:stretch;text-align:left;margin:22px 4px 0;display:flex;flex-direction:column;gap:16px}
+.urtl .line{position:absolute;left:11px;top:14px;bottom:14px;width:2px;background:var(--line)}
+.urtl .line i{position:absolute;inset:0 0 50% 0;background:var(--green);transform-origin:top}
+.ti{display:flex;gap:12px;align-items:flex-start;position:relative}
+.ti .d{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;background:#fff;border:2px solid var(--line);position:relative}
+.ti.done .d{background:var(--green);border-color:var(--green);color:#fff}
+.ti.done .d svg{width:14px;height:14px}
+.ti.now .d{border-color:var(--blue)}
+.ti.now .d::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue)}
+.ti.now .d i{position:absolute;inset:6px;border-radius:50%;background:var(--blue)}
+.ti b{display:block;font-size:15px;color:var(--ink);font-weight:500}
+.ti small{font-size:13px;color:var(--muted)}
+.notify{margin-top:20px;align-self:stretch;height:48px;border-radius:12px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:500;color:var(--ink);transition:background calc(300ms*var(--k)),border-color calc(300ms*var(--k))}
+.notify.on{background:var(--green-soft);border-color:#A6D8B4;color:var(--green)}
+.notify .bell{display:inline-block;transform-origin:50% 10%}
 /* director menu */
 .dir{position:fixed;inset:0;z-index:200;background:rgba(16,20,24,.45);display:none;align-items:flex-end;justify-content:center}
 .dir.on{display:flex}
@@ -269,7 +311,7 @@ body.rec.bare .statusbar,body.rec.bare .island,body.rec.bare .homebar{display:no
 body.rec.bare .top{padding-top:16px}
 body.rec.bare .cam .topbar{top:14px}
 body.rec.bare .toast{top:12px}
-body.rec.bare .haptic{top:auto;bottom:6px}
+body.rec.bare .haptic{top:6px}
 @media (max-width:520px){.page{padding:20px 8px 40px;gap:20px}.intro h1{font-size:22px;line-height:28px}}
 @media (prefers-reduced-motion:reduce){:root{--k:.01}}
 </style>
@@ -398,7 +440,7 @@ const ICON = {
 };
 
 /* ================= sample licence (fictional) ================= */
-function cardFront(exp){
+function cardFront(exp,o={}){
   return `<svg viewBox="0 0 312 197" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-label="Sample driver licence, front">
   <defs>
     <linearGradient id="cf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EEF3F7"/><stop offset=".55" stop-color="#E3ECF2"/><stop offset="1" stop-color="#D7E3EB"/></linearGradient>
@@ -429,6 +471,12 @@ function cardFront(exp){
   <path d="M18 170c10-8 16 6 24-2s12-6 18 1 10-3 16-1" stroke="#2B4C6F" stroke-width="1.6" fill="none" stroke-linecap="round"/>
   <text x="156" y="120" text-anchor="middle" font-family="Google Sans,Arial" font-size="40" font-weight="700" fill="#2B4C6F" opacity=".09" transform="rotate(-14 156 110)">SAMPLE</text>
   <circle cx="276" cy="172" r="14" fill="none" stroke="#9DB3C4" stroke-width="1.2"/><circle cx="276" cy="172" r="9" fill="none" stroke="#9DB3C4" stroke-width="1"/>
+  ${o.old?`<rect width="312" height="197" rx="12" fill="#C8A867" opacity=".16"/>
+  <path d="M40 60l60 24M150 30l40 70M230 140l50-30" stroke="#fff" stroke-width=".8" opacity=".45"/>
+  <text x="298" y="190" text-anchor="end" font-family="ui-monospace,Menlo,monospace" font-size="7" fill="#5D7183">ISS 2020/03/12</text>`:''}
+  ${o.holo?`<defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9FE3FF"/><stop offset=".35" stop-color="#F7C6FF"/><stop offset=".65" stop-color="#FFF3A8"/><stop offset="1" stop-color="#A8FFD6"/></linearGradient></defs>
+  <ellipse cx="211" cy="125" rx="13" ry="10" fill="url(#hg)" opacity=".85"/><ellipse cx="211" cy="125" rx="13" ry="10" fill="none" stroke="#fff" stroke-width=".8" opacity=".9"/>
+  <path d="M201 131l22-14M204 134l18-12" stroke="#fff" stroke-width="1" opacity=".7"/>`:''}
 </svg>`;
 }
 function cardBack(){
@@ -448,17 +496,18 @@ function cardBack(){
 
 /* ================= scenarios ================= */
 const SCEN = {
-  story:  {name:'Full story', note:'One take: glare on the front, shaky hands on the back, one unclear field.', dot:'#1F2A37', f:{glare:'front', blur:'back', unsure:1}},
+  story:  {name:'Full story', note:'One take: an expired card first, then glare, shaky hands, one unclear digit and the review screen.', dot:'#1F2A37', f:{expiredFirst:1, glare:'front', blur:'back', unsure:1}},
   happy:  {name:'Happy path', note:'Card found, captured and read without help.', dot:'#1E8E3E', f:{}},
   glare:  {name:'Glare on the card', note:'A light reflection hides the text. The app asks to tilt.', dot:'#E8A317', f:{glare:'front'}},
   blur:   {name:'Shaky hands', note:'The image is blurry, so capture waits until it is sharp.', dot:'#E8A317', f:{blur:'front'}},
-  unsure: {name:'Unclear field', note:'OCR is not sure about one value. The driver confirms it.', dot:'#E8A317', f:{unsure:1}},
-  expired:{name:'Expired licence', note:'The read works, but the licence is no longer valid.', dot:'#D93025', f:{expired:1}},
+  unsure: {name:'Unclear digit', note:'A hologram covers the last digit of the year. The driver types it in.', dot:'#E8A317', f:{unsure:1}},
+  expired:{name:'Expired licence', note:'Caught right after the front photo, before the driver flips the card.', dot:'#D93025', f:{expired:1}},
   manual: {name:'Manual entry', note:'No camera or the driver prefers typing. Live format checks.', dot:'#6E62A5', f:{manual:1}},
 };
 let scenario='happy';
 const F = () => SCEN[scenario].f;
-const EXP = () => F().expired ? '2025/03/12' : '2029/06/14';
+let cardOld=false;                 // the card in front of the camera is the old, expired one
+const EXP = () => cardOld ? '2025/03/12' : '2029/06/14';
 
 /* ================= spec panel ================= */
 const sp = k => `spring ${k}`;
@@ -471,7 +520,8 @@ const SPEC = {
   flip:{t:'Now the back', d:'The card turns over in place, so the driver understands what to do without reading anything.', why:'<b>Show, don’t tell:</b> one movement replaces a paragraph of instructions.', rows:[['Card flip','900ms',sp('· bounce .06')],['Hint cross-fade','240ms','standard']], hap:'Light tap when the flip prompt appears.'},
   read:{t:'Reading the licence', d:'A scan line passes over the photo. Each value lights up on the card at the moment it lands in its field, so the driver sees where every value came from.', why:'<b>Trust:</b> linking the box on the card to the field makes autofill feel checkable, not magic.', rows:[['Photo hand-off','550ms',sp('· bounce 0')],['Scan line','1500ms','ease-in-out'],['Field fill stagger','260ms each','emphasized decel'],['Tick','400ms',sp('· bounce .25')]], hap:'Success when all fields are filled.'},
   unsure:{t:'One value needs a check', d:'OCR is not sure about the expiry date. Only that field turns amber and says why. The driver taps Fix, the number keypad opens with the year almost filled, types the last digit and presses Enter. Continue unlocks.', why:'<b>Rule:</b> never silently guess a legal value. Ask only about the one field we are unsure of.', rows:[['Scroll to the field','smooth','browser default'],['Fix button nudge','2 × 700ms','ease-in-out'],['Edit focus ring','200ms','standard'],['Button unlocks','300ms','standard']], hap:'Light tap on Done.'},
-  expired:{t:'Licence has expired', d:'The scan worked, so we say what is wrong with the document, not with the photo. One clear action: scan a valid licence.', why:'<b>2024 problem:</b> the expired warning could be closed and Continue still worked.', rows:[['Banner in','400ms','emphasized decel'],['Field shake','420ms','ease-in-out, 3 swings']], hap:'Error (three short taps).'},
+  expired:{t:'Licence has expired', d:'We read the date right after the front photo, so the driver does not flip a card we cannot accept. The message is about the document, not the photo. One clear action: scan a valid licence. A temporary paper licence has its own path.', why:'<b>2024 problem:</b> the expired warning could be closed and Continue still worked.', rows:[['Checking the front','1100ms','spinner'],['Sheet rises','600ms',sp('· bounce 0')],['Old card leaves','520ms','emphasized accel'],['New card comes in','1200ms','emphasized decel']], hap:'Error (three short taps), once.'},
+  review:{t:'Under review: a calm wait', d:'The photo the driver just took carries over and settles in the middle. While we check, the motion is slow on purpose: one turn every 6 seconds and a halo that breathes. The timeline draws itself and says what happens next and when.', why:'<b>Why it matters:</b> waiting is where people drop off. Saying how long, what happens next and letting them keep going turns the wait into progress.', rows:[['Photo carries over','700ms',sp('· bounce 0')],['Badge','400ms',sp('· bounce .25')],['Ring turn','6s loop','linear'],['Halo breath','5s loop','ease-in-out'],['Timeline draws','1100ms','emphasized decel'],['Steps appear','330ms apart','emphasized decel']], hap:'Success on arrival. Light tap on “Notify me”.'},
   manual:{t:'Manual entry', d:'Real inputs. The licence number formats itself as you type, dates use the format printed on the card, and errors appear when you leave a field, not on every key.', why:'<b>Accessibility:</b> labels above fields, 16px text, and errors in words, not only in red.', rows:[['Focus ring','200ms','standard'],['Error reveal','240ms','emphasized decel'],['Button unlocks','300ms','standard']], hap:'None.'},
   saved:{t:'Saved and back to the list', d:'You come back to the list first, then the licence item changes to “In review”, the ring fills and the highlight moves to the next step. Each change happens one after another, so the eye can follow it.', why:'<b>2024 problem:</b> no save and resume, and most drop-offs happened at document upload.', rows:[['Pop back','550ms',sp('· bounce 0')],['Status swap','160ms out · 400ms in',sp('· bounce .25')],['Ring fill','900ms','ease-in-out'],['Toast','550ms in · 3.2s · 250ms out',sp('· bounce .12')]], hap:'Success.'},
 };
@@ -530,7 +580,7 @@ async function toast(html){
 }
 
 /* ---------- touch feedback: press < 100 ms, spring release ---------- */
-const PRESSABLE='.btn,.item,.iconbtn,.fix,.thumb button,.shutter,#toscan,.slot';
+const PRESSABLE='.btn,.item,.iconbtn,.fix,.thumb button,.shutter,#toscan,.slot,.notify';
 const ratio=()=>screen.getBoundingClientRect().width/screen.offsetWidth;
 function tapRing(x,y){
   const d=document.createElement('div'); d.className='tap'; d.style.left=x+'px'; d.style.top=y+'px'; screen.appendChild(d);
@@ -644,12 +694,13 @@ function setPill(p,cls,html){
 function setHint(el,txt){ el.textContent=txt; anim(el,[{opacity:0},{opacity:1}],240,EASE.std); }
 const DRIFT_FRONT=[{transform:'translate(0,0) rotate(0deg)'},{transform:'translate(-2px,1.5px) rotate(-.5deg)'},{transform:'translate(1.5px,-1px) rotate(.4deg)'},{transform:'translate(0,0) rotate(0deg)'}];
 const DRIFT_BACK=DRIFT_FRONT.map(f=>({transform:'rotateY(180deg) '+f.transform}));
-async function camera(){
+async function camera(retry=false){
   const t=RUN; const f=F();
+  cardOld = !retry && !!(f.expired || f.expiredFirst);
   spec('camera');
   const html=`<div class="cam">
     <div class="feed"></div><div class="grain"></div>
-    <div class="cardwrap" id="cw"><div class="card3d" id="c3"><div class="face front">${cardFront(EXP())}<div class="glare" id="gl"><i class="sheen"></i><i class="core"></i></div></div><div class="face back">${cardBack()}</div></div></div>
+    <div class="cardwrap" id="cw"><div class="card3d" id="c3"><div class="face front"><div class="art">${cardFront(EXP(),{old:cardOld,holo:f.unsure&&!cardOld})}</div><div class="glare" id="gl"><i class="sheen"></i><i class="core"></i></div></div><div class="face back">${cardBack()}</div></div></div>
     <div class="hole"></div>
     <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><b id="side">Front of licence</b><span style="width:44px"></span></div>
     <div class="pill" id="pill">Place the front of your licence in the frame</div>
@@ -673,6 +724,19 @@ async function camera(){
   await anim(c3,[{transform:'translate(30px,260px) rotate(-12deg) scale(.86)'},{transform:'translate(0,0) rotate(0deg) scale(1)'}],1200,EASE.decel);
   if(!alive(t))return;
   let drift=c3.animate(DRIFT_FRONT,{duration:5000*K,iterations:Infinity,easing:'ease-in-out'});
+  if(cardOld){
+    await lockAndCapture(v,drift,'front',t); if(!alive(t))return;
+    const ok = await expiredSheet(v,t); if(!alive(t)||!ok) return;
+    // the old card leaves, the new one comes in
+    await anim(cwr,[{transform:'none',opacity:1},{transform:'translate(-40px,280px) rotate(10deg)',opacity:0}],520,EASE.accel); if(!alive(t))return;
+    cwr.getAnimations().forEach(a=>a.cancel()); c3.getAnimations().forEach(a=>a.cancel());
+    cardOld=false; $('.art',v).innerHTML=cardFront(EXP(),{holo:f.unsure});
+    gd.classList.remove('locked','warn'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
+    setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a dark surface and avoid direct light');
+    await wait(500); if(!alive(t))return;
+    await anim(c3,[{transform:'translate(30px,260px) rotate(-12deg) scale(.86)'},{transform:'translate(0,0) rotate(0deg) scale(1)'}],1200,EASE.decel); if(!alive(t))return;
+    drift=c3.animate(DRIFT_FRONT,{duration:5000*K,iterations:Infinity,easing:'ease-in-out'});
+  }
   await issues(v,'front',drift,t); if(!alive(t))return;
   await lockAndCapture(v,drift,'front',t); if(!alive(t))return;
   // flip
@@ -690,6 +754,29 @@ async function camera(){
   await lockAndCapture(v,drift,'back',t); if(!alive(t))return;
   await wait(300); if(!alive(t))return;
   reading();
+}
+/* expired: say it right after the front photo, so the driver does not flip a card we cannot accept */
+async function expiredSheet(v,t){
+  const pill=$('#pill',v), gd=$('#gd',v);
+  spec('expired');
+  setPill(pill,'',`<span class="spinner" style="border-color:rgba(255,255,255,.25);border-top-color:#fff"></span><span>Checking the front…</span>`);
+  await wait(1100); if(!alive(t)) return false;
+  gd.classList.remove('locked'); gd.classList.add('warn');
+  setPill(pill,'warn',`${ICON.alert}<span>This licence has expired</span>`);
+  haptic('error');
+  const sh=document.createElement('div'); sh.className='xsheet';
+  sh.innerHTML=`<div class="grab"></div>
+    <div class="xs-ic">${ICON.alert}</div>
+    <h3>This licence expired on 12 Mar 2025</h3>
+    <p>You need a valid licence to drive with Uride. If you have a newer card, scan that one. Your other steps are saved.</p>
+    <button class="btn primary" id="exSc">${ICON.cam} Scan a valid licence</button>
+    <button class="btn ghost" id="exTmp">I only have a temporary licence</button>`;
+  $('.cam',v).appendChild(sh);
+  anim(sh,[{transform:'translateY(105%)'},{transform:'none'}],SPR.sheet);
+  return new Promise(res=>{
+    $('#exSc',sh).onclick=async()=>{ await anim(sh,[{transform:'none'},{transform:'translateY(105%)'}],280,EASE.accel); sh.remove(); res(true); };
+    $('#exTmp',sh).onclick=()=>toast(`<span><b>Temporary licence:</b> you upload the paper copy and our team checks it by hand. (Not part of this prototype.)</span>`);
+  });
 }
 async function issues(v,side,drift,t){
   const f=F(), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v), cw=$('#cw',v);
@@ -755,9 +842,9 @@ async function reading(){
   const t=RUN, f=F(); spec('read');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Check details</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
-    <div class="scanimg" id="si"><div class="face">${cardFront(EXP())}</div><div class="scanline" id="sl"></div></div>
+    <div class="scanimg" id="si"><div class="face">${cardFront(EXP(),{holo:f.unsure})}</div><div class="scanline" id="sl"></div></div>
     <div class="thumbs">
-      <div class="thumb"><div class="mini"><div class="face">${cardFront(EXP())}</div></div>Front<button class="rt">Retake</button></div>
+      <div class="thumb"><div class="mini"><div class="face">${cardFront(EXP(),{holo:f.unsure})}</div></div>Front<button class="rt">Retake</button></div>
       <div class="thumb"><div class="mini"><div class="face">${cardBack()}</div></div>Back<button class="rt">Retake</button></div>
     </div>
     <div id="bn"></div>
@@ -767,7 +854,7 @@ async function reading(){
   <div class="foot"><button class="btn primary" id="go" disabled>Looks right, continue</button></div>`;
   const v=await show(html,'handoff',false);
   $('#bk',v).onclick=()=>{RUN++;licenceIntro('pop');};
-  v.querySelectorAll('.rt').forEach(b=>b.onclick=()=>{RUN++;camera();});
+  v.querySelectorAll('.rt').forEach(b=>b.onclick=()=>{RUN++;camera(true);});
   const si=$('#si',v), sl=$('#sl',v), go=$('#go',v);
   // shared-element hand-off: the photo moves up from where the card was in the frame
   anim(si,[{transform:'translateY(150px) scale(1.06)'},{transform:'none'}],SPR.push);
@@ -777,7 +864,7 @@ async function reading(){
   const scale=si.clientWidth/312;
   for(const x of FIELDS){
     await wait(x===FIELDS[0]?420:260); if(!alive(t))return;
-    const unsure = f.unsure && x.k==='exp', bad = f.expired && x.k==='exp';
+    const unsure = f.unsure && x.k==='exp', bad = cardOld && x.k==='exp';
     const b=document.createElement('div'); b.className='ocrbox'+(unsure?' unsure':'')+(bad?' bad':'');
     Object.assign(b.style,{left:x.box[0]*scale-3+'px',top:x.box[1]*scale-3+'px',width:x.box[2]*scale+6+'px',height:x.box[3]*scale+6+'px'});
     si.appendChild(b);
@@ -785,7 +872,7 @@ async function reading(){
     const fe=$(`[data-k="${x.k}"]`,v), val=$('.v',fe);
     val.textContent = unsure ? '14 Jun 202?' : bad ? '12 Mar 2025' : x.v;
     anim(val,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],360,EASE.decel);
-    if(unsure){ fe.classList.add('unsure'); $('.note',fe).textContent='We couldn’t read the last digit. Please check.'; $('.ok',fe).outerHTML=`<button class="fix" id="fix">Fix</button>`; }
+    if(unsure){ fe.classList.add('unsure'); $('.note',fe).textContent='A hologram covers the last digit of the year. Please check.'; $('.ok',fe).outerHTML=`<button class="fix" id="fix">Fix</button>`; }
     else if(bad){ fe.classList.add('bad'); $('.note',fe).textContent='Expired on 12 Mar 2025'; $('.ok',fe).outerHTML=`<span style="color:var(--red-text)">${ICON.alert}</span>`; }
     else { fe.classList.add('filled'); anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop); }
   }
@@ -794,7 +881,7 @@ async function reading(){
   const stt=$('#stt',v);
   const status=(html)=>{ stt.innerHTML=html; anim(stt,[{opacity:0,transform:'translateY(3px)'},{opacity:1,transform:'none'}],280,EASE.decel); };
   const enable=()=>{ go.disabled=false; anim(go,[{filter:'saturate(.2) brightness(1.4)'},{filter:'none'}],300,EASE.std); };
-  if(f.expired){
+  if(cardOld){
     spec('expired');
     status(`<span style="color:var(--red-text)">${ICON.alert}</span>We read your licence, but it has expired`);
     const bn=$('#bn',v);
@@ -803,7 +890,7 @@ async function reading(){
     anim($('[data-k="exp"]',v),[{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(5px)'},{transform:'translateX(-3px)'},{transform:'translateX(0)'}],420,EASE.inout,{delay:200*K});
     haptic('error');
     go.innerHTML=`${ICON.cam} Scan a valid licence`; enable();
-    go.onclick=()=>{ scenario='happy'; markScen(); camera(); };
+    go.onclick=()=>camera(true);
     return;
   }
   if(f.unsure){
@@ -849,7 +936,56 @@ async function reading(){
     haptic('success');
     enable();
   }
-  go.onclick=()=>checklist(true,'pop');
+  go.onclick=()=>underReview();
+}
+
+/* ================= under review: a calm wait ================= */
+async function underReview(){
+  const t=RUN; spec('review');
+  const C=2*Math.PI*78;
+  const html=`<div class="top"><span style="width:44px"></span><h1></h1></div>
+  <div class="body ur">
+    <div class="urhero">
+      <div class="halo"></div>
+      <svg class="urring" width="176" height="176" viewBox="0 0 176 176"><circle cx="88" cy="88" r="78" fill="none" stroke="#E6EBEE" stroke-width="4"/>
+        <circle class="arc" cx="88" cy="88" r="78" fill="none" stroke="url(#urg)" stroke-width="4" stroke-linecap="round" stroke-dasharray="${C*.28} ${C}"/>
+        <defs><linearGradient id="urg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1A5FB4" stop-opacity="0"/><stop offset="1" stop-color="#1A5FB4"/></linearGradient></defs></svg>
+      <div class="urcard"><div class="face">${cardFront('2029/06/14')}</div><span class="urbadge">${ICON.clock}</span></div>
+    </div>
+    <h2 class="urt">Licence sent for review</h2>
+    <p class="urp">We check it with the issuing office. It usually takes less than 24 hours, and you can keep going in the meantime.</p>
+    <div class="urtl"><span class="line"><i></i></span>
+      <div class="ti done"><span class="d">${ICON.check}</span><div><b>Sent</b><small>Today, 9:41</small></div></div>
+      <div class="ti now"><span class="d"><i></i></span><div><b>Checking your licence</b><small>Usually within 24 h</small></div></div>
+      <div class="ti"><span class="d"></span><div><b>We’ll let you know</b><small>Notification and email</small></div></div>
+    </div>
+    <button class="notify" id="nt"><span class="bell">🔔</span><span class="nl">Notify me when it’s done</span></button>
+  </div>
+  <div class="foot"><button class="btn primary" id="urGo">Continue registration</button><p class="help">8 steps left · about 15 min</p></div>`;
+  const v=await show(html,'fade');
+  if(screen.clientHeight<720) $('.ur',v).classList.add('compact');
+  $('#urGo',v).onclick=()=>checklist(true,'pop');
+  // the photo carries over from "Check details" and settles into the middle
+  anim($('.urcard',v),[{transform:'translateY(-150px) scale(2.1)',opacity:.6},{transform:'none',opacity:1}],SPR.settle);
+  anim($('.urbadge',v),[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:600*K});
+  // calm, slow motion while we wait: one turn every 6 s, a halo that breathes like a slow breath
+  $('.urring .arc',v).animate([{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],{duration:6000,iterations:Infinity,easing:'linear'});
+  $('.halo',v).animate([{transform:'scale(.92)',opacity:.35},{transform:'scale(1.06)',opacity:.7},{transform:'scale(.92)',opacity:.35}],{duration:5000,iterations:Infinity,easing:'ease-in-out'});
+  haptic('success');
+  // the timeline draws itself top to bottom, each step appears when the line reaches it
+  const line=$('.urtl .line i',v), items=[...v.querySelectorAll('.ti')];
+  items.forEach(i=>i.style.opacity=0);
+  await wait(500); if(!alive(t))return;
+  anim(line,[{transform:'scaleY(0)'},{transform:'scaleY(1)'}],1100,EASE.decel);
+  items.forEach((it,i)=>anim(it,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],420,EASE.decel,{delay:i*330*K}));
+  $('.ti.now .d i',v).animate([{transform:'scale(.7)',opacity:1},{transform:'scale(1.8)',opacity:0}],{duration:1800,iterations:Infinity,easing:'ease-out'});
+  const nt=$('#nt',v);
+  nt.onclick=()=>{
+    if(nt.classList.contains('on')) return;
+    nt.classList.add('on'); haptic('light');
+    anim($('.bell',nt),[{transform:'rotate(0)'},{transform:'rotate(-16deg)'},{transform:'rotate(12deg)'},{transform:'rotate(-6deg)'},{transform:'rotate(0)'}],600,EASE.inout);
+    const nl=$('.nl',nt); anim(nl,[{opacity:1},{opacity:0}],140,EASE.accel).then(()=>{ nl.textContent='We’ll notify you'; anim(nl,[{opacity:0,transform:'translateY(4px)'},{opacity:1,transform:'none'}],280,EASE.decel); });
+  };
 }
 
 /* ================= manual entry ================= */
@@ -884,7 +1020,7 @@ async function manual(){
   [num,cls,exp].forEach(i=>{ i.addEventListener('focus',()=>i.closest('.field').classList.add('editing')); i.addEventListener('blur',()=>i.closest('.field').classList.remove('editing')); });
   let was=false;
   function check(){ const ok=okNum(num.value)&&okCls(cls.value)&&okExp(exp.value)==='ok'; go.disabled=!ok; if(ok&&!was) anim(go,[{filter:'saturate(.2) brightness(1.4)'},{filter:'none'}],300,EASE.std); was=ok; }
-  go.onclick=()=>checklist(true,'pop');
+  go.onclick=()=>underReview();
   if(F().manual && AUTO){ await wait(700); if(!alive(t))return; await typeInto(num,'M12345678901234',t); await typeInto(cls,'G',t); await typeInto(exp,'20290614',t); }
 }
 async function typeInto(inp,str,t){
@@ -903,6 +1039,8 @@ async function waitFor(sel,t,timeout=40000){
 async function tapEl(sel,t,before=800){
   const el=await waitFor(sel,t);
   await wait(before); if(!alive(t)) throw 'stop';
+  const sc=el.closest('.body'); if(sc){ const er=el.getBoundingClientRect(), br=sc.getBoundingClientRect();
+    if(er.bottom>br.bottom||er.top<br.top){ el.scrollIntoView({block:'center',behavior:'smooth'}); await wait(600); } }
   const r=el.getBoundingClientRect(), s=screen.getBoundingClientRect(), q=ratio();
   tapRing((r.left+r.width/2-s.left)/q,(r.top+r.height/2-s.top)/q);
   pressDown(el); await new Promise(r=>setTimeout(r,130)); pressUp(el);
@@ -914,11 +1052,14 @@ async function autopilot(){
     await tapEl('[data-i="1"]',t,1600);
     if(f.manual){ await tapEl('#man',t,2200); await waitFor('#go:not([disabled])',t); await tapEl('#go',t,1000); return; }
     await tapEl('#scan',t,2400);
-    if(f.expired){ await waitFor('.banner.err',t); return; }
+    if(f.expired){ await waitFor('#exSc',t); return; }
+    if(f.expiredFirst){ await tapEl('#exSc',t,3200); }
     if(f.unsure){ await tapEl('#fix',t,1600); const inp=await waitFor('#ein',t); await wait(900); inp.value+='9'; inp.dispatchEvent(new Event('input'));
       await wait(700); inp.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'})); }
     await waitFor('#go:not([disabled])',t);
     await tapEl('#go',t,1500);
+    await tapEl('#nt',t,3200);
+    await tapEl('#urGo',t,2200);
   }catch(e){}
 }
 
