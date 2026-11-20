@@ -175,7 +175,12 @@ input{font:inherit;color:inherit}
 .cardwrap .card3d{width:100%;height:100%;position:relative;transform-style:preserve-3d}
 .cardwrap .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;overflow:hidden;box-shadow:0 18px 30px -12px rgba(0,0,0,.6)}
 .cardwrap .face.back{transform:rotateY(180deg)}
-.glare{position:absolute;width:180px;height:120px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,.55) 45%,rgba(255,255,255,0));mix-blend-mode:screen;pointer-events:none;opacity:0}
+.glare{position:absolute;inset:0;pointer-events:none;opacity:0;overflow:hidden;border-radius:12px}
+.glare i{position:absolute;display:block}
+.glare .sheen{left:-40%;top:-50%;width:180%;height:200%;background:linear-gradient(118deg,rgba(255,255,255,0) 28%,rgba(255,255,255,.32) 42%,rgba(255,255,255,.6) 50%,rgba(255,255,255,.3) 58%,rgba(255,255,255,0) 72%);mix-blend-mode:screen}
+.glare .core{left:58%;top:46%;width:250px;height:150px;margin:-75px 0 0 -125px;border-radius:50%;background:radial-gradient(closest-side,#fff 0,#fff 42%,rgba(255,255,255,.9) 58%,rgba(255,255,255,.45) 78%,rgba(255,255,255,0));filter:blur(1.5px)}
+.field.hinting .note{display:block;color:var(--muted)}
+.field.invalid .note{display:block;color:var(--red-text)}
 .pill{position:absolute;left:50%;top:calc(var(--gt,228px) - 76px);transform:translateX(-50%);z-index:5;background:rgba(20,22,25,.72);backdrop-filter:blur(8px);color:#fff;font-size:15px;line-height:20px;padding:10px 16px;border-radius:22px;white-space:nowrap;display:flex;gap:8px;align-items:center;transition:background calc(200ms*var(--k))}
 .pill.warn{background:rgba(124,78,0,.9)}
 .pill.ok{background:rgba(22,112,52,.92)}
@@ -465,7 +470,7 @@ const SPEC = {
   blur:{t:'Too blurry to read', d:'The frame stays open and the hint asks to hold steady. Capture only happens on a sharp image, so OCR never reads a blurry photo.', why:'<b>Design rule:</b> if the camera can tell up front, never fail the read afterwards.', rows:[['Blur clears','1400ms','emphasized decel'],['Hint swap','240ms','standard']], hap:'None until capture.'},
   flip:{t:'Now the back', d:'The card turns over in place, so the driver understands what to do without reading anything.', why:'<b>Show, don’t tell:</b> one movement replaces a paragraph of instructions.', rows:[['Card flip','900ms',sp('· bounce .06')],['Hint cross-fade','240ms','standard']], hap:'Light tap when the flip prompt appears.'},
   read:{t:'Reading the licence', d:'A scan line passes over the photo. Each value lights up on the card at the moment it lands in its field, so the driver sees where every value came from.', why:'<b>Trust:</b> linking the box on the card to the field makes autofill feel checkable, not magic.', rows:[['Photo hand-off','550ms',sp('· bounce 0')],['Scan line','1500ms','ease-in-out'],['Field fill stagger','260ms each','emphasized decel'],['Tick','400ms',sp('· bounce .25')]], hap:'Success when all fields are filled.'},
-  unsure:{t:'One value needs a check', d:'OCR is not sure about the expiry date. Only that field turns amber and says why. The driver fixes it in place, and Continue unlocks.', why:'<b>Rule:</b> never silently guess a legal value. Ask only about the one field we are unsure of.', rows:[['Scroll to the field','smooth','browser default'],['Fix button nudge','2 × 700ms','ease-in-out'],['Edit focus ring','200ms','standard'],['Button unlocks','300ms','standard']], hap:'Light tap on Done.'},
+  unsure:{t:'One value needs a check', d:'OCR is not sure about the expiry date. Only that field turns amber and says why. The driver taps Fix, the number keypad opens with the year almost filled, types the last digit and presses Enter. Continue unlocks.', why:'<b>Rule:</b> never silently guess a legal value. Ask only about the one field we are unsure of.', rows:[['Scroll to the field','smooth','browser default'],['Fix button nudge','2 × 700ms','ease-in-out'],['Edit focus ring','200ms','standard'],['Button unlocks','300ms','standard']], hap:'Light tap on Done.'},
   expired:{t:'Licence has expired', d:'The scan worked, so we say what is wrong with the document, not with the photo. One clear action: scan a valid licence.', why:'<b>2024 problem:</b> the expired warning could be closed and Continue still worked.', rows:[['Banner in','400ms','emphasized decel'],['Field shake','420ms','ease-in-out, 3 swings']], hap:'Error (three short taps).'},
   manual:{t:'Manual entry', d:'Real inputs. The licence number formats itself as you type, dates use the format printed on the card, and errors appear when you leave a field, not on every key.', why:'<b>Accessibility:</b> labels above fields, 16px text, and errors in words, not only in red.', rows:[['Focus ring','200ms','standard'],['Error reveal','240ms','emphasized decel'],['Button unlocks','300ms','standard']], hap:'None.'},
   saved:{t:'Saved and back to the list', d:'You come back to the list first, then the licence item changes to “In review”, the ring fills and the highlight moves to the next step. Each change happens one after another, so the eye can follow it.', why:'<b>2024 problem:</b> no save and resume, and most drop-offs happened at document upload.', rows:[['Pop back','550ms',sp('· bounce 0')],['Status swap','160ms out · 400ms in',sp('· bounce .25')],['Ring fill','900ms','ease-in-out'],['Toast','550ms in · 3.2s · 250ms out',sp('· bounce .12')]], hap:'Success.'},
@@ -644,7 +649,7 @@ async function camera(){
   spec('camera');
   const html=`<div class="cam">
     <div class="feed"></div><div class="grain"></div>
-    <div class="cardwrap" id="cw"><div class="card3d" id="c3"><div class="face front">${cardFront(EXP())}</div><div class="face back">${cardBack()}</div></div><div class="glare" id="gl"></div></div>
+    <div class="cardwrap" id="cw"><div class="card3d" id="c3"><div class="face front">${cardFront(EXP())}<div class="glare" id="gl"><i class="sheen"></i><i class="core"></i></div></div><div class="face back">${cardBack()}</div></div></div>
     <div class="hole"></div>
     <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><b id="side">Front of licence</b><span style="width:44px"></span></div>
     <div class="pill" id="pill">Place the front of your licence in the frame</div>
@@ -690,14 +695,19 @@ async function issues(v,side,drift,t){
   const f=F(), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v), cw=$('#cw',v);
   if(f.glare===side){
     spec('glare');
-    gl.style.left='120px'; gl.style.top='24px';
-    await anim(gl,[{opacity:0,transform:'scale(.8)'},{opacity:1,transform:'scale(1)'}],500,EASE.decel); if(!alive(t))return;
+    // the card drifts into the lamp's reflection: the hot spot grows over the name and dates
+    const core=$('.core',gl), sheen=$('.sheen',gl);
+    anim(cw,[{transform:'none'},{transform:'perspective(700px) rotateY(-5deg) rotateX(-3deg)'}],900,EASE.inout);
+    anim(core,[{transform:'translate(60px,-30px) scale(.6)'},{transform:'translate(0,0) scale(1)'}],900,EASE.inout);
+    await anim(gl,[{opacity:0},{opacity:1}],900,EASE.inout); if(!alive(t))return;
     gd.classList.add('warn'); setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); haptic('warning');
     setHint(ch,'The light is reflecting on the card');
     await wait(2400); if(!alive(t))return;
-    // the driver tilts: card leans back a little, the reflection slides off
-    anim(cw,[{transform:'none'},{transform:'perspective(700px) rotateX(9deg)',offset:.5},{transform:'none'}],1600,EASE.inout);
-    await anim(gl,[{transform:'translate(0,0)',opacity:1},{transform:'translate(160px,-50px)',opacity:0}],1600,EASE.inout); if(!alive(t))return;
+    // the driver tilts the card: the reflection travels to the edge of the card and fades,
+    // it never leaves the card, because it is a reflection on the card's surface
+    anim(cw,[{transform:'perspective(700px) rotateY(-5deg) rotateX(-3deg)'},{transform:'perspective(700px) rotateY(4deg) rotateX(6deg)',offset:.55},{transform:'none'}],1800,EASE.inout);
+    anim(sheen,[{opacity:1,transform:'translateX(0)'},{opacity:.25,transform:'translateX(60px)'}],1800,EASE.inout);
+    await anim(core,[{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate(-120px,62px) scale(.55)',opacity:.12}],1800,EASE.inout); if(!alive(t))return;
     gd.classList.remove('warn'); setPill(pill,'',`<span>That’s better</span>`); setHint(ch,'Keep it there');
     await wait(500);
   }
@@ -802,20 +812,37 @@ async function reading(){
     const fx=$('#fix',v), fe=$('[data-k="exp"]',v), bd=$('.body',v);
     bd.scrollTo({top:bd.scrollHeight,behavior:'smooth'});
     anim(fx,[{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],700,EASE.inout,{iterations:2,delay:600*K});
-    fx.onclick=async()=>{
+    fx.onclick=()=>{
       fe.classList.remove('unsure'); fe.classList.add('editing');
-      const vv=$('.val',fe); vv.innerHTML=`<input id="ein" value="14 Jun 202" aria-label="Expiry date"><button class="fix" id="ok2" style="color:var(--ink)">Done</button>`;
-      $('.note',fe).textContent='';
-      const inp=$('#ein',fe); inp.focus({preventScroll:true}); inp.setSelectionRange(99,99);
-      await wait(700); inp.value+='9'; anim(inp,[{color:'#1A73E8'},{color:'#1F2A37'}],500,EASE.std);
-      $('#ok2',fe).onclick=()=>{
-        vv.innerHTML=`<span class="v">${inp.value}</span><span class="ok">${ICON.check}</span>`;
-        fe.classList.remove('editing'); fe.classList.add('filled'); haptic('light');
+      const vv=$('.val',fe);
+      vv.innerHTML=`<input id="ein" value="14 Jun 202" inputmode="numeric" enterkeyhint="done" autocomplete="off" aria-label="Expiry date, add the last digit of the year"><button class="fix" id="ok2" style="color:var(--ink)">Done</button>`;
+      $('.note',fe).textContent='Add the last digit of the year';
+      fe.classList.add('hinting');
+      const inp=$('#ein',fe);
+      inp.focus(); inp.setSelectionRange(99,99);              // focus inside the tap, so the phone keyboard opens
+      setTimeout(()=>bd.scrollTo({top:bd.scrollHeight,behavior:'smooth'}),60);
+      inp.addEventListener('input',()=>{                       // only digits after "14 Jun ", max 4 for the year
+        const m=/^14 Jun (\d{0,4})/.exec(inp.value.replace(/[^\d A-Za-z]/g,'')); const y=(inp.value.match(/(\d+)\s*$/)||['',''])[1].slice(0,4);
+        inp.value='14 Jun '+y; fe.classList.remove('invalid');
+      });
+      let done=false;
+      const confirm=()=>{
+        if(done) return;
+        if(!/^14 Jun \d{4}$/.test(inp.value)){ fe.classList.add('invalid'); $('.note',fe).textContent='Enter the full year, for example 2029';
+          anim(fe,[{transform:'translateX(0)'},{transform:'translateX(-5px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],360,EASE.inout); return; }
+        done=true;
+        const val=inp.value; inp.blur();
+        vv.innerHTML=`<span class="v">${val}</span><span class="ok">${ICON.check}</span>`;
+        $('.note',fe).textContent=''; fe.classList.remove('editing','hinting','invalid'); fe.classList.add('filled'); haptic('light');
         anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop);
         const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);}
         status(`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`);
         enable();
       };
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); confirm(); } });
+      inp.addEventListener('blur',()=>{ if(/^14 Jun \d{4}$/.test(inp.value)) confirm(); });   // iOS keypad "Done" in the bar above the keyboard
+      $('#ok2',fe).addEventListener('pointerdown',e=>e.preventDefault());                        // keep focus while pressing Done
+      $('#ok2',fe).onclick=confirm;
     };
   } else {
     status(`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`);
@@ -888,7 +915,8 @@ async function autopilot(){
     if(f.manual){ await tapEl('#man',t,2200); await waitFor('#go:not([disabled])',t); await tapEl('#go',t,1000); return; }
     await tapEl('#scan',t,2400);
     if(f.expired){ await waitFor('.banner.err',t); return; }
-    if(f.unsure){ await tapEl('#fix',t,1600); await tapEl('#ok2',t,1500); }
+    if(f.unsure){ await tapEl('#fix',t,1600); const inp=await waitFor('#ein',t); await wait(900); inp.value+='9'; inp.dispatchEvent(new Event('input'));
+      await wait(700); inp.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'})); }
     await waitFor('#go:not([disabled])',t);
     await tapEl('#go',t,1500);
   }catch(e){}
