@@ -702,7 +702,7 @@ async function issues(v,side,drift,t){
     await anim(gl,[{opacity:0},{opacity:1}],900,EASE.inout); if(!alive(t))return;
     gd.classList.add('warn'); setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); haptic('warning');
     setHint(ch,'The light is reflecting on the card');
-    await wait(2400); if(!alive(t))return;
+    await wait(3600); if(!alive(t))return;
     // the driver tilts the card: the reflection travels to the edge of the card and fades,
     // it never leaves the card, because it is a reflection on the card's surface
     anim(cw,[{transform:'perspective(700px) rotateY(-5deg) rotateX(-3deg)'},{transform:'perspective(700px) rotateY(4deg) rotateX(6deg)',offset:.55},{transform:'none'}],1800,EASE.inout);
@@ -718,7 +718,7 @@ async function issues(v,side,drift,t){
     await wait(300); if(!alive(t))return;
     gd.classList.add('warn'); setPill(pill,'warn',`${ICON.hand}<span>Hold your phone steady</span>`);
     setHint(ch,'Rest your elbows on the table if you can');
-    await wait(2000); if(!alive(t))return;
+    await wait(3000); if(!alive(t))return;
     await anim(face,[{filter:'blur(3px)'},{filter:'blur(0px)'}],1400,EASE.decel); face.style.filter='';
     gd.classList.remove('warn'); setPill(pill,'',`<span>Sharp. Keep still</span>`);
     await wait(400);
