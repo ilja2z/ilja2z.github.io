@@ -114,7 +114,7 @@ input{font:inherit;color:inherit}
 .ti.now .d i{position:absolute;inset:6px;border-radius:50%;background:var(--blue)}
 .ti b{display:block;font-size:15px;color:var(--ink);font-weight:500}
 .ti small{font-size:13px;color:var(--muted)}
-.notify{margin-top:20px;align-self:stretch;height:48px;border-radius:12px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:500;color:var(--ink);transition:background calc(300ms*var(--k)),border-color calc(300ms*var(--k))}
+.notify{transition:background calc(700ms*var(--k)) ease,border-color calc(700ms*var(--k)) ease,color calc(700ms*var(--k)) ease !important;margin-top:20px;align-self:stretch;height:48px;border-radius:12px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:500;color:var(--ink);transition:background calc(300ms*var(--k)),border-color calc(300ms*var(--k))}
 .notify.on{background:var(--green-soft);border-color:#A6D8B4;color:var(--green)}
 .notify .bell{display:inline-block;transform-origin:50% 10%}
 
@@ -190,6 +190,13 @@ body.rec.bare .foot{padding-bottom:12px}
 .chips span{transition:border-color calc(300ms*var(--k)),background calc(300ms*var(--k)),color calc(300ms*var(--k));cursor:pointer}
 .chips span.done{border-color:#A6D8B4;background:var(--green-soft);color:#1B5E30}
 .chips span.done svg{color:var(--green)}
+.sidebox{display:flex;flex-direction:column;align-items:center;gap:6px}
+.sides{position:relative;display:flex;gap:6px;font-size:12px;font-weight:500}
+.sides span{position:relative;z-index:1;padding:3px 9px;border-radius:10px;color:rgba(255,255,255,.6);transition:color calc(400ms*var(--k)) ease}
+.sides span.on{color:#15181B}
+.sides span.ok::before{content:"✓ ";color:#5BD17E}
+.sides span.ok.on::before{color:#1E8E3E}
+.sides .sdhl{position:absolute;left:0;top:0;height:100%;width:52px;border-radius:10px;background:#fff;transform:translateX(-3px)}
 /* director menu */
 .dir{position:fixed;inset:0;z-index:200;background:rgba(16,20,24,.45);display:none;align-items:flex-end;justify-content:center}
 .dir.on{display:flex}
@@ -269,9 +276,10 @@ body.rec.bare .foot{padding-bottom:12px}
 
 /* camera */
 .cam{position:absolute;inset:0;background:#15181B;overflow:hidden}
-.cam .feed{position:absolute;inset:-20px;background:
+.cam .world{position:absolute;inset:0;transform-origin:50% 45%}
+.cam .feed{position:absolute;inset:-420px;background:
   radial-gradient(120% 80% at 30% 20%,#5A4A3C 0%,#3A3029 45%,#211C18 100%);filter:saturate(.9)}
-.cam .grain{position:absolute;inset:0;background-image:repeating-linear-gradient(115deg,rgba(255,255,255,.025) 0 2px,transparent 2px 7px);mix-blend-mode:overlay}
+.cam .grain{position:absolute;inset:-420px;background-image:repeating-linear-gradient(115deg,rgba(255,255,255,.025) 0 2px,transparent 2px 7px);mix-blend-mode:overlay}
 .cam .shade{position:absolute;inset:0;pointer-events:none}
 .cam .topbar{position:absolute;top:48px;left:12px;right:12px;display:flex;align-items:center;justify-content:space-between;z-index:5;color:#fff}
 .cam .topbar b{font-size:16px;font-weight:500}
@@ -508,6 +516,7 @@ const SPR = {
   snap:   spring(.45, .15),  // frame corners lock on
   pop:    spring(.4, .25),   // ticks, status icons
   flip:   spring(.9, .06),   // card turns over
+  flipCalm: spring(1.2, 0),
   toast:  spring(.55, .12),
   release:spring(.35, .2),   // press release
 };
@@ -846,9 +855,9 @@ async function tipsStory(v){
     ic.innerHTML=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="24" stroke-dashoffset="24"/></svg>`;
     const p=ic.querySelector('path'); anim(ic.firstElementChild,[{transform:'scale(.7)'},{transform:'scale(1)'}],SPR.pop);
     await anim(p,[{strokeDashoffset:24},{strokeDashoffset:0}],380,soft); };
-  await wait(800); if(!ok()) return;
+  await wait(250); if(!ok()) return;
   // 1 · good light: the card comes out of the dark
-  await anim(dim,[{opacity:.72},{opacity:0}],1100,'cubic-bezier(.3,0,.2,1)'); dim.style.opacity=0; if(!ok()) return;
+  await anim(dim,[{opacity:.72},{opacity:0}],750,'cubic-bezier(.3,0,.2,1)'); dim.style.opacity=0; if(!ok()) return;
   await done(0); await wait(500); if(!ok()) return;
   // 2 · contrasting surface: the table under the card slowly darkens, then the tip is ticked
   surf.classList.add('dark'); await wait(1700); if(!ok()) return;
@@ -909,10 +918,10 @@ async function camera(retry=false){
   spec('camera');
   const gt=Math.round(screen.clientHeight*.43-98);
   const html=`<div class="cam" style="--gt:${gt}px">
-    <div class="feed"></div><div class="grain"></div>
-    <div class="cardwrap" id="cw" style="opacity:0"><div class="card3d" id="c3"><div class="face front"><div class="art">${cardFront(EXP(),{old:cardOld,holo:f.unsure&&!cardOld})}</div><div class="glare" id="gl"><i class="sheen"></i><i class="core"></i></div></div><div class="face back">${cardBack()}</div></div></div>
+    <div class="world" id="wd"><div class="feed"></div><div class="grain"></div>
+    <div class="cardwrap" id="cw"><div class="card3d" id="c3"><div class="face front"><div class="art">${cardFront(EXP(),{old:cardOld,holo:f.unsure&&!cardOld})}</div><div class="glare" id="gl"><i class="sheen"></i><i class="core"></i></div></div><div class="face back">${cardBack()}</div></div></div></div>
     <div class="hole"></div>
-    <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><b id="side">Front of licence</b><span style="width:44px"></span></div>
+    <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><div class="sidebox"><b id="side">Front of licence</b><div class="sides"><i class="sdhl"></i><span id="sdF">Front</span><span id="sdB">Back</span></div></div><span style="width:44px"></span></div>
     <div class="pill" id="pill">Place the front of your licence in the frame</div>
     <div class="guide" id="gd"><svg width="312" height="197" viewBox="0 0 312 197" overflow="visible" fill="none" stroke-width="3.5" stroke-linecap="round">
       <path class="cn tl" d="M-2 24V12A14 14 0 0 1 12 -2H26"/><path class="cn tr" d="M286 -2H300A14 14 0 0 1 314 12V24"/>
@@ -929,42 +938,41 @@ async function camera(retry=false){
   const cam=$('.cam',v); cam.style.setProperty('--gt', Math.round(screen.clientHeight*.43-98)+'px');
   $('#cx',v).onclick=()=>{RUN++;PAUSED=false;licenceIntro('down');};
   wireCamControls(v);
+  $('#sdF',v).classList.add('on'); requestAnimationFrame(()=>moveSide(v,0));
   $('#sh',v).onclick=()=>camChip(v,'Just hold still, we take the photo for you');
   const c3=$('#c3',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v);
-  const cwr=$('#cw',v); cwr.style.opacity=0;
-  await wait(700); if(!alive(t))return;
-  // the card is brought in by a hand: decelerates and settles, no bounce
-  // (opacity lives on the wrapper: opacity on the 3D element would flatten the flip)
-  cwr.style.transition=`opacity ${900*K}ms ${EASE.std}`; cwr.style.opacity=1;
-  await anim(c3,[{transform:'translate(20px,170px) rotate(-8deg) scale(.92)'},{transform:'translate(0,0) rotate(0deg) scale(1)'}],1500,EASE.decel);
-  if(!alive(t))return;
+  const cwr=$('#cw',v), wd=$('#wd',v);
+  // the card lies on a table; the camera moves over the table and finds it (the card itself does not fly)
+  wd.style.transform='translate(50px,250px) scale(.86)';
+  await wait(600); if(!alive(t))return;
+  await pan(wd,'translate(50px,250px) scale(.86)','none',1700); if(!alive(t))return;
   let drift=hand(c3,'');
   if(cardOld){
     await lockAndCapture(v,drift,'front',t); if(!alive(t))return;
     const ok = await expiredSheet(v,t); if(!alive(t)||!ok) return;
     // the old card leaves, the new one comes in
-    drift.settle(); await anim(cwr,[{transform:'none',opacity:1},{transform:'translate(-24px,150px) rotate(6deg)',opacity:0}],1100,'cubic-bezier(.45,0,.55,1)'); if(!alive(t))return;
-    cwr.getAnimations().forEach(a=>a.cancel()); drift.stop(); c3.getAnimations().forEach(a=>a.cancel());
-    cardOld=false; $('.art',v).innerHTML=cardFront(EXP(),{holo:f.unsure});
+    // the camera moves along the table to the new card: one continuous pan, a little motion blur in the middle
     gd.classList.remove('locked','warn'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
     setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a plain, contrasting surface and avoid direct light');
-    cwr.style.transition='none'; cwr.style.opacity=0;
-    await wait(400); if(!alive(t))return;
-    cwr.style.transition=`opacity ${900*K}ms ${EASE.std}`; cwr.style.opacity=1;
-    await anim(c3,[{transform:'translate(20px,170px) rotate(-8deg) scale(.92)'},{transform:'translate(0,0) rotate(0deg) scale(1)'}],1500,EASE.decel); if(!alive(t))return;
+    drift.settle(); await wait(300); drift.stop(); if(!alive(t))return;
+    await pan(wd,'none','translate(-330px,30px) scale(.92)',900,'cubic-bezier(.5,0,.9,.6)',2.4,'in'); if(!alive(t))return;
+    cardOld=false; $('.art',v).innerHTML=cardFront(EXP(),{holo:f.unsure});
+    await pan(wd,'translate(330px,-30px) scale(.92)','none',1300,'cubic-bezier(.1,.45,.3,1)',2.4,'out'); if(!alive(t))return;
     drift=hand(c3,'');
   }
   await issues(v,'front',drift,t); if(!alive(t))return;
   await lockAndCapture(v,drift,'front',t); if(!alive(t))return;
   // flip
   spec('flip');
+  $('#sdF',v).classList.add('ok');
+  await wait(300); if(!alive(t))return;
   setPill(pill,'',`<span>Great. Now turn it over</span>`); setHint(ch,'Same place, back side up');
-  $('#side',v).textContent='Back of licence';
-  gd.classList.remove('locked'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
+  swapTitle($('#side',v),'Back of licence'); moveSide(v,1);
+  gd.classList.remove('locked'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std);
   haptic('light');
-  await wait(500); if(!alive(t))return;
+  await wait(900); if(!alive(t))return;
   drift.stop();
-  await anim(c3,[{transform:'rotateY(0deg) translateZ(0)'},{transform:'rotateY(180deg) translateZ(0)'}],SPR.flip);
+  await anim(c3,[{transform:'rotateY(0deg) translateZ(0)'},{transform:'rotateY(180deg) translateZ(0)'}],SPR.flipCalm);
   if(!alive(t))return;
   drift=hand(c3,'rotateY(180deg) ');
   await wait(700); if(!alive(t))return;
@@ -973,6 +981,16 @@ async function camera(retry=false){
   await wait(300); if(!alive(t))return;
   reading();
 }
+/* camera pan: the whole table (feed + card) moves; a touch of motion blur only while moving fast */
+function pan(wd,from,to,ms,easing='cubic-bezier(.45,0,.55,1)',blur=1.6,phase='both'){
+  const b0=phase==='out'?blur:0, b2=phase==='in'?blur:0;
+  return anim(wd,[{transform:from,filter:`blur(${b0}px)`},{filter:`blur(${phase==='both'?blur:(b0+b2)/2+.6}px)`,offset:.5},{transform:to,filter:b2?`blur(${b2}px)`:'none'}],ms,easing);
+}
+function swapTitle(el,txt){ anim(el,[{opacity:1,transform:'none'},{opacity:0,transform:'translateY(-6px)'}],260,EASE.accel).then(()=>{ el.textContent=txt; anim(el,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],420,EASE.decel); }); }
+function moveSide(v,i){ const hl=$('.sdhl',v), tg=$(i?'#sdB':'#sdF',v); const r=tg.getBoundingClientRect(), pr=tg.parentElement.getBoundingClientRect(), q=ratio();
+  anim(hl,[{transform:getComputedStyle(hl).transform==='none'?'translateX(0)':getComputedStyle(hl).transform,width:hl.offsetWidth+'px'},{transform:`translateX(${(r.left-pr.left)/q-3}px)`,width:(r.width/q+6)+'px'}],600,'cubic-bezier(.4,0,.2,1)');
+  $('#sdB',v).classList.toggle('on',!!i); $('#sdF',v).classList.toggle('on',!i); }
+
 /* camera controls: flash cycles like the iOS camera, tips pause the flow */
 const TIPS=[
   [ICON.sun,'Bright, even light. No lamp right above'],
@@ -1270,8 +1288,8 @@ async function underReview(){
   nt.onclick=()=>{
     if(nt.classList.contains('on')) return;
     nt.classList.add('on'); haptic('light');
-    anim($('.bell',nt),[{transform:'rotate(0)'},{transform:'rotate(-16deg)'},{transform:'rotate(12deg)'},{transform:'rotate(-6deg)'},{transform:'rotate(0)'}],600,EASE.inout);
-    const nl=$('.nl',nt); anim(nl,[{opacity:1},{opacity:0}],140,EASE.accel).then(()=>{ nl.textContent='We’ll notify you'; anim(nl,[{opacity:0,transform:'translateY(4px)'},{opacity:1,transform:'none'}],280,EASE.decel); });
+    anim($('.bell',nt),[{transform:'rotate(0)'},{transform:'rotate(-18deg)',offset:.14},{transform:'rotate(13deg)',offset:.32},{transform:'rotate(-8deg)',offset:.5},{transform:'rotate(4deg)',offset:.68},{transform:'rotate(-1.5deg)',offset:.84},{transform:'rotate(0)'}],1500,'cubic-bezier(.4,0,.2,1)');
+    const nl=$('.nl',nt); anim(nl,[{opacity:1},{opacity:0}],350,'cubic-bezier(.4,0,.2,1)').then(()=>{ nl.textContent='We’ll notify you'; anim(nl,[{opacity:0},{opacity:1}],600,'cubic-bezier(.4,0,.2,1)'); });
   };
 }
 
