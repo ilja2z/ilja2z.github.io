@@ -941,9 +941,11 @@ function shake(el,ms,ok){
 }
 
 /* ================= camera ================= */
+// the pill speaks only for a problem, a needed action or a result; between them it fades away
+function hidePill(p){ if(!p||p.dataset.off) return; p.dataset.off=1; anim(p,[{opacity:1},{opacity:0}],320,EASE.std); }
 function setPill(p,cls,html){
-  if(p.className==='pill '+cls && p.innerHTML===html) return;
-  p.className='pill '+cls; p.innerHTML=html;
+  if(p.className==='pill '+cls && p.innerHTML===html && !p.dataset.off) return;
+  delete p.dataset.off; p.className='pill '+cls; p.innerHTML=html;
   anim(p,[{opacity:.2,transform:'translateX(-50%) translateY(4px) scale(.97)'},{opacity:1,transform:'translateX(-50%) translateY(0) scale(1)'}],280,EASE.decel);
 }
 // the line under the frame carries only the first recommendation; the pill above says everything else,
@@ -1025,7 +1027,7 @@ async function camera(retry=false, side=null){
   spec('flip');
   $('#sdF',v).classList.add('ok');
   await wait(300); if(!alive(t))return;
-  setPill(pill,'',`<span>Now turn it over</span>`); setHint(ch,'Same place, back side up');
+  hidePill(pill); setHint(ch,'Same place, back side up');
   swapTitle($('#side',v),'Back of licence'); moveSide(v,1);
   gd.classList.remove('locked'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std);
   haptic('light');
@@ -1067,7 +1069,7 @@ async function realRetake(v,t,side){
   const L=side==='front'?[.5,1.0,1.15,1.25]:[.3,.9,1.05,1.15];
   await at(L[0]); if(!alive(t))return;
   spec('camera'); gd.querySelectorAll('.cn').forEach(c=>{ c.style.transitionDuration=(SPR.snap.ms*K)+'ms'; c.style.transitionTimingFunction=SPR.snap.e; });
-  gd.classList.add('locked'); setPill(pill,'',`<span>Hold still…</span>`); setHint(ch,'Keep it there');
+  gd.classList.add('locked'); hidePill(pill); setHint(ch,'Keep it there');
   anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],(L[1]-L[0])*1000*K,'linear');
   await at(L[1]); if(!alive(t))return;
   if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
@@ -1075,7 +1077,7 @@ async function realRetake(v,t,side){
   if(side==='front') REAL_FRONT_CLEAN=true;
   await at(L[2]); if(!alive(t))return; gd.classList.remove('locked');
   await at(L[3]); if(!alive(t))return;
-  vid.pause(); await wait(350); if(!alive(t))return;
+  vid.pause(); await wait(900); if(!alive(t))return;
   reading();
 }
 let REALVID=null;
@@ -1115,7 +1117,7 @@ async function realCamera(v,t){
       if(vid.currentTime>=s||vid.ended) return r();
       requestAnimationFrame(tick); }; tick(); });
   const snap=()=>gd.querySelectorAll('.cn').forEach(c=>{ c.style.transitionDuration=(SPR.snap.ms*K)+'ms'; c.style.transitionTimingFunction=SPR.snap.e; });
-  const lock=(ms=800)=>{ spec('camera'); snap(); gd.classList.remove('warn'); gd.classList.add('locked'); setPill(pill,'',`<span>Hold still…</span>`);
+  const lock=(ms=800)=>{ spec('camera'); snap(); gd.classList.remove('warn'); gd.classList.add('locked'); hidePill(pill);
     anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],ms*K,'linear'); };
   const capture=txt=>{ if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
     haptic('medium impact'); setPill(pill,'ok',`${ICON.check}<span>${txt}</span>`); };
@@ -1141,24 +1143,24 @@ async function realCamera(v,t){
   spec('glare'); gd.classList.add('warn'); setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); haptic('warning');
   setHint(ch,'The light is reflecting on the card');
   await at(14.1); if(!alive(t))return;
-  gd.classList.remove('warn'); setPill(pill,'',`<span>Hold still…</span>`); setHint(ch,'Keep it there');
+  gd.classList.remove('warn'); hidePill(pill); setHint(ch,'Keep it there');
   await at(14.9); if(!alive(t))return; lock(600);                        // the card has settled fully inside the frame
   await at(15.5); if(!alive(t))return; capture('Front captured');        // captured with the small trace of glare on the number
   await at(15.7); if(!alive(t))return; gd.classList.remove('locked');   // photo taken: the frame lets go, the trace of glare stays
   // the front is read at once, as with the old card: the date is fine, so no stop here
   await at(15.85); if(!alive(t))return;
-  setPill(pill,'',`<span class="spinner" style="border-color:rgba(255,255,255,.25);border-top-color:#fff"></span><span>Checking the front…</span>`);
+  
   await at(16.75); if(!alive(t))return;
   // 4. back
   spec('flip'); $('#sdF',v).classList.add('ok');
-  setPill(pill,'',`<span>Now turn it over</span>`); setHint(ch,'Same place, back side up');
+  hidePill(pill); setHint(ch,'Same place, back side up');
   swapTitle($('#side',v),'Back of licence'); moveSide(v,1);
   gd.classList.remove('locked'); anim(prog,[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std); haptic('light');
   await at(19.0); if(!alive(t))return; lock(); setHint(ch,'Keep it there');
   await at(19.8); if(!alive(t))return; capture('Back captured');
   await at(19.95); if(!alive(t))return; gd.classList.remove('locked');   // the driver brings the card closer: the frame is no longer green
   await at(20.2); if(!alive(t))return;
-  vid.pause(); await wait(300); if(!alive(t))return;
+  vid.pause(); await wait(900); if(!alive(t))return;   // let the green result be read before moving on
   reading();
 }
 /* camera pan: the whole table (feed + card) moves; a touch of motion blur only while moving fast */
@@ -1213,7 +1215,6 @@ function wireCamControls(v){
 async function expiredSheet(v,t){
   const pill=$('#pill',v), gd=$('#gd',v);
   spec('expired');
-  setPill(pill,'',`<span class="spinner" style="border-color:rgba(255,255,255,.25);border-top-color:#fff"></span><span>Checking the front…</span>`);
   await wait(1100); if(!alive(t)) return false;
   gd.classList.remove('locked'); gd.classList.add('warn');
   setPill(pill,'warn',`${ICON.alert}<span>This licence has expired</span>`);
@@ -1250,7 +1251,7 @@ async function issues(v,side,drift,t){
     anim(cw,[{transform:'perspective(700px) rotateY(-5deg) rotateX(-3deg)'},{transform:'perspective(700px) rotateY(4deg) rotateX(6deg)',offset:.55},{transform:'none'}],D2,glide);
     anim(sheen,[{opacity:1,transform:'translate(0,0)'},{opacity:.6,transform:'translate(-60px,40px)',offset:.6},{opacity:0,transform:'translate(-110px,70px)'}],D2,glide);
     await anim(core,[{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate(-130px,70px) scale(.85)',opacity:.85,offset:.6},{transform:'translate(-230px,120px) scale(.7)',opacity:0}],D2,glide); if(!alive(t))return;
-    gd.classList.remove('warn'); setPill(pill,'',`<span>Hold still…</span>`); setHint(ch,'Keep it there');
+    gd.classList.remove('warn'); hidePill(pill); setHint(ch,'Keep it there');
     await wait(200);
   }
   if(f.blur===side){
@@ -1276,7 +1277,7 @@ async function lockAndCapture(v,drift,side,t){
   gd.classList.add('locked');                         // corners close in (CSS spring-ish transition)
   gd.querySelectorAll('.cn').forEach(c=>c.style.transitionDuration=(SPR.snap.ms*K)+'ms');
   gd.querySelectorAll('.cn').forEach(c=>c.style.transitionTimingFunction=SPR.snap.e);
-  setPill(pill,'',`<span>Hold still…</span>`);
+  hidePill(pill);
   await wait(250); if(!alive(t))return;
   await anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],850,'linear'); if(!alive(t))return;
   if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
@@ -1381,7 +1382,6 @@ async function reading(){
     spec('unsureNum');
     status(`<span style="color:var(--amber)">${ICON.alert}</span>Almost done. Please check one value`);
     const fx=$('#fix',v), fe=$('[data-k="num"]',v), bd=$('.body',v);
-    fe.scrollIntoView({block:'center',behavior:'smooth'});
     anim(fx,[{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],700,EASE.inout,{iterations:2,delay:600*K});
     fx.onclick=()=>{
       fe.classList.remove('unsure'); fe.classList.add('editing','hinting');
