@@ -920,10 +920,16 @@ function shake(el,ms,ok){
 
 /* ================= camera ================= */
 function setPill(p,cls,html){
+  if(p.className==='pill '+cls && p.innerHTML===html) return;
   p.className='pill '+cls; p.innerHTML=html;
   anim(p,[{opacity:.2,transform:'translateX(-50%) translateY(4px) scale(.97)'},{opacity:1,transform:'translateX(-50%) translateY(0) scale(1)'}],280,EASE.decel);
 }
-function setHint(el,txt){ el.textContent=txt; anim(el,[{opacity:0},{opacity:1}],240,EASE.std); }
+// the line under the frame carries only the first recommendation; the pill above says everything else,
+// so any later hint just fades the line away instead of repeating the pill
+const HINT0='Use a plain, contrasting surface and avoid direct light';
+function setHint(el,txt){ if(!el) return;
+  if(txt===HINT0){ el.textContent=txt; if(el.dataset.off){ delete el.dataset.off; anim(el,[{opacity:0},{opacity:1}],300,EASE.std); } return; }
+  if(!el.dataset.off){ el.dataset.off=1; anim(el,[{opacity:1},{opacity:0}],300,EASE.std); } }
 /* the card is held by a hand: slow drift from two low-frequency waves, a tremor that fades in and out,
    and a settle that eases the movement to zero (no jump between two transforms) */
 function hand(c3,base=''){
@@ -997,7 +1003,7 @@ async function camera(retry=false, side=null){
   spec('flip');
   $('#sdF',v).classList.add('ok');
   await wait(300); if(!alive(t))return;
-  setPill(pill,'',`<span>Great. Now turn it over</span>`); setHint(ch,'Same place, back side up');
+  setPill(pill,'',`<span>Now turn it over</span>`); setHint(ch,'Same place, back side up');
   swapTitle($('#side',v),'Back of licence'); moveSide(v,1);
   gd.classList.remove('locked'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std);
   haptic('light');
@@ -1039,7 +1045,7 @@ async function realRetake(v,t,side){
   const L=side==='front'?[.5,1.0,1.15,1.25]:[.3,.9,1.05,1.15];
   await at(L[0]); if(!alive(t))return;
   spec('camera'); gd.querySelectorAll('.cn').forEach(c=>{ c.style.transitionDuration=(SPR.snap.ms*K)+'ms'; c.style.transitionTimingFunction=SPR.snap.e; });
-  gd.classList.add('locked'); setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`); setHint(ch,'Keep it there');
+  gd.classList.add('locked'); setPill(pill,'',`<span>Hold still…</span>`); setHint(ch,'Keep it there');
   anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],(L[1]-L[0])*1000*K,'linear');
   await at(L[1]); if(!alive(t))return;
   if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
@@ -1087,7 +1093,7 @@ async function realCamera(v,t){
       if(vid.currentTime>=s||vid.ended) return r();
       requestAnimationFrame(tick); }; tick(); });
   const snap=()=>gd.querySelectorAll('.cn').forEach(c=>{ c.style.transitionDuration=(SPR.snap.ms*K)+'ms'; c.style.transitionTimingFunction=SPR.snap.e; });
-  const lock=(ms=800)=>{ spec('camera'); snap(); gd.classList.remove('warn'); gd.classList.add('locked'); setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`);
+  const lock=(ms=800)=>{ spec('camera'); snap(); gd.classList.remove('warn'); gd.classList.add('locked'); setPill(pill,'',`<span>Hold still…</span>`);
     anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],ms*K,'linear'); };
   const capture=txt=>{ if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
     haptic('medium impact'); setPill(pill,'ok',`${ICON.check}<span>${txt}</span>`); };
@@ -1113,7 +1119,7 @@ async function realCamera(v,t){
   spec('glare'); gd.classList.add('warn'); setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); haptic('warning');
   setHint(ch,'The light is reflecting on the card');
   await at(14.1); if(!alive(t))return;
-  gd.classList.remove('warn'); setPill(pill,'',`<span>That’s better</span>`); setHint(ch,'Keep it there');
+  gd.classList.remove('warn'); setPill(pill,'',`<span>Hold still…</span>`); setHint(ch,'Keep it there');
   await at(14.9); if(!alive(t))return; lock(600);                        // the card has settled fully inside the frame
   await at(15.5); if(!alive(t))return; capture('Front captured');        // captured with the small trace of glare on the number
   await at(15.7); if(!alive(t))return; gd.classList.remove('locked');   // photo taken: the frame lets go, the trace of glare stays
@@ -1123,7 +1129,7 @@ async function realCamera(v,t){
   await at(16.75); if(!alive(t))return;
   // 4. back
   spec('flip'); $('#sdF',v).classList.add('ok');
-  setPill(pill,'',`<span>Great. Now turn it over</span>`); setHint(ch,'Same place, back side up');
+  setPill(pill,'',`<span>Now turn it over</span>`); setHint(ch,'Same place, back side up');
   swapTitle($('#side',v),'Back of licence'); moveSide(v,1);
   gd.classList.remove('locked'); anim(prog,[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std); haptic('light');
   await at(19.0); if(!alive(t))return; lock(); setHint(ch,'Keep it there');
@@ -1222,7 +1228,7 @@ async function issues(v,side,drift,t){
     anim(cw,[{transform:'perspective(700px) rotateY(-5deg) rotateX(-3deg)'},{transform:'perspective(700px) rotateY(4deg) rotateX(6deg)',offset:.55},{transform:'none'}],D2,glide);
     anim(sheen,[{opacity:1,transform:'translate(0,0)'},{opacity:.6,transform:'translate(-60px,40px)',offset:.6},{opacity:0,transform:'translate(-110px,70px)'}],D2,glide);
     await anim(core,[{transform:'translate(0,0) scale(1)',opacity:1},{transform:'translate(-130px,70px) scale(.85)',opacity:.85,offset:.6},{transform:'translate(-230px,120px) scale(.7)',opacity:0}],D2,glide); if(!alive(t))return;
-    gd.classList.remove('warn'); setPill(pill,'',`<span>That’s better</span>`); setHint(ch,'Keep it there');
+    gd.classList.remove('warn'); setPill(pill,'',`<span>Hold still…</span>`); setHint(ch,'Keep it there');
     await wait(200);
   }
   if(f.blur===side){
@@ -1248,7 +1254,7 @@ async function lockAndCapture(v,drift,side,t){
   gd.classList.add('locked');                         // corners close in (CSS spring-ish transition)
   gd.querySelectorAll('.cn').forEach(c=>c.style.transitionDuration=(SPR.snap.ms*K)+'ms');
   gd.querySelectorAll('.cn').forEach(c=>c.style.transitionTimingFunction=SPR.snap.e);
-  setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`);
+  setPill(pill,'',`<span>Hold still…</span>`);
   await wait(250); if(!alive(t))return;
   await anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],850,'linear'); if(!alive(t))return;
   if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
