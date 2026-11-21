@@ -334,7 +334,9 @@ body.rec.bare .foot{padding-bottom:12px}
 .pside button.ok::before{content:"✓";width:auto;height:auto;border-radius:0;color:#5BD17E;font-weight:700}
 .pside button.ok.on::before{color:#1E8E3E}
 .pside button.warn::before{background:#F2B33D}
-.field .rtk{display:block;margin-top:6px;font-size:13px;font-weight:600;color:var(--amber);text-decoration:underline;text-underline-offset:2px;padding:2px 0}
+.field .rtk{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13px;font-weight:500;color:var(--muted);padding:2px 0}
+.field .rtk svg{width:15px;height:15px}
+.field.unsure .fix{background:var(--amber);color:#fff;padding:6px 16px;border-radius:16px;font-size:14px;font-weight:600;line-height:18px}
 .field.editing .rtk{display:none}
 .bkboxes{position:absolute;inset:0;visibility:hidden;pointer-events:none}
 .bkboxes .ocrbox{opacity:0}
@@ -1315,10 +1317,10 @@ async function reading(){
   const siv=$('#si',v), showSide=i=>{ siv.classList.toggle('showback',!!i); if(i&&siv._showBack) siv._showBack();
     siv.querySelectorAll('.pside button').forEach((b,k)=>{ b.classList.toggle('on',k===i); b.setAttribute('aria-selected',k===i); });
     const hl=$('.pside .phl',siv), tg=siv.querySelectorAll('.pside button')[i], q=ratio();
-    anim(hl,[{transform:getComputedStyle(hl).transform,width:hl.offsetWidth+'px'},{transform:`translateX(${tg.offsetLeft-3}px)`,width:tg.offsetWidth+'px'}],450,'cubic-bezier(.4,0,.2,1)'); };
+    anim(hl,[{transform:getComputedStyle(hl).transform,width:hl.offsetWidth+'px'},{transform:`translateX(${tg.offsetLeft}px)`,width:tg.offsetWidth+'px'}],450,'cubic-bezier(.4,0,.2,1)'); };
   siv.querySelectorAll('.pside button').forEach(b=>b.addEventListener('click',e=>{ e.stopPropagation(); showSide(+b.dataset.s); }));
   siv.querySelectorAll('.pside button').forEach(b=>b.addEventListener('pointerdown',e=>e.stopPropagation()));
-  requestAnimationFrame(()=>{ const hl=$('.pside .phl',siv), b0=siv.querySelector('.pside button'); if(hl&&b0){ hl.style.width=b0.offsetWidth+'px'; hl.style.transform=`translateX(${b0.offsetLeft-3}px)`; } });
+  requestAnimationFrame(()=>{ const hl=$('.pside .phl',siv), b0=siv.querySelector('.pside button'); if(hl&&b0){ hl.style.width=b0.offsetWidth+'px'; hl.style.transform=`translateX(${b0.offsetLeft}px)`; } });
   let sx=null; siv.addEventListener('pointerdown',e=>{sx=e.clientX;});
   siv.addEventListener('pointerup',e=>{ if(sx==null) return; const dx=e.clientX-sx; sx=null; if(Math.abs(dx)>24) showSide(dx<0?1:0); });
   siv.addEventListener('pointercancel',()=>{sx=null;});
@@ -1347,7 +1349,7 @@ async function reading(){
     val.textContent = unsure ? (x.k==='num'?'M?234-56789-01234':'14 Jun 202?') : bad ? '12 Mar 2025' : x.v;
     anim(val,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],360,EASE.decel);
     if(unsure){ fe.classList.add('unsure'); $('.note',fe).textContent=x.k==='num'?'Glare hid one character. Please check it on your card.':'A hologram covers the last digit of the year. Please check.'; $('.ok',fe).outerHTML=`<button class="fix" id="fix">Fix</button>`;
-      $('.note',fe).insertAdjacentHTML('afterend',`<button class="rtk" data-side="front">Or retake the photo</button>`); }
+      $('.note',fe).insertAdjacentHTML('afterend',`<button class="rtk" data-side="front">${ICON.cam}<span>Or retake the photo</span></button>`); }
     else if(bad){ fe.classList.add('bad'); $('.note',fe).textContent='Expired on 12 Mar 2025'; $('.ok',fe).outerHTML=`<span style="color:var(--red-text)">${ICON.alert}</span>`; }
     else { fe.classList.add('filled'); anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop); }
   }
@@ -1491,7 +1493,7 @@ async function underReview(){
   $('#urGo',v).onclick=()=>checklist(true,'pop');
   // the photo carries over from "Check details" and settles into the middle
   anim($('.urcard',v),[{transform:'scale(.94)',opacity:0},{transform:'none',opacity:1}],900,'cubic-bezier(.4,0,.2,1)');
-  anim($('.urbadge',v),[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:600*K});
+  anim($('.urbadge',v),[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:350*K});
   // calm, slow motion while we wait: one turn every 6 s, a halo that breathes like a slow breath
   $('.urring .arc',v).animate([{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],{duration:6000,iterations:Infinity,easing:'linear'});
   $('.halo',v).animate([{transform:'scale(.92)',opacity:.35},{transform:'scale(1.06)',opacity:.7},{transform:'scale(.92)',opacity:.35}],{duration:5000,iterations:Infinity,easing:'ease-in-out'});
@@ -1515,16 +1517,16 @@ async function underReview(){
   const s1=seg(cy[0]+R+2,cy[1]-R-2,G), c2=ring(cy[1],B);
   const dot=el('circle',{cx:12,cy:cy[1],r:4,fill:B,opacity:0}), halo=el('circle',{cx:12,cy:cy[1],r:4,fill:B,opacity:0});
   const s2=seg(cy[1]+R+2,cy[2]-R-2,L), c3r=ring(cy[2],L);
-  await wait(400); if(!alive(t))return;
-  fade(items[0]); await draw(c1,CR,750); if(!alive(t))return;
-  anim(fill1,[{opacity:0},{opacity:1}],300,'ease'); await draw(tick,14,380); if(!alive(t))return;
-  await draw(s1,cy[1]-cy[0]-2*R-4,900); if(!alive(t))return;
-  fade(items[1]); await draw(c2,CR,750); if(!alive(t))return;
-  await anim(dot,[{opacity:0},{opacity:1}],350,'ease'); if(!alive(t))return;
+  await wait(200); if(!alive(t))return;
+  fade(items[0],350); await draw(c1,CR,380); if(!alive(t))return;
+  anim(fill1,[{opacity:0},{opacity:1}],180,'ease'); await draw(tick,14,200); if(!alive(t))return;
+  await draw(s1,cy[1]-cy[0]-2*R-4,420); if(!alive(t))return;
+  fade(items[1],350); await draw(c2,CR,380); if(!alive(t))return;
+  await anim(dot,[{opacity:0},{opacity:1}],180,'ease'); if(!alive(t))return;
   halo.animate([{r:4,opacity:.45},{r:10,opacity:0}],{duration:2400,iterations:Infinity,easing:'ease-out'});
-  await draw(s2,cy[2]-cy[1]-2*R-4,800); if(!alive(t))return;
-  fade(items[2],700); await draw(c3r,CR,700); if(!alive(t))return;
-  const nt=$('#nt',v); anim(nt,[{opacity:0},{opacity:1}],700,'ease');
+  await draw(s2,cy[2]-cy[1]-2*R-4,400); if(!alive(t))return;
+  fade(items[2],350); await draw(c3r,CR,350); if(!alive(t))return;
+  const nt=$('#nt',v); anim(nt,[{opacity:0},{opacity:1}],400,'ease');
   nt.onclick=()=>{
     if(nt.classList.contains('on')) return;
     nt.classList.add('on'); haptic('light');
