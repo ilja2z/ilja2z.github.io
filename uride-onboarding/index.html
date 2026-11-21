@@ -190,8 +190,11 @@ body.rec.bare .foot{padding-bottom:12px}
 .hc-frame.ok path{stroke:#1E8E3E}
 .chips span i{display:inline-grid;place-items:center;width:16px;height:16px;font-style:normal}
 .chips span{transition:border-color calc(300ms*var(--k)),background calc(300ms*var(--k)),color calc(300ms*var(--k));cursor:pointer}
-.chips span.on{border-color:var(--ink);color:var(--ink);box-shadow:0 0 0 1px var(--ink) inset}
-.chips span.on svg{color:var(--ink)}
+.chips.tipline{display:block;text-align:center;margin-top:18px;font-size:14.5px;line-height:20px;color:#5B6B78}
+.chips.tipline span{display:inline;border:0;background:none;padding:0;border-radius:0;cursor:default;transition:color calc(400ms*var(--k)) ease}
+.chips.tipline b{font-weight:400;margin:0 7px;color:#B8C3CA}
+.chips.tipline.playing span{color:#A9B5BE}
+.chips.tipline span.on{color:var(--ink);font-weight:500}
 .sidebox{display:flex;flex-direction:column;align-items:center;gap:6px}
 .sides{position:relative;display:flex;gap:6px;font-size:12px;font-weight:500}
 .sides span{position:relative;z-index:1;padding:3px 9px;border-radius:10px;color:rgba(255,255,255,.6);transition:color calc(400ms*var(--k)) ease}
@@ -874,7 +877,7 @@ async function licenceIntro(dir='push'){
       <div class="hc-dim"></div>
       <svg class="hc-frame" viewBox="0 0 296 203" fill="none" stroke="#1F2A37" stroke-width="3" stroke-linecap="round"><path d="M1.5 36V29.5A28 28 0 0 1 29.5 1.5H36"/><path d="M260 1.5H266.5A28 28 0 0 1 294.5 29.5V36"/><path d="M1.5 167V173.5A28 28 0 0 0 29.5 201.5H36"/><path d="M260 201.5H266.5A28 28 0 0 0 294.5 173.5V167"/></svg>
     </div>
-    <div class="chips"><span data-c="0"><i>${ICON.sun}</i>Good light</span><span data-c="1"><i>${ICON.surface}</i>Contrasting surface</span><span data-c="2"><i>${ICON.hand}</i>Hold still</span></div>
+    <p class="chips tipline" aria-label="Tips: good light, contrasting surface, hold still"><span data-c="0">Good light</span><b aria-hidden="true">·</b><span data-c="1">Contrasting surface</span><b aria-hidden="true">·</b><span data-c="2">Hold still</span></p>
     <p class="privacy">${ICON.lock}<span>Only used to check you can drive with Uride</span></p>
   </div>
   <div class="foot">
@@ -886,7 +889,6 @@ async function licenceIntro(dir='push'){
   $('#scan',v).onclick=()=>camera();
   $('#man',v).onclick=()=>manual();
   tipsStory(v);
-  v.querySelector('.chips').onclick=()=>tipsStory(v);       // tap a tip to watch it again
   // no extra entrance for the content: it travels with the screen, one motion only
 }
 
@@ -900,7 +902,8 @@ async function tipsStory(v){
   chips.forEach(c=>c.classList.remove('done','on'));
   frame.classList.remove('ok'); dim.style.opacity=.72; surf.classList.remove('dark'); card.style.filter=''; card.style.transform='';
   // these are tips, not checks: the chip being illustrated is highlighted, nothing is ticked
-  const act=i=>chips.forEach((c,k)=>c.classList.toggle('on',k===i));
+  const line=v.querySelector('.chips');
+  const act=i=>{ line.classList.toggle('playing',i>=0); chips.forEach((c,k)=>c.classList.toggle('on',k===i)); };
   await wait(150); if(!ok()) return;
   // 1 · good light: the card comes out of the dark
   act(0);
