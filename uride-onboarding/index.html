@@ -707,9 +707,6 @@ async function show(html, dir='push', dark=false){
 const VIB={success:[12,60,18],warning:[18,80,18],error:[14,50,14,50,14],light:[8],'medium impact':[16],selection:[5]};
 function haptic(label){
   try{ if(navigator.vibrate && VIB[label]) navigator.vibrate(VIB[label]); }catch(e){}
-  let h=$('.haptic',screen); if(!h){h=document.createElement('div');h.className='haptic';screen.appendChild(h);}
-  h.innerHTML=`<i></i>Haptic · ${label}`;
-  anim(h,[{opacity:0,minWidth:'96px'},{opacity:1,minWidth:'150px',offset:.15},{opacity:1,minWidth:'150px',offset:.85},{opacity:0,minWidth:'96px'}],1600,EASE.std);
 }
 async function toast(html){
   screen.querySelectorAll('.toast').forEach(n=>n.remove());
@@ -993,19 +990,36 @@ async function camera(retry=false){
    The video is lightly stabilised (the card is eased towards the frame, hand tremor stays).
    Cues follow what the footage shows: expired card held 1–6.5 s, swap 7–10 s, glare on the new card 11.4–14.3 s,
    front captured at 14.6 s as the glare slides off, flip ~17.8 s, sharp back 19–20.3 s */
+let REALVID=null;
+function realVideo(){
+  if(REALVID) return REALVID;
+  const vid=document.createElement('video');
+  vid.muted=true; vid.defaultMuted=true; vid.playsInline=true; vid.setAttribute('playsinline',''); vid.setAttribute('webkit-playsinline','');
+  vid.preload='auto'; vid.poster='real/poster.jpg';
+  vid.innerHTML=`<source src="real/scan.mp4" type="video/mp4"><source src="real/scan.webm" type="video/webm">`;
+  Object.assign(vid.style,{position:'fixed',left:'-10px',top:'0',width:'2px',height:'2px',opacity:0,pointerEvents:'none'});
+  document.body.appendChild(vid); vid.load(); REALVID=vid;
+  // iOS only buffers after play(): start muted, then stop at once, so the camera opens without waiting
+  const p=vid.play(); if(p&&p.then) p.then(()=>{ if(!vid.closest('.cam')){ vid.pause(); vid.currentTime=0; } }).catch(()=>{});
+  return vid;
+}
+if(new URLSearchParams(location.search).get('s')==='real') setTimeout(realVideo,300);
 async function realCamera(v,t){
   const wd=$('#wd',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), prog=$('#prog',v), fl=$('#fl',v), cam=$('.cam',v);
   const gt=parseFloat(cam.style.getPropertyValue('--gt'))||228;
-  wd.innerHTML=`<video id="rv" muted playsinline webkit-playsinline preload="auto" poster="real/poster.jpg"><source src="real/scan.mp4" type="video/mp4"><source src="real/scan.webm" type="video/webm"></video>`;
-  const vid=$('#rv',wd);
-  Object.assign(vid.style,{position:'absolute',left:'0',top:(gt+98.5-326.5)+'px',width:'360px',height:'880px',objectFit:'cover',opacity:0,background:'#3b2416'});
-  setPill(pill,'',`<span class="spinner" style="border-color:rgba(255,255,255,.25);border-top-color:#fff"></span><span>Starting camera…</span>`);
-  await new Promise(r=>{ if(vid.readyState>=3) return r(); vid.addEventListener('canplaythrough',r,{once:true}); setTimeout(r,6000); });
+  const vid=realVideo(); vid.id='rv';
+  vid.pause(); try{ vid.currentTime=0; }catch(e){}
+  Object.assign(vid.style,{opacity:1,pointerEvents:'none',position:'absolute',left:'0',top:(gt+98.5-326.5)+'px',width:'360px',height:'880px',objectFit:'cover',background:'#3b2416 url(real/poster.jpg) center/cover'});
+  wd.innerHTML=''; wd.appendChild(vid);
+  anim(vid,[{opacity:0,filter:'blur(6px) brightness(.6)'},{opacity:1,filter:'none'}],400,EASE.decel);
+  if(vid.readyState<3){
+    setPill(pill,'',`<span class="spinner" style="border-color:rgba(255,255,255,.25);border-top-color:#fff"></span><span>Starting camera…</span>`);
+    await new Promise(r=>{ vid.addEventListener('canplay',r,{once:true}); setTimeout(r,4000); });
+  }
   if(!alive(t)) return;
   let hold=false;                                         // freeze the feed while a sheet waits for the driver
-  vid.playbackRate=Math.max(.5,1/K);
+  vid.playbackRate=Math.min(1,Math.max(.5,1/K));
   try{ await vid.play(); }catch(e){}
-  anim(vid,[{opacity:0,filter:'blur(6px) brightness(.6)'},{opacity:1,filter:'none'}],500,EASE.decel);
   setPill(pill,'',`<span>Place the front of your licence in the frame</span>`);
   const at=s=>new Promise(r=>{ const tick=()=>{
       if(!alive(t)||!vid.isConnected){ vid.pause(); return r(); }
@@ -1024,9 +1038,11 @@ async function realCamera(v,t){
   await at(3.95); if(!alive(t))return;
   // 2. we read the date straight away and stop before the flip; the camera stays live behind the sheet
   const sheet=expiredSheet(v,t);
-  at(7.6).then(()=>{ if($('.xsheet',v)) hold=true; });     // card is off the table: wait here for the tap
+  // the old card leaves the table, then the feed waits for the tap, so the new card never arrives under the sheet
+  (async()=>{ while(alive(t) && vid.currentTime<7.4 && $('.xsheet',v)) await new Promise(r=>requestAnimationFrame(r));
+    if($('.xsheet',v)){ hold=true; vid.pause(); } })();
   const ok=await sheet; if(!alive(t)||!ok) return;
-  hold=false; cardOld=false;
+  hold=false; cardOld=false; vid.play().catch(()=>{});
   gd.classList.remove('locked','warn'); anim(prog,[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
   setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a plain, contrasting surface and avoid direct light');
   // 3. the desk lamp reflects on the new card
@@ -1337,7 +1353,7 @@ async function underReview(){
       <svg class="urring" width="176" height="176" viewBox="0 0 176 176"><circle cx="88" cy="88" r="78" fill="none" stroke="#E6EBEE" stroke-width="4"/>
         <circle class="arc" cx="88" cy="88" r="78" fill="none" stroke="url(#urg)" stroke-width="4" stroke-linecap="round" stroke-dasharray="${C*.28} ${C}"/>
         <defs><linearGradient id="urg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1A5FB4" stop-opacity="0"/><stop offset="1" stop-color="#1A5FB4"/></linearGradient></defs></svg>
-      <div class="urcard"><div class="face">${realFace('front',cardFront('2029/06/14'))}</div><span class="urbadge">${ICON.clock}</span></div>
+      <div class="urcard"><div class="face">${cardFront('2029/06/14')}</div><span class="urbadge">${ICON.clock}</span></div>
     </div>
     <h2 class="urt">Licence sent for review</h2>
     <p class="urp">We check it with the issuing office. It usually takes less than 24 hours, and you can keep going in the meantime.</p>
@@ -1545,7 +1561,7 @@ if(STUDY){
 }
 if(matchMedia('(prefers-reduced-motion: reduce)').matches) setPace(.01);
 if(!STUDY) start();
-if(REC&&!STUDY){ let seen=false; try{seen=localStorage.getItem('urideHint')==='1';}catch(e){}
+if(REC&&!STUDY&&!Q.get('s')){ let seen=false; try{seen=localStorage.getItem('urideHint')==='1';}catch(e){}
   if(!seen){ const h=document.createElement('div'); h.className='hint1'; h.textContent='Hold the top edge for the menu'; document.body.appendChild(h);
     setTimeout(()=>h.remove(),3500); try{localStorage.setItem('urideHint','1');}catch(e){} } }
 </script>
