@@ -97,7 +97,8 @@ input{font:inherit;color:inherit}
 .urbadge{position:absolute;right:-12px;bottom:-12px;width:32px;height:32px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;border:3px solid #fff}
 .ur.compact .urhero{width:140px;height:140px;margin:0 0 12px}
 .ur.compact .urring{width:140px;height:140px}
-.ur.compact .urcard{transform:scale(.85)}
+.ur.compact .urcard{scale:.85}
+.urcard{opacity:0}.urbadge{transform:scale(0)}.urtl .ti{opacity:0}.ur .notify{opacity:0}
 .ur.compact .urp{font-size:14px;line-height:20px}
 .ur.compact .urtl{margin-top:16px;gap:12px}
 .urt{font-size:22px;line-height:28px;color:var(--ink);font-weight:700}
@@ -180,7 +181,7 @@ body.rec.bare .foot{padding-bottom:12px}
 .urtl .ti .d{border-color:transparent!important;background:transparent!important}
 .urtl .ti .d::after,.urtl .ti .d i{display:none}
 /* tips story on the intro card */
-.hc-surface{position:absolute;inset:10px;border-radius:21px;background:#E3E8EC;transition:background calc(1600ms*var(--k)) cubic-bezier(.45,0,.55,1)}
+.hc-surface{position:absolute;inset:10px;border-radius:21px;background:#E3E8EC;transition:background calc(800ms*var(--k)) cubic-bezier(.45,0,.55,1)}
 .hc-surface.dark{background:#2C3136}
 .hc-dim{position:absolute;inset:10px;border-radius:21px;background:#0E1114;opacity:.72;pointer-events:none}
 .hc-warm{position:absolute;inset:10px;border-radius:21px;background:radial-gradient(80% 80% at 50% 30%,#FFB86B,rgba(255,184,107,0));mix-blend-mode:soft-light;pointer-events:none}
@@ -246,7 +247,7 @@ body.rec.bare .foot{padding-bottom:12px}
 .list{display:flex;flex-direction:column;gap:8px}
 .item{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;text-align:left;width:100%;position:relative;transition:border-color calc(240ms*var(--k)),box-shadow calc(240ms*var(--k)),background calc(240ms*var(--k))}
 .item.next{border-color:var(--ink);box-shadow:0 4px 14px -6px rgba(31,42,55,.25)}
-.item .ic{position:relative;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:none;transition:background calc(240ms*var(--k))}
+.item .ic{position:relative;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:none;transition:background calc(600ms*var(--k)) cubic-bezier(.4,0,.2,1),color calc(600ms*var(--k)) cubic-bezier(.4,0,.2,1)}
 .item .tx{flex:1;min-width:0}
 .item .tx b{display:block;font-size:16px;line-height:22px;color:var(--ink);font-weight:500}
 .item .tx small{display:block;font-size:13px;line-height:18px;margin-top:1px}
@@ -316,7 +317,17 @@ body.rec.bare .foot{padding-bottom:12px}
 
 /* reading / review */
 .scanimg{position:relative;width:100%;aspect-ratio:1.586;border-radius:12px;overflow:hidden;margin-top:6px;box-shadow:0 8px 20px -10px rgba(16,24,40,.35)}
-.scanimg .face{position:absolute;inset:0}
+.scanimg .face{position:absolute;inset:0;transition:opacity calc(380ms*var(--k)) cubic-bezier(.4,0,.2,1),transform calc(450ms*var(--k)) cubic-bezier(.4,0,.2,1)}
+.scanimg{touch-action:pan-y;cursor:pointer}
+.scanimg .face.bk{opacity:0;transform:translateX(10%)}
+.scanimg.showback .face.fr{opacity:0;transform:translateX(-10%)}
+.scanimg.showback .face.bk{opacity:1;transform:none}
+.scanimg.showback .ocrbox,.scanimg.showback .beam{visibility:hidden}
+.sdots{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:5px;padding:4px 6px;border-radius:10px;background:rgba(16,24,40,.35);z-index:3}
+.sdots i{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.5);transition:background calc(300ms*var(--k)),width calc(300ms*var(--k))}
+.sdots i.on{background:#fff;width:14px}
+.thumb{cursor:pointer;transition:border-color calc(300ms*var(--k)),box-shadow calc(300ms*var(--k))}
+.thumb.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .realimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.ghostsvg{position:absolute;inset:0;opacity:0}.ghostsvg svg{width:100%;height:100%}
 .scanline{position:absolute;left:0;right:0;height:56px;top:-56px;background:linear-gradient(to bottom,rgba(26,95,180,0),rgba(26,95,180,.22) 70%,rgba(26,95,180,.9) 98%,rgba(26,95,180,0));pointer-events:none}
 .ocrbox{position:absolute;border:2px solid #22A04B;border-radius:4px;background:rgba(34,160,75,.08);opacity:0;pointer-events:none}
@@ -777,27 +788,21 @@ const item=(i,st)=>`<button class="item ${STATE[st][0]} ${st==='next'?'next':''}
 // then the badge pops and its mark draws itself (same idea as the tips chips on the licence intro)
 const strokes=sv=>[...sv.querySelectorAll('path,circle,rect,line')].filter(p=>p.getAttribute('fill')!=='currentColor');
 async function morph(el,i,st){
-  const pen='cubic-bezier(.45,0,.55,1)';
-  const old=$('.ic > svg',el), ob=$('.bdg',el);
-  strokes(old).forEach(p=>{ p.setAttribute('pathLength','1'); p.style.strokeDasharray='1'; });
-  const txt=[...el.querySelectorAll('.tx,.go,.chev')];
-  await Promise.all([
-    ...strokes(old).map(p=>anim(p,[{strokeDashoffset:0},{strokeDashoffset:-1}],380,pen)),
-    ...[...old.querySelectorAll('[fill="currentColor"]')].map(p=>anim(p,[{opacity:1},{opacity:0}],200,'ease')),
-    ob?anim(ob,[{transform:'scale(1)'},{transform:'scale(0)'}],220,EASE.accel):null,
-    ...txt.map(p=>anim(p,[{opacity:1},{opacity:0}],260,'cubic-bezier(.4,0,.2,1)'))]);
-  el.className=`item ${STATE[st][0]} ${st==='next'?'next':''}`; el.innerHTML=itemInner(i,st);
-  const sv=$('.ic > svg',el), bd=$('.bdg',el);
-  const ss=strokes(sv);
-  ss.forEach(p=>{ p.setAttribute('pathLength','1'); p.style.strokeDasharray='1'; p.style.strokeDashoffset='1'; });
-  sv.querySelectorAll('[fill="currentColor"]').forEach(p=>anim(p,[{opacity:0},{opacity:1}],300,'ease',{delay:500*K,fill:'both'}));
-  ss.forEach((p,k)=>anim(p,[{strokeDashoffset:1},{strokeDashoffset:0}],750,pen,{delay:k*90*K,fill:'both'}));
-  el.querySelectorAll('.tx,.go,.chev').forEach(p=>anim(p,[{opacity:0},{opacity:1}],480,'cubic-bezier(.4,0,.2,1)',{delay:150*K,fill:'both'}));
-  if(bd){
-    const bs=strokes($('svg',bd)); bs.forEach(p=>{ p.setAttribute('pathLength','1'); p.style.strokeDasharray='1'; p.style.strokeDashoffset='1'; });
-    await anim(bd,[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:(450+ss.length*90)*K,fill:'both'});
-    await Promise.all(bs.map((p,k)=>anim(p,[{strokeDashoffset:1},{strokeDashoffset:0}],450,pen,{delay:k*120*K,fill:'both'})));
-  } else await wait(750+ss.length*90);
+  const soft='cubic-bezier(.4,0,.2,1)', pen='cubic-bezier(.45,0,.55,1)';
+  const txt=[...el.querySelectorAll('.tx,.go,.chev')], ob=$('.bdg',el);
+  await Promise.all([ob?anim(ob,[{transform:'scale(1)'},{transform:'scale(0)'}],220,EASE.accel):null,
+    ...txt.map(p=>anim(p,[{opacity:1},{opacity:0}],260,soft))]);
+  if(ob) ob.remove(); txt.forEach(p=>p.remove());
+  el.className=`item ${STATE[st][0]} ${st==='next'?'next':''}`;      // the icon keeps its shape: its tile and colour ease over (CSS)
+  const tmp=document.createElement('div'); tmp.innerHTML=itemInner(i,st);
+  const nb=$('.bdg',tmp), rest=[...tmp.children].slice(1);
+  rest.forEach(n=>{ el.appendChild(n); anim(n,[{opacity:0},{opacity:1}],480,soft,{delay:120*K,fill:'both'}); });
+  if(nb){
+    $('.ic',el).appendChild(nb);
+    const bs=[...nb.querySelectorAll('path,circle')]; bs.forEach(p=>{ p.setAttribute('pathLength','1'); p.style.strokeDasharray='1'; p.style.strokeDashoffset='1'; });
+    await anim(nb,[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:300*K,fill:'both'});
+    await Promise.all(bs.map((p,k)=>anim(p,[{strokeDashoffset:1},{strokeDashoffset:0}],420,pen,{delay:k*110*K,fill:'both'})));
+  } else await wait(600);
 }
 function ring(frac,label){
   const c=2*Math.PI*24;
@@ -876,23 +881,23 @@ async function tipsStory(v){
   // the chip turns green first, then the icon turns away and a tick draws itself in
   const done=async i=>{ const c=chips[i], ic=c.querySelector('i');
     c.classList.add('done');
-    await anim(ic.firstElementChild,[{transform:'rotate(0) scale(1)',opacity:1},{transform:'rotate(-90deg) scale(.4)',opacity:0}],260,EASE.accel);
+    await anim(ic.firstElementChild,[{transform:'rotate(0) scale(1)',opacity:1},{transform:'rotate(-90deg) scale(.4)',opacity:0}],180,EASE.accel);
     ic.innerHTML=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="24" stroke-dashoffset="24"/></svg>`;
     const p=ic.querySelector('path'); anim(ic.firstElementChild,[{transform:'scale(.7)'},{transform:'scale(1)'}],SPR.pop);
-    await anim(p,[{strokeDashoffset:24},{strokeDashoffset:0}],380,soft); };
-  await wait(250); if(!ok()) return;
+    await anim(p,[{strokeDashoffset:24},{strokeDashoffset:0}],260,soft); };
+  await wait(150); if(!ok()) return;
   // 1 · good light: the card comes out of the dark
-  await anim(dim,[{opacity:.72},{opacity:0}],750,'cubic-bezier(.3,0,.2,1)'); dim.style.opacity=0; if(!ok()) return;
-  await done(0); await wait(500); if(!ok()) return;
+  await anim(dim,[{opacity:.72},{opacity:0}],420,'cubic-bezier(.3,0,.2,1)'); dim.style.opacity=0; if(!ok()) return;
+  await done(0); await wait(220); if(!ok()) return;
   // 2 · contrasting surface: the table under the card slowly darkens, then the tip is ticked
-  surf.classList.add('dark'); await wait(1700); if(!ok()) return;
-  await done(1); await wait(500); if(!ok()) return;
+  surf.classList.add('dark'); await wait(850); if(!ok()) return;
+  await done(1); await wait(220); if(!ok()) return;
   // 3 · hold still: a real hand shake (small, quick, irregular jerks with a little blur), then the card stops
-  await shake(card,1500,ok); if(!ok()) return;
-  frame.classList.add('ok'); await wait(250); if(!ok()) return;
+  await shake(card,800,ok); if(!ok()) return;
+  frame.classList.add('ok'); await wait(150); if(!ok()) return;
   await done(2);
-  const hb=$('.hc-beam',v); await wait(300); if(!ok()) return;
-  hb.animate([{transform:'translateY(-10px)',opacity:0},{opacity:.9,offset:.1},{opacity:.9,offset:.88},{transform:'translateY(160px)',opacity:0}],{duration:2000*K,easing:'linear'});
+  const hb=$('.hc-beam',v); await wait(150); if(!ok()) return;
+  hb.animate([{transform:'translateY(-10px)',opacity:0},{opacity:.9,offset:.1},{opacity:.9,offset:.88},{transform:'translateY(160px)',opacity:0}],{duration:1200*K,easing:'linear'});
 }
 /* hand shake: a new random target every 60–110 ms, reached quickly, so the movement is jerky like a real hand */
 function shake(el,ms,ok){
@@ -1031,7 +1036,7 @@ async function realRetake(v,t,side){
       if(PAUSED){ if(!vid.paused) vid.pause(); } else if(vid.paused && !vid.ended) vid.play().catch(()=>{});
       if(vid.currentTime>=s||vid.ended) return r();
       requestAnimationFrame(tick); }; tick(); });
-  const L=side==='front'?[.35,1.0,1.15,1.25]:[.3,.9,1.05,1.15];
+  const L=side==='front'?[.5,1.0,1.15,1.25]:[.3,.9,1.05,1.15];
   await at(L[0]); if(!alive(t))return;
   spec('camera'); gd.querySelectorAll('.cn').forEach(c=>{ c.style.transitionDuration=(SPR.snap.ms*K)+'ms'; c.style.transitionTimingFunction=SPR.snap.e; });
   gd.classList.add('locked'); setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`); setHint(ch,'Keep it there');
@@ -1265,10 +1270,10 @@ async function reading(){
   const t=RUN, f0=F(), f={...f0, unsure: f0.unsure && !(f0.real && REAL_FRONT_CLEAN)}; spec('read');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Check details</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
-    <div class="scanimg" id="si"><div class="face">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div></div>
+    <div class="scanimg" id="si"><div class="face fr">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div><div class="face bk">${realFace('back',cardBack())}</div><div class="sdots"><i class="on"></i><i></i></div></div>
     <div class="thumbs">
-      <div class="thumb"><div class="mini"><div class="face">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div></div>Front<button class="rt">Retake</button></div>
-      <div class="thumb"><div class="mini"><div class="face">${realFace('back',cardBack())}</div></div>Back<button class="rt">Retake</button></div>
+      <div class="thumb on" data-s="0"><div class="mini"><div class="face">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div></div>Front<button class="rt">Retake</button></div>
+      <div class="thumb" data-s="1"><div class="mini"><div class="face">${realFace('back',cardBack())}</div></div>Back<button class="rt">Retake</button></div>
     </div>
     <div id="bn"></div>
     <div class="status" id="stt"><span class="spinner"></span>Reading your licence…</div>
@@ -1277,7 +1282,15 @@ async function reading(){
   <div class="foot"><button class="btn primary" id="go" disabled>Looks right, continue</button></div>`;
   const v=await show(html,'handoff',false);
   $('#bk',v).onclick=()=>{RUN++;licenceIntro('pop');};
-  v.querySelectorAll('.rt').forEach((b,k)=>b.onclick=()=>{RUN++;camera(true,k?'back':'front');});
+  v.querySelectorAll('.rt').forEach((b,k)=>b.onclick=e=>{e.stopPropagation();RUN++;camera(true,k?'back':'front');});
+  // see both photos: tap a thumbnail or swipe the big photo
+  const siv=$('#si',v), showSide=i=>{ siv.classList.toggle('showback',!!i);
+    v.querySelectorAll('.thumb').forEach(th=>th.classList.toggle('on',+th.dataset.s===i));
+    siv.querySelectorAll('.sdots i').forEach((d,k)=>d.classList.toggle('on',k===i)); };
+  v.querySelectorAll('.thumb').forEach(th=>th.onclick=()=>showSide(+th.dataset.s));
+  let sx=null; siv.addEventListener('pointerdown',e=>{sx=e.clientX;});
+  siv.addEventListener('pointerup',e=>{ if(sx==null) return; const dx=e.clientX-sx; sx=null;
+    if(Math.abs(dx)>24) showSide(dx<0?1:0); else showSide(siv.classList.contains('showback')?0:1); });
   const si=$('#si',v), go=$('#go',v);
   // shared-element hand-off: the photo moves up from where the card was in the frame
   anim(si,[{opacity:.0,transform:'scale(.985)'},{opacity:1,transform:'none'}],500,EASE.std);
@@ -1410,7 +1423,7 @@ async function underReview(){
   const t=RUN; spec('review');
   const C=2*Math.PI*78;
   const html=`<div class="top"><span style="width:44px"></span><h1></h1></div>
-  <div class="body ur">
+  <div class="body ur${screen.clientHeight<720?' compact':''}">
     <div class="urhero">
       <div class="halo"></div>
       <svg class="urring" width="176" height="176" viewBox="0 0 176 176"><circle cx="88" cy="88" r="78" fill="none" stroke="#E6EBEE" stroke-width="4"/>
@@ -1430,7 +1443,6 @@ async function underReview(){
   <div class="foot"><button class="btn primary" id="urGo">Continue registration</button><p class="help">Next: Work eligibility · 8 steps left, about 15 min</p></div>`;
   const v=await show(html,'fade');
   ptrack('proto_complete',{seconds:T0.t?Math.round((performance.now()-T0.t)/1000):0});
-  if(screen.clientHeight<720) $('.ur',v).classList.add('compact');
   $('#urGo',v).onclick=()=>checklist(true,'pop');
   // the photo carries over from "Check details" and settles into the middle
   anim($('.urcard',v),[{transform:'scale(.94)',opacity:0},{transform:'none',opacity:1}],900,'cubic-bezier(.4,0,.2,1)');
