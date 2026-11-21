@@ -116,7 +116,12 @@ input{font:inherit;color:inherit}
 .ti b{display:block;font-size:15px;color:var(--ink);font-weight:500}
 .ti small{font-size:13px;color:var(--muted)}
 .notify{transition:background calc(700ms*var(--k)) ease,border-color calc(700ms*var(--k)) ease,color calc(700ms*var(--k)) ease !important;margin-top:20px;align-self:stretch;height:48px;border-radius:12px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:500;color:var(--ink);transition:background calc(300ms*var(--k)),border-color calc(300ms*var(--k))}
-.notify.on{background:var(--green-soft);border-color:#A6D8B4;color:var(--green)}
+.notify{justify-content:flex-start!important;padding:0 12px 0 16px}
+.notify .nl{flex:1;text-align:left}
+.notify .sw{flex:none;width:44px;height:26px;border-radius:13px;background:#D5DCE1;position:relative;transition:background calc(250ms*var(--k)) ease}
+.notify .sw i{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(16,24,40,.3);transition:transform calc(320ms*var(--k)) cubic-bezier(.3,.7,.4,1.15)}
+.notify.on .sw{background:var(--green)}
+.notify.on .sw i{transform:translateX(18px)}
 .notify .bell{display:inline-block;transform-origin:50% 10%}
 .notify .nl{display:inline-block;white-space:nowrap;overflow:hidden;vertical-align:bottom}
 
@@ -1483,7 +1488,7 @@ async function underReview(){
       <div class="ti now"><span class="d"></span><div><b>Checking your licence</b><small>Usually within 24 h</small></div></div>
       <div class="ti"><span class="d"></span><div><b>We’ll let you know</b><small>Notification and email</small></div></div>
     </div>
-    <button class="notify" id="nt"><span class="bell">🔔</span><span class="nl">Notify me when it’s done</span></button>
+    <button class="notify" id="nt" role="switch" aria-checked="false"><span class="bell">🔔</span><span class="nl">Notify me when it’s done</span><span class="sw" aria-hidden="true"><i></i></span></button>
   </div>
   <div class="foot"><button class="btn primary" id="urGo">Continue registration</button><p class="help">Next: Work eligibility · 8 steps left, about 15 min</p></div>`;
   const v=await show(html,'fade');
@@ -1525,15 +1530,11 @@ async function underReview(){
   await draw(s2,cy[2]-cy[1]-2*R-4,400); if(!alive(t))return;
   fade(items[2],350); await draw(c3r,CR,350); if(!alive(t))return;
   const nt=$('#nt',v); anim(nt,[{opacity:0},{opacity:1}],400,'ease');
+  // a preference, so a real switch: on and off are both fine, and the state is always visible
   nt.onclick=()=>{
-    if(nt.classList.contains('on')) return;
-    nt.classList.add('on'); haptic('light');
-    anim($('.bell',nt),[{transform:'rotate(0)'},{transform:'rotate(-18deg)',offset:.14},{transform:'rotate(13deg)',offset:.32},{transform:'rotate(-8deg)',offset:.5},{transform:'rotate(4deg)',offset:.68},{transform:'rotate(-1.5deg)',offset:.84},{transform:'rotate(0)'}],1500,'cubic-bezier(.4,0,.2,1)');
-    const nl=$('.nl',nt), w0=nl.getBoundingClientRect().width/ratio();
-    anim(nl,[{opacity:1},{opacity:0}],350,'cubic-bezier(.4,0,.2,1)').then(()=>{
-      nl.textContent='You’ll get a notification'; nl.style.width='auto'; const w1=nl.getBoundingClientRect().width/ratio();
-      anim(nl,[{width:w0+'px'},{width:w1+'px'}],700,'cubic-bezier(.4,0,.2,1)');
-      anim(nl,[{opacity:0},{opacity:1}],600,'cubic-bezier(.4,0,.2,1)',{delay:150*K,fill:'both'}); });
+    const on=!nt.classList.contains('on');
+    nt.classList.toggle('on',on); nt.setAttribute('aria-checked',on); haptic('light');
+    if(on) anim($('.bell',nt),[{transform:'rotate(0)'},{transform:'rotate(-18deg)',offset:.14},{transform:'rotate(13deg)',offset:.32},{transform:'rotate(-8deg)',offset:.5},{transform:'rotate(4deg)',offset:.68},{transform:'rotate(-1.5deg)',offset:.84},{transform:'rotate(0)'}],1500,'cubic-bezier(.4,0,.2,1)');
   };
 }
 
