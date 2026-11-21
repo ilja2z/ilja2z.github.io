@@ -328,7 +328,7 @@ body.rec.bare .foot{padding-bottom:12px}
 .sdots i.on{background:#fff;width:14px}
 .thumb{transition:border-color calc(500ms*var(--k)),background calc(500ms*var(--k))}
 .thumb.warn{border-color:var(--amber-line);background:var(--amber-soft)}
-.realimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.ghostsvg{position:absolute;inset:0;opacity:0}.ghostsvg svg{width:100%;height:100%}
+.realimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.ghostsvg{position:absolute;inset:3.65% 3.71%;opacity:0}.ghostsvg svg{width:100%;height:100%}
 .scanline{position:absolute;left:0;right:0;height:56px;top:-56px;background:linear-gradient(to bottom,rgba(26,95,180,0),rgba(26,95,180,.22) 70%,rgba(26,95,180,.9) 98%,rgba(26,95,180,0));pointer-events:none}
 .ocrbox{position:absolute;border:2px solid #22A04B;border-radius:4px;background:rgba(34,160,75,.08);opacity:0;pointer-events:none}
 .ocrbox.unsure{border-color:#E8A317;background:rgba(232,163,23,.12)}
@@ -1015,7 +1015,7 @@ async function camera(retry=false, side=null){
 /* real camera: one take filmed on an iPhone with printed specimen cards under a desk lamp.
    The video is lightly stabilised (the card is eased towards the frame, hand tremor stays).
    Cues follow what the footage shows: expired card held 1–6.5 s, swap 7–10 s, glare on the new card 11.4–14.3 s,
-   front captured at 14.6 s as the glare slides off, flip ~17.8 s, sharp back 19–20.3 s */
+   front captured at 15.5 s with a trace of glare left on the number, flip ~17.8 s, sharp back 19–20.3 s */
 /* retake in real-camera mode: a short clip of one side. Front retake = the same card without the glare (happy path) */
 async function realRetake(v,t,side){
   const wd=$('#wd',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), prog=$('#prog',v), fl=$('#fl',v), cam=$('.cam',v);
@@ -1114,13 +1114,13 @@ async function realCamera(v,t){
   setHint(ch,'The light is reflecting on the card');
   await at(14.1); if(!alive(t))return;
   gd.classList.remove('warn'); setPill(pill,'',`<span>That’s better</span>`); setHint(ch,'Keep it there');
-  await at(14.25); if(!alive(t))return; lock(350);
-  await at(14.6); if(!alive(t))return; capture('Front captured');
-  await at(14.85); if(!alive(t))return; gd.classList.remove('locked');   // photo taken: the frame lets go, the trace of glare stays
+  await at(14.9); if(!alive(t))return; lock(600);                        // the card has settled fully inside the frame
+  await at(15.5); if(!alive(t))return; capture('Front captured');        // captured with the small trace of glare on the number
+  await at(15.7); if(!alive(t))return; gd.classList.remove('locked');   // photo taken: the frame lets go, the trace of glare stays
   // the front is read at once, as with the old card: the date is fine, so no stop here
-  await at(14.75); if(!alive(t))return;
+  await at(15.85); if(!alive(t))return;
   setPill(pill,'',`<span class="spinner" style="border-color:rgba(255,255,255,.25);border-top-color:#fff"></span><span>Checking the front…</span>`);
-  await at(15.75); if(!alive(t))return;
+  await at(16.75); if(!alive(t))return;
   // 4. back
   spec('flip'); $('#sdF',v).classList.add('ok');
   setPill(pill,'',`<span>Great. Now turn it over</span>`); setHint(ch,'Same place, back side up');
