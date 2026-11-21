@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uride licence scan · how it evolved · Illia Vostrikov</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400..700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Google Sans",-apple-system,Segoe UI,Roboto,sans-serif;background:#F3F5F6;color:#1F2A37;-webkit-font-smoothing:antialiased;line-height:1.5}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:56px 24px 80px}
+header h1{font-size:clamp(28px,4vw,40px);line-height:1.15;font-weight:700;letter-spacing:-.3px;max-width:760px}
+header p{margin-top:14px;font-size:17px;color:#4A5965;max-width:680px}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.links a{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:15px;font-weight:600;padding:10px 16px;border-radius:22px;border:1px solid #CBD3D9;background:#fff}
+.links a.main{background:#C8372D;border-color:#C8372D;color:#fff}
+section{margin-top:64px}
+.step{display:flex;align-items:baseline;gap:12px}
+.step span{font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#7A8A96}
+section h2{font-size:24px;line-height:1.25;font-weight:700;margin-top:6px}
+section > p{margin-top:8px;font-size:16px;color:#4A5965;max-width:720px}
+.strip{display:flex;gap:16px;margin-top:22px;overflow-x:auto;padding:4px 2px 18px;scroll-snap-type:x mandatory}
+.strip figure{flex:none;width:calc((100% - 80px)/6);min-width:150px;max-width:200px;scroll-snap-align:start}
+.strip img{width:100%;display:block;border-radius:22px;background:#fff;box-shadow:0 12px 28px -16px rgba(16,24,40,.45);border:1px solid #E1E6EA}
+.strip figcaption{margin-top:10px;font-size:13.5px;line-height:1.4;color:#4A5965}
+.strip figcaption b{display:block;color:#1F2A37;font-weight:600}
+ul.notes{margin-top:6px;list-style:none;display:grid;gap:8px;max-width:760px}
+ul.notes li{position:relative;padding-left:18px;font-size:15.5px;color:#3E4958}
+ul.notes li::before{content:"";position:absolute;left:2px;top:10px;width:6px;height:6px;border-radius:50%;background:#9AA8B3}
+ul.notes b{color:#1F2A37;font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:22px}
+.card{background:#fff;border:1px solid #E1E6EA;border-radius:16px;padding:18px 18px 20px}
+.card .n{width:26px;height:26px;border-radius:50%;background:#1F2A37;color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
+.card h3{margin-top:12px;font-size:17px;line-height:1.3;font-weight:700}
+.card p{margin-top:6px;font-size:14.5px;color:#4A5965}
+.tag{display:inline-block;margin-top:4px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:10px}
+.t-old{background:#ECEFF1;color:#5B6B78}.t-ai{background:#FEF4DD;color:#9A5B00}.t-new{background:#E6F4EA;color:#1E8E3E}
+footer{margin-top:64px;font-size:13.5px;color:#7A8A96;border-top:1px solid #E1E6EA;padding-top:18px}
+@media (max-width:600px){.wrap{padding:36px 16px 60px}.strip figure{width:170px;min-width:170px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Driver’s licence scan: from a 2024 screen to a working prototype</h1>
+  <p>Uride driver onboarding, step 2 of 10. I took the step I shipped in 2024 and rebuilt it as a click-through prototype on real iPhone footage of a printed specimen card. Built with Claude Code; the decisions and the direction are mine.</p>
+  <div class="links">
+    <a class="main" href="../">Try it on your phone →</a>
+    <a href="../v1/">Open the AI first pass</a>
+  </div>
+</header>
+
+<section>
+  <div class="step"><span>1 · 2024</span><span class="tag t-old">Shipped</span></div>
+  <h2>Where it started</h2>
+  <div class="strip">
+    <figure><img src="img/olist.jpg" alt="2024 checklist" loading="lazy"><figcaption><b>Checklist</b>“Rejected” had a green tick; labels were about 1.6:1 contrast.</figcaption></figure>
+    <figure><img src="img/olicence.jpg" alt="2024 licence step" loading="lazy"><figcaption><b>Licence step</b>A camera icon covered the photo; “Skip” on a legal step.</figcaption></figure>
+    <figure><img src="img/oexpired.jpg" alt="2024 expired warning" loading="lazy"><figcaption><b>Expired document</b>The warning could be closed and Continue still worked.</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <div class="step"><span>2 · First pass</span><span class="tag t-ai">AI, from my brief</span></div>
+  <h2>Looked right in a screenshot</h2>
+  <p>The first version came straight from my brief. Every screen was there, but in motion it fell apart:</p>
+  <ul class="notes">
+    <li><b>Too fast and jumpy</b>: the card flew in, statuses changed faster than you could read them.</li>
+    <li><b>Every state announced</b>: “Hold still”, “Great, now flip it over”, haptic labels on screen.</li>
+    <li><b>No rule for problems</b>: what stops the flow, what waits for review, which colour means what.</li>
+    <li><b>A drawn card</b>, so glare, blur and an expired licence were only claims.</li>
+  </ul>
+  <div class="strip">
+    <figure><img src="img/v1.jpg" alt="First pass intro" loading="lazy"><figcaption><b>Intro</b>Empty slots that look like drop zones.</figcaption></figure>
+    <figure><img src="img/v2.jpg" alt="First pass camera" loading="lazy"><figcaption><b>Camera</b>A message for every moment.</figcaption></figure>
+    <figure><img src="img/v3.jpg" alt="First pass back side" loading="lazy"><figcaption><b>Back</b>Drawn card, no real conditions.</figcaption></figure>
+    <figure><img src="img/v4.jpg" alt="First pass check details" loading="lazy"><figcaption><b>Check details</b>Everything always green.</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <div class="step"><span>3 · Direction</span><span class="tag t-new">My decisions</span></div>
+  <h2>What I changed, and why</h2>
+  <div class="cards">
+    <div class="card"><div class="n">1</div><h3>One rule for messages</h3><p>The camera speaks only for an action, a problem or a result. Problems are amber, a taken photo is green, nothing in between. The Front/Back switch says where you are, so the pill doesn’t.</p></div>
+    <div class="card"><div class="n">2</div><h3>Stop only when going on is pointless</h3><p>Expiry is read on-device right after the front photo, so nobody flips a card we can’t accept. Anything fixable in a second waits for one review screen.</p></div>
+    <div class="card"><div class="n">3</div><h3>Fix it first, retake as a fallback</h3><p>A trace of glare hid one character. Typing it is faster than shooting again: the character is pre-selected and the number keypad opens. Retake stays one tap away.</p></div>
+    <div class="card"><div class="n">4</div><h3>Calm, honest motion</h3><p>Nothing that stays the same moves. Tips tick only after the change is visible. The shutter ring never rewinds. A status changes in place: colour eases, the badge draws itself.</p></div>
+    <div class="card"><div class="n">5</div><h3>Real footage, real problems</h3><p>One take on an iPhone: an expired card, a swap, lamp glare, both sides. The back is read too: the barcode cross-checks the front.</p></div>
+    <div class="card"><div class="n">6</div><h3>Less to read under stress</h3><p>One sentence per line, one-line hints, a two-line expired sheet that ends with “Your other steps are saved”. Status messages are announced to VoiceOver.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="step"><span>4 · Now</span><span class="tag t-new">Prototype</span></div>
+  <h2>The result</h2>
+  <div class="strip">
+    <figure><img src="img/f1.jpg" alt="Intro with tips" loading="lazy"><figcaption><b>Intro</b>Each tip ticks once it’s true on the card.</figcaption></figure>
+    <figure><img src="img/f2.jpg" alt="Expired licence" loading="lazy"><figcaption><b>Expired</b>Caught after the front photo.</figcaption></figure>
+    <figure><img src="img/f3.jpg" alt="Glare warning" loading="lazy"><figcaption><b>Glare</b>One problem, one action.</figcaption></figure>
+    <figure><img src="img/f4.jpg" alt="Front captured" loading="lazy"><figcaption><b>Captured</b>Green only for a taken photo.</figcaption></figure>
+    <figure><img src="img/f5.jpg" alt="Check details" loading="lazy"><figcaption><b>Check details</b>Fix it, or retake.</figcaption></figure>
+    <figure><img src="img/f6.jpg" alt="Sent for review" loading="lazy"><figcaption><b>Sent for review</b>A calm wait, drawn like one pen line.</figcaption></figure>
+  </div>
+  <div class="links"><a class="main" href="../">Try it on your phone →</a></div>
+</section>
+
+<footer>Illia Vostrikov · Sample data only. The card is a printed specimen with my photo, not a real document.</footer>
+</div>
+</body>
+</html>
