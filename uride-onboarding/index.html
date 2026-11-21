@@ -981,8 +981,8 @@ async function camera(retry=false, side=null){
     <div class="world" id="wd"><div class="feed"></div><div class="grain"></div>
     <div class="cardwrap" id="cw"${f.real?' style="display:none"':''}><div class="card3d" id="c3"><div class="face front"><div class="art">${cardFront(EXP(),{old:cardOld,holo:f.unsure&&!cardOld})}</div><div class="glare" id="gl"><i class="sheen"></i><i class="core"></i></div></div><div class="face back">${cardBack()}</div></div></div></div>
     <div class="hole"></div>
-    <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><div class="sidebox"><b id="side">Front of licence</b><div class="sides"><i class="sdhl"></i><span id="sdF">Front</span><span id="sdB">Back</span></div></div><span style="width:44px"></span></div>
-    <div class="pill" id="pill">Place the front of your licence in the frame</div>
+    <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><div class="sidebox"><b id="side">Scan your licence</b><div class="sides"><i class="sdhl"></i><span id="sdF">Front</span><span id="sdB">Back</span></div></div><span style="width:44px"></span></div>
+    <div class="pill" id="pill">Place your licence in the frame</div>
     <div class="guide" id="gd"><svg width="312" height="197" viewBox="0 0 312 197" overflow="visible" fill="none" stroke-width="3.5" stroke-linecap="round">
       <path class="cn tl" d="M-2 24V12A14 14 0 0 1 12 -2H26"/><path class="cn tr" d="M286 -2H300A14 14 0 0 1 314 12V24"/>
       <path class="cn bl" d="M-2 173V185A14 14 0 0 0 12 199H26"/><path class="cn br" d="M286 199H300A14 14 0 0 0 314 185V173"/></svg></div>
@@ -1027,8 +1027,8 @@ async function camera(retry=false, side=null){
   spec('flip');
   $('#sdF',v).classList.add('ok');
   await wait(300); if(!alive(t))return;
-  hidePill(pill); setHint(ch,'Same place, back side up');
-  swapTitle($('#side',v),'Back of licence'); moveSide(v,1);
+  setPill(pill,'',`<span>Place your licence in the frame</span>`); setHint(ch,'Same place, back side up');
+  moveSide(v,1);
   gd.classList.remove('locked'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std);
   haptic('light');
   await wait(900); if(!alive(t))return;
@@ -1050,7 +1050,7 @@ async function camera(retry=false, side=null){
 async function realRetake(v,t,side){
   const wd=$('#wd',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), prog=$('#prog',v), fl=$('#fl',v), cam=$('.cam',v);
   const gt=parseFloat(cam.style.getPropertyValue('--gt'))||228;
-  if(side==='back'){ $('#sdF',v).classList.add('ok'); $('#side',v).textContent='Back of licence'; setTimeout(()=>moveSide(v,1),120); setPill(pill,'',`<span>Place the back of your licence in the frame</span>`); }
+  if(side==='back'){ $('#sdF',v).classList.add('ok'); setTimeout(()=>moveSide(v,1),120); setPill(pill,'',`<span>Place your licence in the frame</span>`); }
   const vid=document.createElement('video');
   vid.muted=true; vid.playsInline=true; vid.setAttribute('playsinline',''); vid.preload='auto';
   vid.innerHTML=`<source src="real/retake_${side}.mp4" type="video/mp4"><source src="real/retake_${side}.webm" type="video/webm">`;
@@ -1110,7 +1110,7 @@ async function realCamera(v,t){
   let hold=false;                                         // freeze the feed while a sheet waits for the driver
   vid.playbackRate=Math.min(1,Math.max(.5,1/K));
   try{ await vid.play(); }catch(e){}
-  setPill(pill,'',`<span>Place the front of your licence in the frame</span>`);
+  setPill(pill,'',`<span>Place your licence in the frame</span>`);
   const at=s=>new Promise(r=>{ const tick=()=>{
       if(!alive(t)||!vid.isConnected){ vid.pause(); return r(); }
       if(PAUSED||hold){ if(!vid.paused) vid.pause(); } else if(vid.paused && !vid.ended) vid.play().catch(()=>{});
@@ -1153,8 +1153,8 @@ async function realCamera(v,t){
   await at(16.75); if(!alive(t))return;
   // 4. back
   spec('flip'); $('#sdF',v).classList.add('ok');
-  hidePill(pill); setHint(ch,'Same place, back side up');
-  swapTitle($('#side',v),'Back of licence'); moveSide(v,1);
+  setPill(pill,'',`<span>Place your licence in the frame</span>`); setHint(ch,'Same place, back side up');
+  moveSide(v,1);
   gd.classList.remove('locked'); anim(prog,[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std); haptic('light');
   await at(19.0); if(!alive(t))return; lock(); setHint(ch,'Keep it there');
   await at(19.8); if(!alive(t))return; capture('Back captured');
@@ -1222,8 +1222,8 @@ async function expiredSheet(v,t){
   const sh=document.createElement('div'); sh.className='xsheet';
   sh.innerHTML=`<div class="grab"></div>
     <div class="xs-ic">${ICON.alert}</div>
-    <h3>This licence expired on 12 Mar 2025</h3>
-    <p>You need a valid licence to drive with Uride. If you have a newer card, scan that one. Your other steps are saved.</p>
+    <h3>This licence has expired</h3>
+    <p>It expired on 12 Mar 2025. You need a valid licence to drive with Uride. If you have a newer card, scan that one. Your other steps are saved.</p>
     <button class="btn primary" id="exSc">${ICON.cam} Scan a valid licence</button>
     <button class="btn ghost" id="exTmp">I only have a temporary licence</button>`;
   $('.cam',v).appendChild(sh);
