@@ -240,7 +240,8 @@ body.rec.bare .foot{padding-bottom:12px}
 /* checklist */
 .ring{width:56px;height:56px;position:relative;flex:none}
 .ring svg{transform:rotate(-90deg)}
-.ring span{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink)}
+.ring > span{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink)}
+.roll{display:inline-grid;overflow:hidden;vertical-align:bottom;line-height:inherit}.roll i{grid-area:1/1;font-style:normal;text-align:left}
 .sumrow{display:flex;gap:14px;align-items:center;padding:6px 0 18px}
 .sumrow b{display:block;font-size:17px;color:var(--ink);font-weight:700}
 .sumrow small{font-size:14px;color:var(--muted)}
@@ -322,7 +323,12 @@ body.rec.bare .foot{padding-bottom:12px}
 .scanimg .face.bk{opacity:0;transform:translateX(10%)}
 .scanimg.showback .face.fr{opacity:0;transform:translateX(-10%)}
 .scanimg.showback .face.bk{opacity:1;transform:none}
-.scanimg.showback .ocrbox,.scanimg.showback .beam{visibility:hidden}
+.scanimg.showback > .ocrbox,.scanimg.showback .beam{visibility:hidden}
+.bkboxes{position:absolute;inset:0;visibility:hidden;pointer-events:none}
+.bkboxes .ocrbox{opacity:0}
+.scanimg.showback .bkboxes{visibility:visible}
+.bkchip{position:absolute;left:10px;top:10px;display:flex;align-items:center;gap:5px;padding:4px 9px 4px 6px;border-radius:12px;background:rgba(22,112,52,.92);color:#fff;font-size:12px;font-weight:500;opacity:0}
+.bkchip svg{width:14px;height:14px}
 .sdots{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:5px;padding:4px 6px;border-radius:10px;background:rgba(16,24,40,.35);z-index:3}
 .sdots i{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.5);transition:background calc(300ms*var(--k)),width calc(300ms*var(--k))}
 .sdots i.on{background:#fff;width:14px}
@@ -337,7 +343,8 @@ body.rec.bare .foot{padding-bottom:12px}
 .thumb{flex:1;display:flex;align-items:center;gap:8px;padding:6px;border-radius:10px;border:1px solid var(--line);font-size:13px;color:var(--ink)}
 .thumb .mini{width:46px;height:29px;border-radius:4px;overflow:hidden;position:relative;flex:none}
 .thumb .mini .face{position:absolute;inset:0}
-.thumb button{margin-left:auto;font-size:13px;font-weight:500;color:var(--red-text);padding:4px}
+.thumb button{margin-left:auto;font-size:13px;font-weight:700;color:var(--amber);padding:4px}
+.thumb .tok{margin-left:auto;color:var(--green);display:grid;place-items:center;padding:0 6px}
 .status{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink);font-weight:500;margin:18px 0 10px;min-height:22px}
 .spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--blue-soft);border-top-color:var(--blue);animation:spin calc(800ms*var(--k)) linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -630,10 +637,10 @@ function cardBack(){
   <rect width="312" height="197" rx="12" fill="#E9EEF2"/>
   <rect y="18" width="312" height="30" fill="#2E3A44"/>
   <g font-family="ui-monospace,Menlo,monospace" font-size="7.5" fill="#43586A">
-    <text x="18" y="66">RESTRICTIONS: NONE</text><text x="18" y="78">ENDORSEMENTS: —</text>
-    <text x="190" y="66">DD 4821 AB 77</text><text x="190" y="78">REV 2024/06</text>
+    <g data-b="rest"><text x="18" y="66">RESTRICTIONS: NONE</text><text x="18" y="78">ENDORSEMENTS: —</text></g>
+    <g data-b="dd"><text x="190" y="66">DD 4821 AB 77</text><text x="190" y="78">REV 2024/06</text></g>
   </g>
-  ${bars}
+  <g data-b="bar">${bars}</g>
   <text x="156" y="186" text-anchor="middle" font-family="Google Sans,Arial" font-size="8" fill="#6A7F90">SAMPLE · NOT A VALID DOCUMENT</text>
 </svg>`;
 }
@@ -787,6 +794,11 @@ const item=(i,st)=>`<button class="item ${STATE[st][0]} ${st==='next'?'next':''}
 // a status change redraws the step icon like a pen: the old strokes are erased, the new ones are drawn in the new colour,
 // then the badge pops and its mark draws itself (same idea as the tips chips on the licence intro)
 const strokes=sv=>[...sv.querySelectorAll('path,circle,rect,line')].filter(p=>p.getAttribute('fill')!=='currentColor');
+// a value rolls to the next one: the old slides up and out, the new comes up from below (odometer)
+async function roll(r,txt){ const o=r.querySelector('i:last-child'), n=document.createElement('i'); n.textContent=txt; r.appendChild(n);
+  const e='cubic-bezier(.4,0,.2,1)';
+  anim(o,[{transform:'translateY(0)',opacity:1},{transform:'translateY(-80%)',opacity:0}],600,e);
+  await anim(n,[{transform:'translateY(80%)',opacity:0},{transform:'translateY(0)',opacity:1}],600,e); o.remove(); }
 async function morph(el,i,st){
   const soft='cubic-bezier(.4,0,.2,1)', pen='cubic-bezier(.45,0,.55,1)';
   const txt=[...el.querySelectorAll('.tx,.go,.chev')], ob=$('.bdg',el);
@@ -814,7 +826,7 @@ async function checklist(saved=false, dir='fade'){
   const st=i=> i===0?'ok': i===1?'next':'todo';
   const html=`<div class="top"><button class="iconbtn" aria-label="Back">${ICON.back}</button><h1>Driver registration</h1><button class="iconbtn" id="hlp" aria-label="Help">${ICON.help}</button></div>
   <div class="body">
-    <div class="sumrow">${ring(.1,'1/10')}<div><b id="sumt">1 of 10 steps done</b><small>Progress saves after every step</small></div></div>
+    <div class="sumrow">${ring(.1,'<span style="display:inline-flex;align-items:baseline"><span class="roll"><i>1</i></span>/10</span>')}<div><b id="sumt"><span class="roll"><i>1</i></span> of 10 steps <span class="roll" id="sumw"><i>done</i></span></b><small>Progress saves after every step</small></div></div>
     <div class="list">${STEPS.map((_,i)=>item(i,st(i))).join('')}</div>
   </div>`;
   const v=await show(html,dir);
@@ -832,7 +844,7 @@ async function checklist(saved=false, dir='fade'){
   await morph(lic,1,'rev'); haptic('success'); if(!alive(t))return;         // 1 · the licence turns blue
   await wait(600); if(!alive(t))return;
   const arc=$('.arc',v), c=2*Math.PI*24;                                     // 2 · the ring fills, the counter changes
-  const tx=$('#sumt',v); anim(tx,[{opacity:1},{opacity:0}],250,EASE.accel).then(()=>{ $('.rl',v).textContent='2/10'; tx.textContent='2 of 10 steps sent'; anim(tx,[{opacity:0},{opacity:1}],450,'cubic-bezier(.4,0,.2,1)'); });
+  v.querySelectorAll('.rl .roll, #sumt > .roll:first-child').forEach(r=>roll(r,'2')); roll($('#sumw',v),'sent');
   await anim(arc,[{strokeDashoffset:c*.9},{strokeDashoffset:c*.8}],1100,'cubic-bezier(.4,0,.2,1)'); if(!alive(t))return;
   await wait(500); if(!alive(t))return;
   await morph(nxt,2,'next'); if(!alive(t))return;                            // 3 · the next step lights up
@@ -1272,14 +1284,15 @@ const FIELDS=[
   {k:'dob',label:'Date of birth',v:'14 Jun 1988',box:[94,118,74,14]},
   {k:'exp',label:'Expiry date',v:'14 Jun 2029',box:[184,118,74,14]},
 ];
+const TOK=`<span class="tok" aria-label="Photo is fine"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
 async function reading(){
   const t=RUN, f0=F(), f={...f0, unsure: f0.unsure && !(f0.real && REAL_FRONT_CLEAN)}; spec('read');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Check details</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
     <div class="scanimg" id="si"><div class="face fr">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div><div class="face bk">${realFace('back',cardBack())}</div><div class="sdots"><i class="on"></i><i></i></div></div>
     <div class="thumbs">
-      <div class="thumb${f.unsure?' warn':''}" data-s="0"><div class="mini"><div class="face">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div></div>Front<button class="rt">Retake</button></div>
-      <div class="thumb" data-s="1"><div class="mini"><div class="face">${realFace('back',cardBack())}</div></div>Back<button class="rt">Retake</button></div>
+      <div class="thumb${f.unsure?' warn':''}" data-s="0"><div class="mini"><div class="face">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div></div>Front${f.unsure?'<button class="rt" data-side="front">Retake</button>':TOK}</div>
+      <div class="thumb" data-s="1"><div class="mini"><div class="face">${realFace('back',cardBack())}</div></div>Back${TOK}</div>
     </div>
     <div id="bn"></div>
     <div class="status" id="stt"><span class="spinner"></span>Reading your licence…</div>
@@ -1288,9 +1301,9 @@ async function reading(){
   <div class="foot"><button class="btn primary" id="go" disabled>Looks right, continue</button></div>`;
   const v=await show(html,'handoff',false);
   $('#bk',v).onclick=()=>{RUN++;licenceIntro('pop');};
-  v.querySelectorAll('.rt').forEach((b,k)=>b.onclick=e=>{e.stopPropagation();RUN++;camera(true,k?'back':'front');});
+  v.querySelectorAll('.rt').forEach(b=>b.onclick=e=>{e.stopPropagation();RUN++;camera(true,b.dataset.side);});
   // see both photos: swipe the big photo (left = back, right = front)
-  const siv=$('#si',v), showSide=i=>{ siv.classList.toggle('showback',!!i);
+  const siv=$('#si',v), showSide=i=>{ siv.classList.toggle('showback',!!i); if(i&&siv._showBack) siv._showBack();
     siv.querySelectorAll('.sdots i').forEach((d,k)=>d.classList.toggle('on',k===i)); };
   let sx=null; siv.addEventListener('pointerdown',e=>{sx=e.clientX;});
   siv.addEventListener('pointerup',e=>{ if(sx==null) return; const dx=e.clientX-sx; sx=null; if(Math.abs(dx)>24) showSide(dx<0?1:0); });
@@ -1301,7 +1314,9 @@ async function reading(){
   v.querySelectorAll('.thumbs,.status,.fields').forEach((n,i)=>anim(n,[{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],420,EASE.decel,{delay:(150+i*70)*K}));
   await wait(600); if(!alive(t))return;
   // a scanner beam moves down at a steady speed; each value is found when the beam reaches it
-  const scale=si.clientWidth/312, H=si.clientHeight, D=2600;
+  const H=si.clientHeight, D=2600;
+  const geo=(()=>{ const g=si.querySelector('.fr .ghostsvg')||si.querySelector('.fr'), r=g.getBoundingClientRect(), sr=si.getBoundingClientRect(), q=ratio();
+    return {x:(r.left-sr.left)/q, y:(r.top-sr.top)/q, s:(r.width/q)/312}; })(), scale=geo.s;
   const beam=document.createElement('div'); beam.className='beam'; si.appendChild(beam);
   anim(beam,[{transform:'translateY(-8px)',opacity:0},{transform:`translateY(${H*.04}px)`,opacity:1,offset:.05},{transform:`translateY(${H*.96}px)`,opacity:1,offset:.95},{transform:`translateY(${H+8}px)`,opacity:0}],D,'linear').then(()=>beam.remove());
   let prev=0;
@@ -1311,7 +1326,7 @@ async function reading(){
     const unsure = f.unsure && x.k===(f.unsureKey||'exp'), bad = cardOld && x.k==='exp';
     const b=document.createElement('div'); b.className='ocrbox'+(unsure?' unsure':'')+(bad?' bad':'');
     const bb=si.querySelector(`[data-f="${x.k}"]`).getBBox();
-    Object.assign(b.style,{left:bb.x*scale-3+'px',top:bb.y*scale-2+'px',width:bb.width*scale+6+'px',height:bb.height*scale+4+'px'});
+    Object.assign(b.style,{left:geo.x+bb.x*scale-3+'px',top:geo.y+bb.y*scale-2+'px',width:bb.width*scale+6+'px',height:bb.height*scale+4+'px'});
     si.appendChild(b);
     anim(b,[{opacity:0,transform:'scale(1.18)'},{opacity:1,transform:'scale(1)'}],SPR.snap);
     const fe=$(`[data-k="${x.k}"]`,v), val=$('.v',fe);
@@ -1323,6 +1338,17 @@ async function reading(){
   }
   await wait(450); if(!alive(t))return;
   si.querySelectorAll('.ocrbox:not(.unsure):not(.bad)').forEach(b=>anim(b,[{opacity:1},{opacity:.3}],600,EASE.std));
+  // the back is read too: the barcode carries the same data as the front (a cross-check against edits),
+  // the card number (DD) identifies this exact card for the issuing office, restrictions matter for a driver
+  const bk=document.createElement('div'); bk.className='bkboxes';
+  const bsv=si.querySelector('.bk .ghostsvg svg')||si.querySelector('.bk svg');
+  ['rest','dd','bar'].forEach(k=>{ const bb=bsv.querySelector(`[data-b="${k}"]`).getBBox(); const b=document.createElement('div'); b.className='ocrbox';
+    Object.assign(b.style,{left:geo.x+bb.x*scale-3+'px',top:geo.y+bb.y*scale-2+'px',width:bb.width*scale+6+'px',height:bb.height*scale+4+'px'}); bk.appendChild(b); });
+  bk.insertAdjacentHTML('beforeend',`<div class="bkchip">${ICON.check}<span>Barcode matches the front</span></div>`);
+  si.appendChild(bk);
+  si._showBack=()=>{ if(bk.dataset.seen) return; bk.dataset.seen=1;
+    [...bk.querySelectorAll('.ocrbox')].forEach((b,i)=>anim(b,[{opacity:0,transform:'scale(1.12)'},{opacity:1,transform:'scale(1)'},{opacity:.3}],1200,EASE.std,{delay:(250+i*140)*K,fill:'both'}));
+    anim($('.bkchip',bk),[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],400,EASE.decel,{delay:800*K,fill:'both'}); };
   const stt=$('#stt',v);
   const status=(html)=>{ stt.innerHTML=html; anim(stt,[{opacity:0,transform:'translateY(3px)'},{opacity:1,transform:'none'}],280,EASE.decel); };
   const enable=()=>{ go.disabled=false; anim(go,[{filter:'saturate(.2) brightness(1.4)'},{filter:'none'}],300,EASE.std); };
@@ -1348,7 +1374,7 @@ async function reading(){
     fx.onclick=()=>{
       fe.classList.remove('unsure'); fe.classList.add('editing','hinting');
       const vv=$('.val',fe);
-      vv.innerHTML=`<input id="ein" value="M?234-56789-01234" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done" autocomplete="off" aria-label="Licence number. The second character is unclear"><button class="fix" id="ok2" style="color:var(--ink)">Done</button>`;
+      vv.innerHTML=`<input id="ein" value="M?234-56789-01234" inputmode="numeric" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done" autocomplete="off" aria-label="Licence number. The second character is unclear"><button class="fix" id="ok2" style="color:var(--ink)">Done</button>`;
       const NOTE='Replace the ? with the character on your card';
       $('.note',fe).textContent=NOTE;
       const inp=$('#ein',fe);
@@ -1365,7 +1391,7 @@ async function reading(){
         vv.innerHTML=`<span class="v">${val}</span><span class="ok">${ICON.check}</span>`;
         $('.note',fe).textContent=''; fe.classList.remove('editing','hinting','invalid'); fe.classList.add('filled'); haptic('light');
         anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop);
-        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);} const tw=v.querySelector('.thumb.warn'); if(tw) tw.classList.remove('warn');
+        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);} const tw=v.querySelector('.thumb.warn'); if(tw){ tw.classList.remove('warn'); const rb=tw.querySelector('.rt'); if(rb){ rb.outerHTML=TOK; anim(tw.querySelector('.tok'),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop); } }
         status(`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`);
         enable();
       };
@@ -1405,7 +1431,7 @@ async function reading(){
         vv.innerHTML=`<span class="v">${val}</span><span class="ok">${ICON.check}</span>`;
         $('.note',fe).textContent=''; fe.classList.remove('editing','hinting','invalid'); fe.classList.add('filled'); haptic('light');
         anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop);
-        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);} const tw=v.querySelector('.thumb.warn'); if(tw) tw.classList.remove('warn');
+        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);} const tw=v.querySelector('.thumb.warn'); if(tw){ tw.classList.remove('warn'); const rb=tw.querySelector('.rt'); if(rb){ rb.outerHTML=TOK; anim(tw.querySelector('.tok'),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop); } }
         status(`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`);
         enable();
       };
