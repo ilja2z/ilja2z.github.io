@@ -241,12 +241,14 @@ body.rec.bare .foot{padding-bottom:12px}
 .ring{width:56px;height:56px;position:relative;flex:none}
 .ring svg{transform:rotate(-90deg)}
 .ring > span{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink)}
-.roll{display:inline-grid;overflow:hidden;vertical-align:bottom;line-height:inherit}.roll i{grid-area:1/1;font-style:normal;text-align:left}
+.roll{position:relative;display:inline-block}.roll i{font-style:normal;display:inline-block}.roll i.nx{position:absolute;left:0;top:0}
 .sumrow{display:flex;gap:14px;align-items:center;padding:6px 0 18px}
 .sumrow b{display:block;font-size:17px;color:var(--ink);font-weight:700}
 .sumrow small{font-size:14px;color:var(--muted)}
 .list{display:flex;flex-direction:column;gap:8px}
-.item{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;text-align:left;width:100%;position:relative;transition:border-color calc(240ms*var(--k)),box-shadow calc(240ms*var(--k)),background calc(240ms*var(--k))}
+.item{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;text-align:left;width:100%;position:relative;transition:border-color calc(600ms*var(--k)) cubic-bezier(.4,0,.2,1),box-shadow calc(600ms*var(--k)) cubic-bezier(.4,0,.2,1),background calc(240ms*var(--k))}
+.item .tx small{transition:color calc(600ms*var(--k)) cubic-bezier(.4,0,.2,1)}
+.item .swap{display:grid;margin-top:1px}.item .swap small{grid-area:1/1;margin-top:0}
 .item.next{border-color:var(--ink);box-shadow:0 4px 14px -6px rgba(31,42,55,.25)}
 .item .ic{position:relative;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:none;transition:background calc(600ms*var(--k)) cubic-bezier(.4,0,.2,1),color calc(600ms*var(--k)) cubic-bezier(.4,0,.2,1)}
 .item .tx{flex:1;min-width:0}
@@ -415,7 +417,7 @@ body.rec.bare .haptic{top:6px}
 @media (prefers-reduced-motion:reduce){:root{--k:.01}}
 </style>
 </head>
-<body class="show-taps">
+<body class="show-taps"><script>if(/[?&]record/.test(location.search)){document.body.classList.add('rec');if(innerWidth<600)document.body.classList.add('bare');}</script>
 <div class="page">
   <div class="intro">
     <div>
@@ -795,26 +797,36 @@ const item=(i,st)=>`<button class="item ${STATE[st][0]} ${st==='next'?'next':''}
 // then the badge pops and its mark draws itself (same idea as the tips chips on the licence intro)
 const strokes=sv=>[...sv.querySelectorAll('path,circle,rect,line')].filter(p=>p.getAttribute('fill')!=='currentColor');
 // a value rolls to the next one: the old slides up and out, the new comes up from below (odometer)
-async function roll(r,txt){ const o=r.querySelector('i:last-child'), n=document.createElement('i'); n.textContent=txt; r.appendChild(n);
+async function roll(r,txt){ const o=r.querySelector('i'), n=document.createElement('i'); n.textContent=txt; n.className='nx'; r.appendChild(n);
   const e='cubic-bezier(.4,0,.2,1)';
-  anim(o,[{transform:'translateY(0)',opacity:1},{transform:'translateY(-80%)',opacity:0}],600,e);
-  await anim(n,[{transform:'translateY(80%)',opacity:0},{transform:'translateY(0)',opacity:1}],600,e); o.remove(); }
+  anim(o,[{transform:'translateY(0)',opacity:1},{transform:'translateY(-55%)',opacity:0}],520,e);
+  await anim(n,[{transform:'translateY(55%)',opacity:0},{transform:'translateY(0)',opacity:1}],520,e,{fill:'both'}); o.remove(); n.className=''; }
 async function morph(el,i,st){
-  const soft='cubic-bezier(.4,0,.2,1)', pen='cubic-bezier(.45,0,.55,1)';
-  const txt=[...el.querySelectorAll('.tx,.go,.chev')], ob=$('.bdg',el);
-  await Promise.all([ob?anim(ob,[{transform:'scale(1)'},{transform:'scale(0)'}],220,EASE.accel):null,
-    ...txt.map(p=>anim(p,[{opacity:1},{opacity:0}],260,soft))]);
-  if(ob) ob.remove(); txt.forEach(p=>p.remove());
-  el.className=`item ${STATE[st][0]} ${st==='next'?'next':''}`;      // the icon keeps its shape: its tile and colour ease over (CSS)
+  const e='cubic-bezier(.4,0,.2,1)', pen='cubic-bezier(.45,0,.55,1)';
   const tmp=document.createElement('div'); tmp.innerHTML=itemInner(i,st);
-  const nb=$('.bdg',tmp), rest=[...tmp.children].slice(1);
-  rest.forEach(n=>{ el.appendChild(n); anim(n,[{opacity:0},{opacity:1}],480,soft,{delay:120*K,fill:'both'}); });
+  // 1. the right-hand control: Start ↔ chevron fades out
+  const oldEnd=el.querySelector('.go,.chev'), newEnd=tmp.querySelector('.go,.chev');
+  const sameEnd=oldEnd&&newEnd&&oldEnd.className===newEnd.className;
+  const ob=$('.bdg',el);
+  await Promise.all([sameEnd?null:anim(oldEnd,[{opacity:1},{opacity:0}],220,e), ob?anim(ob,[{transform:'scale(1)'},{transform:'scale(0)'}],220,EASE.accel):null]);
+  if(ob) ob.remove();
+  // 2. state class: border, icon tile and text colours ease over in CSS
+  el.className=`item ${STATE[st][0]} ${st==='next'?'next':''}`;
+  // 3. the description crossfades in place (the title does not move)
+  const sm=el.querySelector('.tx small'), ns=tmp.querySelector('.tx small');
+  if(sm.textContent!==ns.textContent){
+    const wrap=document.createElement('span'); wrap.className='swap'; sm.replaceWith(wrap); wrap.append(sm,ns);
+    anim(sm,[{opacity:1},{opacity:0}],420,e); anim(ns,[{opacity:0},{opacity:1}],520,e,{delay:120*K,fill:'both'}).then(()=>{ wrap.replaceWith(ns); });
+  }
+  if(!sameEnd){ oldEnd.replaceWith(newEnd); anim(newEnd,[{opacity:0,transform:'scale(.92)'},{opacity:1,transform:'scale(1)'}],420,e,{delay:200*K,fill:'both'}); }
+  // 4. a new badge pops in and its mark is drawn
+  const nb=$('.bdg',tmp);
   if(nb){
     $('.ic',el).appendChild(nb);
     const bs=[...nb.querySelectorAll('path,circle')]; bs.forEach(p=>{ p.setAttribute('pathLength','1'); p.style.strokeDasharray='1'; p.style.strokeDashoffset='1'; });
-    await anim(nb,[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:300*K,fill:'both'});
-    await Promise.all(bs.map((p,k)=>anim(p,[{strokeDashoffset:1},{strokeDashoffset:0}],420,pen,{delay:k*110*K,fill:'both'})));
-  } else await wait(600);
+    await anim(nb,[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:350*K,fill:'both'});
+    await Promise.all(bs.map((p,k)=>anim(p,[{strokeDashoffset:1},{strokeDashoffset:0}],450,pen,{delay:k*110*K,fill:'both'})));
+  } else await wait(700);
 }
 function ring(frac,label){
   const c=2*Math.PI*24;
@@ -826,7 +838,7 @@ async function checklist(saved=false, dir='fade'){
   const st=i=> i===0?'ok': i===1?'next':'todo';
   const html=`<div class="top"><button class="iconbtn" aria-label="Back">${ICON.back}</button><h1>Driver registration</h1><button class="iconbtn" id="hlp" aria-label="Help">${ICON.help}</button></div>
   <div class="body">
-    <div class="sumrow">${ring(.1,'<span style="display:inline-flex;align-items:baseline"><span class="roll"><i>1</i></span>/10</span>')}<div><b id="sumt"><span class="roll"><i>1</i></span> of 10 steps <span class="roll" id="sumw"><i>done</i></span></b><small>Progress saves after every step</small></div></div>
+    <div class="sumrow">${ring(.1,'<span style="display:inline-flex;align-items:baseline"><span class="roll"><i>1</i></span>/10</span>')}<div><b id="sumt"><span class="roll"><i>1</i></span> of 10 steps done</b><small>Progress saves after every step</small></div></div>
     <div class="list">${STEPS.map((_,i)=>item(i,st(i))).join('')}</div>
   </div>`;
   const v=await show(html,dir);
@@ -844,7 +856,7 @@ async function checklist(saved=false, dir='fade'){
   await morph(lic,1,'rev'); haptic('success'); if(!alive(t))return;         // 1 · the licence turns blue
   await wait(600); if(!alive(t))return;
   const arc=$('.arc',v), c=2*Math.PI*24;                                     // 2 · the ring fills, the counter changes
-  v.querySelectorAll('.rl .roll, #sumt > .roll:first-child').forEach(r=>roll(r,'2')); roll($('#sumw',v),'sent');
+  v.querySelectorAll('.rl .roll, #sumt > .roll').forEach(r=>roll(r,'2'));
   await anim(arc,[{strokeDashoffset:c*.9},{strokeDashoffset:c*.8}],1100,'cubic-bezier(.4,0,.2,1)'); if(!alive(t))return;
   await wait(500); if(!alive(t))return;
   await morph(nxt,2,'next'); if(!alive(t))return;                            // 3 · the next step lights up
