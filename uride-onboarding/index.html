@@ -643,7 +643,8 @@ const F = () => SCEN[scenario].f;
 let cardOld=false;                 // the card in front of the camera is the old, expired one
 const REAL = () => !!(SCEN[scenario]&&SCEN[scenario].f.real);
 // real-camera mode: the photo the phone took (flattened), with the same card drawn invisibly on top so OCR boxes still line up
-const realFace=(side,svg)=>REAL()?`<img class="realimg" src="real/${side}.jpg" alt="">`+`<div class="ghostsvg">${svg}</div>`:svg;
+let REAL_FRONT_CLEAN=false;   // after a front retake in real-camera mode the photo is clean and every field reads
+const realFace=(side,svg)=>REAL()?`<img class="realimg" src="real/${side==='front'&&REAL_FRONT_CLEAN?'front_clean':side}.jpg" alt="">`+`<div class="ghostsvg">${svg}</div>`:svg;
 const EXP = () => cardOld ? '2025/03/12' : '2029/06/14';
 
 /* ================= spec panel ================= */
@@ -936,7 +937,7 @@ function hand(c3,base=''){
 }
 const DRIFT_FRONT=[{transform:'translate(0,0) rotate(0deg)'},{transform:'translate(-2px,1.5px) rotate(-.5deg)'},{transform:'translate(1.5px,-1px) rotate(.4deg)'},{transform:'translate(0,0) rotate(0deg)'}];
 const DRIFT_BACK=DRIFT_FRONT.map(f=>({transform:'rotateY(180deg) '+f.transform}));
-async function camera(retry=false){
+async function camera(retry=false, side=null){
   const t=RUN; const f=F();
   cardOld = !retry && !!(f.expired || f.expiredFirst);
   spec('camera');
@@ -966,7 +967,7 @@ async function camera(retry=false){
   $('#sh',v).onclick=()=>camChip(v,'Just hold still, we take the photo for you');
   const c3=$('#c3',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v);
   const cwr=$('#cw',v), wd=$('#wd',v);
-  if(f.real){ await realCamera(v,t); return; }
+  if(f.real){ if(retry&&side) await realRetake(v,t,side); else await realCamera(v,t); return; }
   // the card lies on a table; the camera moves over the table and finds it (the card itself does not fly)
   wd.style.transform='translate(50px,250px) scale(.86)';
   await wait(600); if(!alive(t))return;
@@ -1010,6 +1011,40 @@ async function camera(retry=false){
    The video is lightly stabilised (the card is eased towards the frame, hand tremor stays).
    Cues follow what the footage shows: expired card held 1–6.5 s, swap 7–10 s, glare on the new card 11.4–14.3 s,
    front captured at 14.6 s as the glare slides off, flip ~17.8 s, sharp back 19–20.3 s */
+/* retake in real-camera mode: a short clip of one side. Front retake = the same card without the glare (happy path) */
+async function realRetake(v,t,side){
+  const wd=$('#wd',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), prog=$('#prog',v), fl=$('#fl',v), cam=$('.cam',v);
+  const gt=parseFloat(cam.style.getPropertyValue('--gt'))||228;
+  if(side==='back'){ $('#sdF',v).classList.add('ok'); $('#side',v).textContent='Back of licence'; setTimeout(()=>moveSide(v,1),120); setPill(pill,'',`<span>Place the back of your licence in the frame</span>`); }
+  const vid=document.createElement('video');
+  vid.muted=true; vid.playsInline=true; vid.setAttribute('playsinline',''); vid.preload='auto';
+  vid.innerHTML=`<source src="real/retake_${side}.mp4" type="video/mp4"><source src="real/retake_${side}.webm" type="video/webm">`;
+  Object.assign(vid.style,{position:'absolute',left:'0',top:(gt+98.5-326.5)+'px',width:'360px',height:'880px',objectFit:'cover',background:'#3b2416',pointerEvents:'none'});
+  wd.innerHTML=''; wd.appendChild(vid);
+  await new Promise(r=>{ if(vid.readyState>=3) return r(); vid.addEventListener('canplay',r,{once:true}); setTimeout(r,4000); });
+  if(!alive(t)) return;
+  vid.playbackRate=Math.min(1,Math.max(.5,1/K));
+  try{ await vid.play(); }catch(e){}
+  anim(vid,[{opacity:0},{opacity:1}],300,EASE.decel);
+  const at=s=>new Promise(r=>{ const tick=()=>{
+      if(!alive(t)||!vid.isConnected){ vid.pause(); return r(); }
+      if(PAUSED){ if(!vid.paused) vid.pause(); } else if(vid.paused && !vid.ended) vid.play().catch(()=>{});
+      if(vid.currentTime>=s||vid.ended) return r();
+      requestAnimationFrame(tick); }; tick(); });
+  const L=side==='front'?[.35,1.0,1.15,1.25]:[.3,.9,1.05,1.15];
+  await at(L[0]); if(!alive(t))return;
+  spec('camera'); gd.querySelectorAll('.cn').forEach(c=>{ c.style.transitionDuration=(SPR.snap.ms*K)+'ms'; c.style.transitionTimingFunction=SPR.snap.e; });
+  gd.classList.add('locked'); setPill(pill,'ok',`${ICON.check}<span>Hold still…</span>`); setHint(ch,'Keep it there');
+  anim(prog,[{strokeDashoffset:220},{strokeDashoffset:0}],(L[1]-L[0])*1000*K,'linear');
+  await at(L[1]); if(!alive(t))return;
+  if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
+  setPill(pill,'ok',`${ICON.check}<span>${side==='front'?'Front':'Back'} captured</span>`);
+  if(side==='front') REAL_FRONT_CLEAN=true;
+  await at(L[2]); if(!alive(t))return; gd.classList.remove('locked');
+  await at(L[3]); if(!alive(t))return;
+  vid.pause(); await wait(350); if(!alive(t))return;
+  reading();
+}
 let REALVID=null;
 function realVideo(){
   if(REALVID) return REALVID;
@@ -1052,7 +1087,7 @@ async function realCamera(v,t){
   const capture=txt=>{ if(FLASH_MODE!=='off') anim(fl,[{opacity:FLASH_MODE==='on'?.75:.45},{opacity:0}],320,EASE.out);
     haptic('medium impact'); setPill(pill,'ok',`${ICON.check}<span>${txt}</span>`); };
   // 1. the driver shows the old card first
-  cardOld=true;
+  cardOld=true; REAL_FRONT_CLEAN=false;
   await at(2.9); if(!alive(t))return; lock();
   await at(3.8); if(!alive(t))return; capture('Front captured');
   await at(3.95); if(!alive(t))return;
@@ -1076,6 +1111,7 @@ async function realCamera(v,t){
   gd.classList.remove('warn'); setPill(pill,'',`<span>That’s better</span>`); setHint(ch,'Keep it there');
   await at(14.25); if(!alive(t))return; lock(350);
   await at(14.6); if(!alive(t))return; capture('Front captured');
+  await at(14.85); if(!alive(t))return; gd.classList.remove('locked');   // photo taken: the frame lets go, the trace of glare stays
   // the front is read at once, as with the old card: the date is fine, so no stop here
   await at(14.75); if(!alive(t))return;
   setPill(pill,'',`<span class="spinner" style="border-color:rgba(255,255,255,.25);border-top-color:#fff"></span><span>Checking the front…</span>`);
@@ -1086,8 +1122,9 @@ async function realCamera(v,t){
   swapTitle($('#side',v),'Back of licence'); moveSide(v,1);
   gd.classList.remove('locked'); anim(prog,[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std); haptic('light');
   await at(19.0); if(!alive(t))return; lock(); setHint(ch,'Keep it there');
-  await at(20.3); if(!alive(t))return; capture('Back captured');
-  await at(20.75); if(!alive(t))return;
+  await at(19.8); if(!alive(t))return; capture('Back captured');
+  await at(19.95); if(!alive(t))return; gd.classList.remove('locked');   // the driver brings the card closer: the frame is no longer green
+  await at(20.2); if(!alive(t))return;
   vid.pause(); await wait(300); if(!alive(t))return;
   reading();
 }
@@ -1225,7 +1262,7 @@ const FIELDS=[
   {k:'exp',label:'Expiry date',v:'14 Jun 2029',box:[184,118,74,14]},
 ];
 async function reading(){
-  const t=RUN, f=F(); spec('read');
+  const t=RUN, f0=F(), f={...f0, unsure: f0.unsure && !(f0.real && REAL_FRONT_CLEAN)}; spec('read');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Check details</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
     <div class="scanimg" id="si"><div class="face">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div></div>
@@ -1240,7 +1277,7 @@ async function reading(){
   <div class="foot"><button class="btn primary" id="go" disabled>Looks right, continue</button></div>`;
   const v=await show(html,'handoff',false);
   $('#bk',v).onclick=()=>{RUN++;licenceIntro('pop');};
-  v.querySelectorAll('.rt').forEach(b=>b.onclick=()=>{RUN++;camera(true);});
+  v.querySelectorAll('.rt').forEach((b,k)=>b.onclick=()=>{RUN++;camera(true,k?'back':'front');});
   const si=$('#si',v), go=$('#go',v);
   // shared-element hand-off: the photo moves up from where the card was in the frame
   anim(si,[{opacity:.0,transform:'scale(.985)'},{opacity:1,transform:'none'}],500,EASE.std);
