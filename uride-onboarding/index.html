@@ -326,12 +326,22 @@ body.rec.bare .foot{padding-bottom:12px}
 .scanimg.showback .face.fr{opacity:0;transform:translateX(-10%)}
 .scanimg.showback .face.bk{opacity:1;transform:none}
 .scanimg.showback > .ocrbox,.scanimg.showback .beam{visibility:hidden}
+.pside{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:4;display:flex;gap:2px;padding:3px;border-radius:14px;background:rgba(16,24,40,.55);backdrop-filter:blur(6px)}
+.pside .phl{position:absolute;left:0;top:3px;bottom:3px;width:56px;border-radius:11px;background:#fff}
+.pside button{position:relative;z-index:1;font-size:12px;font-weight:500;line-height:16px;padding:4px 10px;border-radius:11px;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:5px;transition:color calc(350ms*var(--k))}
+.pside button.on{color:#15181B}
+.pside button::before{content:"";width:6px;height:6px;border-radius:50%;flex:none}
+.pside button.ok::before{content:"✓";width:auto;height:auto;border-radius:0;color:#5BD17E;font-weight:700}
+.pside button.ok.on::before{color:#1E8E3E}
+.pside button.warn::before{background:#F2B33D}
+.field .rtk{display:block;margin-top:6px;font-size:13px;font-weight:600;color:var(--amber);text-decoration:underline;text-underline-offset:2px;padding:2px 0}
+.field.editing .rtk{display:none}
 .bkboxes{position:absolute;inset:0;visibility:hidden;pointer-events:none}
 .bkboxes .ocrbox{opacity:0}
 .scanimg.showback .bkboxes{visibility:visible}
 .bkchip{position:absolute;left:10px;top:10px;display:flex;align-items:center;gap:5px;padding:4px 9px 4px 6px;border-radius:12px;background:rgba(22,112,52,.92);color:#fff;font-size:12px;font-weight:500;opacity:0}
 .bkchip svg{width:14px;height:14px}
-.sdots{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:5px;padding:4px 6px;border-radius:10px;background:rgba(16,24,40,.35);z-index:3}
+.sdots-unused{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:5px;padding:4px 6px;border-radius:10px;background:rgba(16,24,40,.35);z-index:3}
 .sdots i{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.5);transition:background calc(300ms*var(--k)),width calc(300ms*var(--k))}
 .sdots i.on{background:#fff;width:14px}
 .thumb{transition:border-color calc(500ms*var(--k)),background calc(500ms*var(--k))}
@@ -740,7 +750,7 @@ async function toast(html){
 }
 
 /* ---------- touch feedback: press < 100 ms, spring release ---------- */
-const PRESSABLE='.btn,.item,.iconbtn,.fix,.thumb button,.shutter,#toscan,.slot,.notify,.camctl';
+const PRESSABLE='.btn,.item,.iconbtn,.fix,.rtk,.pside button,.shutter,#toscan,.slot,.notify,.camctl';
 const ratio=()=>screen.getBoundingClientRect().width/screen.offsetWidth;
 function tapRing(x,y){
   const d=document.createElement('div'); d.className='tap'; d.style.left=x+'px'; d.style.top=y+'px'; screen.appendChild(d);
@@ -835,10 +845,10 @@ function ring(frac,label){
 async function checklist(saved=false, dir='fade'){
   const t=RUN;
   spec(saved?'saved':'list');
-  const st=i=> i===0?'ok': i===1?'next':'todo';
+  const st=i=> saved ? (i===0?'ok': i===1?'rev': i===2?'next':'todo') : (i===0?'ok': i===1?'next':'todo');
   const html=`<div class="top"><button class="iconbtn" aria-label="Back">${ICON.back}</button><h1>Driver registration</h1><button class="iconbtn" id="hlp" aria-label="Help">${ICON.help}</button></div>
   <div class="body">
-    <div class="sumrow">${ring(.1,'<span style="display:inline-flex;align-items:baseline"><span class="roll"><i>1</i></span>/10</span>')}<div><b id="sumt"><span class="roll"><i>1</i></span> of 10 steps done</b><small>Progress saves after every step</small></div></div>
+    <div class="sumrow">${ring(saved?.2:.1,`<span style="display:inline-flex;align-items:baseline"><span class="roll"><i>${saved?2:1}</i></span>/10</span>`)}<div><b id="sumt"><span class="roll"><i>${saved?2:1}</i></span> of 10 steps done</b><small>Progress saves after every step</small></div></div>
     <div class="list">${STEPS.map((_,i)=>item(i,st(i))).join('')}</div>
   </div>`;
   const v=await show(html,dir);
@@ -850,17 +860,8 @@ async function checklist(saved=false, dir='fade'){
     toast(`<span>This prototype covers the <b>driver’s licence</b> step.</span>`);
   });
   if(!saved) return;
-  // sequenced feedback: status → ring → highlight → toast
-  await wait(500); if(!alive(t))return;
-  const lic=$('[data-i="1"]',v), nxt=$('[data-i="2"]',v);
-  await morph(lic,1,'rev'); haptic('success'); if(!alive(t))return;         // 1 · the licence turns blue
+  // the driver has just seen "Licence sent for review", so the list opens already updated; only the toast confirms it
   await wait(600); if(!alive(t))return;
-  const arc=$('.arc',v), c=2*Math.PI*24;                                     // 2 · the ring fills, the counter changes
-  v.querySelectorAll('.rl .roll, #sumt > .roll').forEach(r=>roll(r,'2'));
-  await anim(arc,[{strokeDashoffset:c*.9},{strokeDashoffset:c*.8}],1100,'cubic-bezier(.4,0,.2,1)'); if(!alive(t))return;
-  await wait(500); if(!alive(t))return;
-  await morph(nxt,2,'next'); if(!alive(t))return;                            // 3 · the next step lights up
-  await wait(1100); if(!alive(t))return;                                     // 4 · only then, the toast
   toast(`${ICON.check}<span><b>Licence sent for review.</b> Progress is saved, you can come back anytime.</span>`);
 }
 
@@ -1301,11 +1302,7 @@ async function reading(){
   const t=RUN, f0=F(), f={...f0, unsure: f0.unsure && !(f0.real && REAL_FRONT_CLEAN)}; spec('read');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Check details</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
-    <div class="scanimg" id="si"><div class="face fr">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div><div class="face bk">${realFace('back',cardBack())}</div><div class="sdots"><i class="on"></i><i></i></div></div>
-    <div class="thumbs">
-      <div class="thumb${f.unsure?' warn':''}" data-s="0"><div class="mini"><div class="face">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div></div>Front${f.unsure?'<button class="rt" data-side="front">Retake</button>':TOK}</div>
-      <div class="thumb" data-s="1"><div class="mini"><div class="face">${realFace('back',cardBack())}</div></div>Back${TOK}</div>
-    </div>
+    <div class="scanimg" id="si"><div class="face fr">${realFace('front',cardFront(EXP(),{holo:f.unsure}))}</div><div class="face bk">${realFace('back',cardBack())}</div><div class="pside" role="tablist" aria-label="Photo side"><i class="phl"></i><button role="tab" aria-selected="true" data-s="0" class="on${f.unsure?' warn':' ok'}">Front</button><button role="tab" aria-selected="false" data-s="1" class="ok">Back</button></div></div>
     <div id="bn"></div>
     <div class="status" id="stt"><span class="spinner"></span>Reading your licence…</div>
     <div class="fields" id="fs">${FIELDS.map(x=>`<div class="field" data-k="${x.k}"><label>${x.label}</label><div class="val"><span class="v"><span class="skel"></span></span><span class="ok">${ICON.check}</span></div><span class="note"></span></div>`).join('')}</div>
@@ -1313,17 +1310,22 @@ async function reading(){
   <div class="foot"><button class="btn primary" id="go" disabled>Looks right, continue</button></div>`;
   const v=await show(html,'handoff',false);
   $('#bk',v).onclick=()=>{RUN++;licenceIntro('pop');};
-  v.querySelectorAll('.rt').forEach(b=>b.onclick=e=>{e.stopPropagation();RUN++;camera(true,b.dataset.side);});
+  v.addEventListener('click',e=>{ const b=e.target.closest('.rtk'); if(!b) return; RUN++; camera(true,b.dataset.side); });
   // see both photos: swipe the big photo (left = back, right = front)
   const siv=$('#si',v), showSide=i=>{ siv.classList.toggle('showback',!!i); if(i&&siv._showBack) siv._showBack();
-    siv.querySelectorAll('.sdots i').forEach((d,k)=>d.classList.toggle('on',k===i)); };
+    siv.querySelectorAll('.pside button').forEach((b,k)=>{ b.classList.toggle('on',k===i); b.setAttribute('aria-selected',k===i); });
+    const hl=$('.pside .phl',siv), tg=siv.querySelectorAll('.pside button')[i], q=ratio();
+    anim(hl,[{transform:getComputedStyle(hl).transform,width:hl.offsetWidth+'px'},{transform:`translateX(${tg.offsetLeft-3}px)`,width:tg.offsetWidth+'px'}],450,'cubic-bezier(.4,0,.2,1)'); };
+  siv.querySelectorAll('.pside button').forEach(b=>b.addEventListener('click',e=>{ e.stopPropagation(); showSide(+b.dataset.s); }));
+  siv.querySelectorAll('.pside button').forEach(b=>b.addEventListener('pointerdown',e=>e.stopPropagation()));
+  requestAnimationFrame(()=>{ const hl=$('.pside .phl',siv), b0=siv.querySelector('.pside button'); if(hl&&b0){ hl.style.width=b0.offsetWidth+'px'; hl.style.transform=`translateX(${b0.offsetLeft-3}px)`; } });
   let sx=null; siv.addEventListener('pointerdown',e=>{sx=e.clientX;});
   siv.addEventListener('pointerup',e=>{ if(sx==null) return; const dx=e.clientX-sx; sx=null; if(Math.abs(dx)>24) showSide(dx<0?1:0); });
   siv.addEventListener('pointercancel',()=>{sx=null;});
   const si=$('#si',v), go=$('#go',v);
   // shared-element hand-off: the photo moves up from where the card was in the frame
   anim(si,[{opacity:.0,transform:'scale(.985)'},{opacity:1,transform:'none'}],500,EASE.std);
-  v.querySelectorAll('.thumbs,.status,.fields').forEach((n,i)=>anim(n,[{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],420,EASE.decel,{delay:(150+i*70)*K}));
+  v.querySelectorAll('.status,.fields').forEach((n,i)=>anim(n,[{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],420,EASE.decel,{delay:(150+i*70)*K}));
   await wait(600); if(!alive(t))return;
   // a scanner beam moves down at a steady speed; each value is found when the beam reaches it
   const H=si.clientHeight, D=2600;
@@ -1344,7 +1346,8 @@ async function reading(){
     const fe=$(`[data-k="${x.k}"]`,v), val=$('.v',fe);
     val.textContent = unsure ? (x.k==='num'?'M?234-56789-01234':'14 Jun 202?') : bad ? '12 Mar 2025' : x.v;
     anim(val,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],360,EASE.decel);
-    if(unsure){ fe.classList.add('unsure'); $('.note',fe).textContent=x.k==='num'?'Glare hid one character. Please check it on your card.':'A hologram covers the last digit of the year. Please check.'; $('.ok',fe).outerHTML=`<button class="fix" id="fix">Fix</button>`; }
+    if(unsure){ fe.classList.add('unsure'); $('.note',fe).textContent=x.k==='num'?'Glare hid one character. Please check it on your card.':'A hologram covers the last digit of the year. Please check.'; $('.ok',fe).outerHTML=`<button class="fix" id="fix">Fix</button>`;
+      $('.note',fe).insertAdjacentHTML('afterend',`<button class="rtk" data-side="front">Or retake the photo</button>`); }
     else if(bad){ fe.classList.add('bad'); $('.note',fe).textContent='Expired on 12 Mar 2025'; $('.ok',fe).outerHTML=`<span style="color:var(--red-text)">${ICON.alert}</span>`; }
     else { fe.classList.add('filled'); anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop); }
   }
@@ -1403,7 +1406,7 @@ async function reading(){
         vv.innerHTML=`<span class="v">${val}</span><span class="ok">${ICON.check}</span>`;
         $('.note',fe).textContent=''; fe.classList.remove('editing','hinting','invalid'); fe.classList.add('filled'); haptic('light');
         anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop);
-        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);} const tw=v.querySelector('.thumb.warn'); if(tw){ tw.classList.remove('warn'); const rb=tw.querySelector('.rt'); if(rb){ rb.outerHTML=TOK; anim(tw.querySelector('.tok'),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop); } }
+        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);} const pw=v.querySelector('.pside .warn'); if(pw){ pw.classList.remove('warn'); pw.classList.add('ok'); } const rk=fe.querySelector('.rtk'); if(rk) rk.remove();
         status(`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`);
         enable();
       };
@@ -1443,7 +1446,7 @@ async function reading(){
         vv.innerHTML=`<span class="v">${val}</span><span class="ok">${ICON.check}</span>`;
         $('.note',fe).textContent=''; fe.classList.remove('editing','hinting','invalid'); fe.classList.add('filled'); haptic('light');
         anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop);
-        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);} const tw=v.querySelector('.thumb.warn'); if(tw){ tw.classList.remove('warn'); const rb=tw.querySelector('.rt'); if(rb){ rb.outerHTML=TOK; anim(tw.querySelector('.tok'),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop); } }
+        const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);} const pw=v.querySelector('.pside .warn'); if(pw){ pw.classList.remove('warn'); pw.classList.add('ok'); } const rk=fe.querySelector('.rtk'); if(rk) rk.remove();
         status(`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`);
         enable();
       };
