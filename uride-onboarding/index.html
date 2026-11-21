@@ -744,7 +744,9 @@ async function toast(html){
   screen.querySelectorAll('.toast').forEach(n=>n.remove());
   const t=document.createElement('div'); t.className='toast'; t.innerHTML=html; screen.appendChild(t);
   await anim(t,[{transform:'translateY(-140%)'},{transform:'translateY(0)'}],SPR.toast);
-  await wait(3200);
+  // time to read: about 4 s, a little more for longer text; a tap closes it sooner
+  const words=t.textContent.trim().split(/\s+/).length;
+  await Promise.race([wait(Math.max(4000,1500+words*350)), new Promise(r=>t.addEventListener('click',r,{once:true}))]);
   await anim(t,[{transform:'translateY(0)',opacity:1},{transform:'translateY(-140%)',opacity:0}],250,EASE.accel);
   t.remove();
 }
@@ -852,17 +854,17 @@ async function checklist(saved=false, dir='fade'){
     <div class="list">${STEPS.map((_,i)=>item(i,st(i))).join('')}</div>
   </div>`;
   const v=await show(html,dir);
-  $('#hlp',v).onclick=()=>toast(`<span><b>Help centre:</b> what each step needs and how long it takes. (Not part of this prototype.)</span>`);
+  $('#hlp',v).onclick=()=>toast(`<span>Help isn’t part of this prototype</span>`);
   v.querySelectorAll('.item').forEach(b=>b.onclick=()=>{
     const i=+b.dataset.i;
     if(i===1 && !saved) return licenceIntro();
     anim(b,[{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(3px)'},{transform:'translateX(0)'}],360,EASE.inout);
-    toast(`<span>This prototype covers the <b>driver’s licence</b> step.</span>`);
+    toast(`<span>Only the licence step works here</span>`);
   });
   if(!saved) return;
   // the driver has just seen "Licence sent for review", so the list opens already updated; only the toast confirms it
   await wait(600); if(!alive(t))return;
-  toast(`${ICON.check}<span><b>Licence sent for review.</b> Progress is saved, you can come back anytime.</span>`);
+  toast(`${ICON.check}<span>Licence sent for review</span>`);
 }
 
 /* ================= licence intro ================= */
@@ -878,7 +880,6 @@ async function licenceIntro(dir='push'){
       <svg class="hc-frame" viewBox="0 0 296 203" fill="none" stroke="#1F2A37" stroke-width="3" stroke-linecap="round"><path d="M1.5 36V29.5A28 28 0 0 1 29.5 1.5H36"/><path d="M260 1.5H266.5A28 28 0 0 1 294.5 29.5V36"/><path d="M1.5 167V173.5A28 28 0 0 0 29.5 201.5H36"/><path d="M260 201.5H266.5A28 28 0 0 0 294.5 173.5V167"/></svg>
     </div>
     <p class="chips tipline" aria-label="Tips: good light, contrasting surface, hold still"><span data-c="0">Good light</span><b aria-hidden="true">·</b><span data-c="1">Contrasting surface</span><b aria-hidden="true">·</b><span data-c="2">Hold still</span></p>
-    <p class="privacy">${ICON.lock}<span>Only used to check you can drive with Uride</span></p>
   </div>
   <div class="foot">
     <button class="btn primary" id="scan">${ICON.cam} Scan your licence</button>
@@ -1001,7 +1002,7 @@ async function camera(retry=false, side=null){
   $('#cx',v).onclick=()=>{RUN++;PAUSED=false;licenceIntro('down');};
   wireCamControls(v);
   $('#sdF',v).classList.add('on'); requestAnimationFrame(()=>moveSide(v,0));
-  $('#sh',v).onclick=()=>camChip(v,'Just hold still, we take the photo for you');
+  $('#sh',v).onclick=()=>camChip(v,'We take the photo for you');
   const c3=$('#c3',v), gd=$('#gd',v), pill=$('#pill',v), ch=$('#ch',v), gl=$('#gl',v);
   const cwr=$('#cw',v), wd=$('#wd',v);
   if(f.real){ if(retry&&side) await realRetake(v,t,side); else await realCamera(v,t); return; }
@@ -1182,7 +1183,7 @@ const TIPS=[
   [ICON.hand,'Hold still. We take the photo for you'],
 ];
 function camChip(v,txt){ const chip=$('#cchip',v); if(!chip) return; chip.textContent=txt; chip.getAnimations().forEach(a=>a.cancel());
-  anim(chip,[{opacity:0,transform:'translateX(-50%) translateY(4px)'},{opacity:1,transform:'translateX(-50%)',offset:.12},{opacity:1,transform:'translateX(-50%)',offset:.85},{opacity:0,transform:'translateX(-50%)'}],1800,EASE.std); }
+  anim(chip,[{opacity:0,transform:'translateX(-50%) translateY(4px)'},{opacity:1,transform:'translateX(-50%)',offset:.12},{opacity:1,transform:'translateX(-50%)',offset:.85},{opacity:0,transform:'translateX(-50%)'}],2800,EASE.std); }
 function wireCamControls(v){
   const flb=$('#flb',v), tpb=$('#tpb',v), chip=$('#cchip',v), feed=$('.feed',v);
   const setFeed=()=>anim(feed,[{filter:getComputedStyle(feed).filter},{filter:FLASH_MODE==='on'?'saturate(.9) brightness(1.35)':'saturate(.9) brightness(1)'}],300,EASE.std);
@@ -1232,7 +1233,7 @@ async function expiredSheet(v,t){
   anim(sh,[{transform:'translateY(105%)'},{transform:'none'}],SPR.sheet);
   return new Promise(res=>{
     $('#exSc',sh).onclick=async()=>{ await anim(sh,[{transform:'none'},{transform:'translateY(105%)'}],280,EASE.accel); sh.remove(); res(true); };
-    $('#exTmp',sh).onclick=()=>toast(`<span><b>Temporary licence:</b> you upload the paper copy and our team checks it by hand. (Not part of this prototype.)</span>`);
+    $('#exTmp',sh).onclick=()=>toast(`<span>Temporary licences aren’t part of this prototype</span>`);
   });
 }
 async function issues(v,side,drift,t){
