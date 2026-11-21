@@ -913,10 +913,10 @@ async function tipsStory(v){
   await done(0); await wait(220); if(!ok()) return;
   // 2 · contrasting surface: the table under the card slowly darkens, then the tip is ticked
   surf.classList.add('dark'); await wait(850); if(!ok()) return;
-  await done(1); await wait(220); if(!ok()) return;
+  await done(1); await wait(80); if(!ok()) return;
   // 3 · hold still: a real hand shake (small, quick, irregular jerks with a little blur), then the card stops
-  await shake(card,800,ok); if(!ok()) return;
-  frame.classList.add('ok'); await wait(150); if(!ok()) return;
+  await shake(card,450,ok); if(!ok()) return;
+  frame.classList.add('ok'); await wait(60); if(!ok()) return;
   await done(2);
   const hb=$('.hc-beam',v); await wait(150); if(!ok()) return;
   hb.animate([{transform:'translateY(-10px)',opacity:0},{opacity:.9,offset:.1},{opacity:.9,offset:.88},{transform:'translateY(160px)',opacity:0}],{duration:1200*K,easing:'linear'});
