@@ -196,8 +196,7 @@ body.rec.bare .foot{padding-bottom:12px}
 .sides{position:relative;display:flex;gap:6px;font-size:12px;font-weight:500}
 .sides span{position:relative;z-index:1;padding:3px 9px;border-radius:10px;color:rgba(255,255,255,.6);transition:color calc(400ms*var(--k)) ease}
 .sides span.on{color:#15181B}
-.sides span.ok::before{content:"✓ ";color:#5BD17E}
-.sides span.ok.on::before{color:#1E8E3E}
+
 .sides .sdhl{position:absolute;left:0;top:0;height:100%;width:52px;border-radius:10px;background:#fff;transform:translateX(-3px)}
 /* director menu */
 .dir{position:fixed;inset:0;z-index:200;background:rgba(16,20,24,.45);display:none;align-items:flex-end;justify-content:center}
@@ -330,11 +329,7 @@ body.rec.bare .foot{padding-bottom:12px}
 .pside .phl{position:absolute;left:0;top:3px;bottom:3px;width:56px;border-radius:11px;background:#fff}
 .pside button{position:relative;z-index:1;font-size:12px;font-weight:500;line-height:16px;padding:4px 10px;border-radius:11px;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:5px;transition:color calc(350ms*var(--k))}
 .pside button.on{color:#15181B}
-.pside button::before{content:"";width:6px;height:6px;border-radius:50%;flex:none}
-.pside button.ok::before{content:"✓";width:auto;height:auto;border-radius:0;color:#5BD17E;font-weight:700}
-.pside button.ok.on::before{color:#1E8E3E}
-.pside button.warn::before{background:#F2B33D}
-.field .rtk{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13px;font-weight:500;color:var(--muted);padding:2px 0}
+.field .rtk{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;font-weight:600;color:#4A5965;padding:6px 12px 6px 10px;border-radius:16px;border:1px solid #CBD3D9;background:rgba(255,255,255,.7)}
 .field .rtk svg{width:15px;height:15px}
 .field.unsure .fix{background:var(--amber);color:#fff;padding:6px 16px;border-radius:16px;font-size:14px;font-weight:600;line-height:18px}
 .field.editing .rtk{display:none}
@@ -1348,8 +1343,8 @@ async function reading(){
     const fe=$(`[data-k="${x.k}"]`,v), val=$('.v',fe);
     val.textContent = unsure ? (x.k==='num'?'M?234-56789-01234':'14 Jun 202?') : bad ? '12 Mar 2025' : x.v;
     anim(val,[{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],360,EASE.decel);
-    if(unsure){ fe.classList.add('unsure'); $('.note',fe).textContent=x.k==='num'?'Glare hid one character. Please check it on your card.':'A hologram covers the last digit of the year. Please check.'; $('.ok',fe).outerHTML=`<button class="fix" id="fix">Fix</button>`;
-      $('.note',fe).insertAdjacentHTML('afterend',`<button class="rtk" data-side="front">${ICON.cam}<span>Or retake the photo</span></button>`); }
+    if(unsure){ fe.classList.add('unsure'); $('.note',fe).innerHTML=x.k==='num'?'Glare hid one character.<br>Please check it on your card.':'A hologram covers the last digit of the year.<br>Please check it on your card.'; $('.ok',fe).outerHTML=`<button class="fix" id="fix">Fix it</button>`;
+      $('.note',fe).insertAdjacentHTML('afterend',`<button class="rtk" data-side="front">${ICON.cam}<span>Retake the photo</span></button>`); }
     else if(bad){ fe.classList.add('bad'); $('.note',fe).textContent='Expired on 12 Mar 2025'; $('.ok',fe).outerHTML=`<span style="color:var(--red-text)">${ICON.alert}</span>`; }
     else { fe.classList.add('filled'); anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop); }
   }
