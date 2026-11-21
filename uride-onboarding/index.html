@@ -867,7 +867,7 @@ async function licenceIntro(dir='push'){
   spec('intro');
   const html=`<div class="top"><button class="iconbtn" id="bk" aria-label="Back">${ICON.back}</button><h1>Driver’s licence</h1><span class="stepper">Step 2 of 10</span></div>
   <div class="body">
-    <p class="lead">By law, we need your licence details. Scan both sides and we’ll fill them in for you.</p>
+    <p class="lead">By law, we need your licence details.<br>Scan both sides and we’ll fill them in for you.</p>
     <div class="hero-card" aria-hidden="true">
       <div class="hc-surface"></div>
       <div class="hc-card"><div class="face">${cardFront('2029/06/14')}</div><div class="hc-beam"></div></div>
@@ -941,6 +941,8 @@ function shake(el,ms,ok){
 }
 
 /* ================= camera ================= */
+// the shutter ring never runs backwards: after a photo it fades out and comes back empty
+function resetRing(p){ if(!p) return; anim(p,[{opacity:1},{opacity:0}],260,EASE.std).then(()=>{ p.getAnimations().forEach(a=>a.cancel()); p.style.strokeDashoffset='220'; p.style.opacity='1'; }); }
 // the pill speaks only for a problem, a needed action or a result; between them it fades away
 function hidePill(p){ if(!p||p.dataset.off) return; p.dataset.off=1; anim(p,[{opacity:1},{opacity:0}],320,EASE.std); }
 function setPill(p,cls,html){
@@ -950,7 +952,7 @@ function setPill(p,cls,html){
 }
 // the line under the frame carries only the first recommendation; the pill above says everything else,
 // so any later hint just fades the line away instead of repeating the pill
-const HINT0='Use a plain, contrasting surface and avoid direct light';
+const HINT0='Use a plain surface and avoid direct light';
 function setHint(el,txt){ if(!el) return;
   if(txt===HINT0){ el.textContent=txt; if(el.dataset.off){ delete el.dataset.off; anim(el,[{opacity:0},{opacity:1}],300,EASE.std); } return; }
   if(!el.dataset.off){ el.dataset.off=1; anim(el,[{opacity:1},{opacity:0}],300,EASE.std); } }
@@ -986,7 +988,7 @@ async function camera(retry=false, side=null){
     <div class="guide" id="gd"><svg width="312" height="197" viewBox="0 0 312 197" overflow="visible" fill="none" stroke-width="3.5" stroke-linecap="round">
       <path class="cn tl" d="M-2 24V12A14 14 0 0 1 12 -2H26"/><path class="cn tr" d="M286 -2H300A14 14 0 0 1 314 12V24"/>
       <path class="cn bl" d="M-2 173V185A14 14 0 0 0 12 199H26"/><path class="cn br" d="M286 199H300A14 14 0 0 0 314 185V173"/></svg></div>
-    <p class="camhint" id="ch">Use a plain, contrasting surface and avoid direct light</p>
+    <p class="camhint" id="ch">Use a plain surface and avoid direct light</p>
     <div class="autolabel" id="al">Auto-capture is on</div>
     <div class="shutterbar"><button class="camctl" id="flb" aria-label="Flash: Auto"><span class="cc">${FLASH[FLASH_MODE]}</span><small>${FLASH_MODE[0].toUpperCase()+FLASH_MODE.slice(1)}</small></button>
       <button class="shutter" id="sh" aria-label="Take photo"><svg width="76" height="76"><circle cx="38" cy="38" r="35" stroke="rgba(255,255,255,.45)" stroke-width="4" fill="none"/><circle id="prog" cx="38" cy="38" r="35" stroke="#5BD17E" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/></svg><span class="core"></span></button>
@@ -1013,8 +1015,8 @@ async function camera(retry=false, side=null){
     const ok = await expiredSheet(v,t); if(!alive(t)||!ok) return;
     // the old card leaves, the new one comes in
     // the camera moves along the table to the new card: one continuous pan, a little motion blur in the middle
-    gd.classList.remove('locked','warn'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
-    setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a plain, contrasting surface and avoid direct light');
+    gd.classList.remove('locked','warn'); resetRing($('#prog',v));
+    setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a plain surface and avoid direct light');
     drift.settle(); await wait(300); drift.stop(); if(!alive(t))return;
     await pan(wd,'none','translate(-330px,30px) scale(.92)',900,'cubic-bezier(.5,0,.9,.6)',2.4,'in'); if(!alive(t))return;
     cardOld=false; $('.art',v).innerHTML=cardFront(EXP(),{holo:f.unsure});
@@ -1029,7 +1031,7 @@ async function camera(retry=false, side=null){
   await wait(300); if(!alive(t))return;
   setPill(pill,'',`<span>Place your licence in the frame</span>`); setHint(ch,'Same place, back side up');
   moveSide(v,1);
-  gd.classList.remove('locked'); anim($('#prog',v),[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std);
+  gd.classList.remove('locked'); resetRing($('#prog',v));
   haptic('light');
   await wait(900); if(!alive(t))return;
   drift.stop();
@@ -1136,8 +1138,8 @@ async function realCamera(v,t){
   const ok=await sheet; raf=false; vid.removeEventListener('timeupdate',guard); vid.removeEventListener('play',guard);
   if(!alive(t)||!ok) return;
   hold=false; cardOld=false; vid.play().catch(()=>{});
-  gd.classList.remove('locked','warn'); anim(prog,[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
-  setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a plain, contrasting surface and avoid direct light');
+  gd.classList.remove('locked','warn'); resetRing($('#prog',v));
+  setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a plain surface and avoid direct light');
   // 3. the desk lamp reflects on the new card
   await at(11.4); if(!alive(t))return;
   spec('glare'); gd.classList.add('warn'); setPill(pill,'warn',`${ICON.sun}<span>Too much glare. Tilt your licence slightly</span>`); haptic('warning');
@@ -1155,7 +1157,7 @@ async function realCamera(v,t){
   spec('flip'); $('#sdF',v).classList.add('ok');
   setPill(pill,'',`<span>Place your licence in the frame</span>`); setHint(ch,'Same place, back side up');
   moveSide(v,1);
-  gd.classList.remove('locked'); anim(prog,[{strokeDashoffset:0},{strokeDashoffset:220}],400,EASE.std); haptic('light');
+  gd.classList.remove('locked'); resetRing($('#prog',v)); haptic('light');
   await at(19.0); if(!alive(t))return; lock(); setHint(ch,'Keep it there');
   await at(19.8); if(!alive(t))return; capture('Back captured');
   await at(19.95); if(!alive(t))return; gd.classList.remove('locked');   // the driver brings the card closer: the frame is no longer green
@@ -1223,7 +1225,7 @@ async function expiredSheet(v,t){
   sh.innerHTML=`<div class="grab"></div>
     <div class="xs-ic">${ICON.alert}</div>
     <h3>This licence has expired</h3>
-    <p>It expired on 12 Mar 2025. You need a valid licence to drive with Uride. If you have a newer card, scan that one. Your other steps are saved.</p>
+    <p>It expired on 12 Mar 2025. Scan a newer one.<br>Your other steps are saved.</p>
     <button class="btn primary" id="exSc">${ICON.cam} Scan a valid licence</button>
     <button class="btn ghost" id="exTmp">I only have a temporary licence</button>`;
   $('.cam',v).appendChild(sh);
