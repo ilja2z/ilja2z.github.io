@@ -117,6 +117,7 @@ input{font:inherit;color:inherit}
 .notify{transition:background calc(700ms*var(--k)) ease,border-color calc(700ms*var(--k)) ease,color calc(700ms*var(--k)) ease !important;margin-top:20px;align-self:stretch;height:48px;border-radius:12px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:500;color:var(--ink);transition:background calc(300ms*var(--k)),border-color calc(300ms*var(--k))}
 .notify.on{background:var(--green-soft);border-color:#A6D8B4;color:var(--green)}
 .notify .bell{display:inline-block;transform-origin:50% 10%}
+.notify .nl{display:inline-block;white-space:nowrap;overflow:hidden;vertical-align:bottom}
 
 /* intro: three short tips instead of three paragraphs */
 .tips3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}
@@ -656,7 +657,7 @@ const SPEC = {
   flip:{t:'Now the back', d:'The card turns over in place, so the driver understands what to do without reading anything.', why:'<b>Show, don’t tell:</b> one movement replaces a paragraph of instructions.', rows:[['Card flip','900ms',sp('· bounce .06')],['Hint cross-fade','240ms','standard']], hap:'Light tap when the flip prompt appears.'},
   read:{t:'Reading the licence', d:'A scan line passes over the photo. Each value lights up on the card at the moment it lands in its field, so the driver sees where every value came from.', why:'<b>Trust:</b> linking the box on the card to the field makes autofill feel checkable, not magic.', rows:[['Photo hand-off','550ms',sp('· bounce 0')],['Scan line','1500ms','ease-in-out'],['Field fill stagger','260ms each','emphasized decel'],['Tick','400ms',sp('· bounce .25')]], hap:'Success when all fields are filled.'},
   unsure:{t:'One value needs a check', d:'OCR is not sure about the expiry date. Only that field turns amber and says why. The driver taps Fix, the number keypad opens with the year almost filled, types the last digit and presses Enter. Continue unlocks.', why:'<b>Rule:</b> never silently guess a legal value. Ask only about the one field we are unsure of.', rows:[['Scroll to the field','smooth','browser default'],['Fix button nudge','2 × 700ms','ease-in-out'],['Edit focus ring','200ms','standard'],['Button unlocks','300ms','standard']], hap:'Light tap on Done.'},
-  unsureNum:{t:'One character needs a check', d:'A trace of the lamp’s glare stayed over the start of the licence number. The expiry date read fine, so the card was accepted at once; this value can wait for the review screen. Only the hidden character is asked for, with the number keypad.', why:'<b>Rule:</b> stop at the camera only for what makes going on pointless (expired, wrong document). Anything the driver can fix in a second waits for one review screen.', rows:[['Field highlight','240ms','standard'],['Gap fills, tick','250ms + pop',sp('· bounce .25')]], hap:'Light tap when the value is confirmed.'},
+  unsureNum:{t:'One character needs a check', d:'A trace of the lamp’s glare stayed over the start of the licence number. The expiry date read fine, so the card was accepted at once; this value can wait for the review screen. The whole number stays editable; the unclear character is shown as ? and pre-selected, so one keystroke fixes it.', why:'<b>Rule:</b> stop at the camera only for what makes going on pointless (expired, wrong document). Anything the driver can fix in a second waits for one review screen.', rows:[['Field highlight','240ms','standard'],['Gap fills, tick','250ms + pop',sp('· bounce .25')]], hap:'Light tap when the value is confirmed.'},
   expired:{t:'Licence has expired', d:'We read the date right after the front photo, so the driver does not flip a card we cannot accept. The message is about the document, not the photo. One clear action: scan a valid licence. A temporary paper licence has its own path.', why:'<b>2024 problem:</b> the expired warning could be closed and Continue still worked.', rows:[['Checking the front','1100ms','spinner'],['Sheet rises','600ms',sp('· bounce 0')],['Old card leaves','520ms','emphasized accel'],['New card comes in','1200ms','emphasized decel']], hap:'Error (three short taps), once.'},
   review:{t:'Under review: a calm wait', d:'The photo the driver just took carries over and settles in the middle. While we check, the motion is slow on purpose: one turn every 6 seconds and a halo that breathes. The timeline draws itself and says what happens next and when.', why:'<b>Why it matters:</b> waiting is where people drop off. Saying how long, what happens next and letting them keep going turns the wait into progress.', rows:[['Photo carries over','700ms',sp('· bounce 0')],['Badge','400ms',sp('· bounce .25')],['Ring turn','6s loop','linear'],['Halo breath','5s loop','ease-in-out'],['Timeline draws','1100ms','emphasized decel'],['Steps appear','330ms apart','emphasized decel']], hap:'Success on arrival. Light tap on “Notify me”.'},
   manual:{t:'Manual entry', d:'Real inputs. The licence number formats itself as you type, dates use the format printed on the card, and errors appear when you leave a field, not on every key.', why:'<b>Accessibility:</b> labels above fields, 16px text, and errors in words, not only in red.', rows:[['Focus ring','200ms','standard'],['Error reveal','240ms','emphasized decel'],['Button unlocks','300ms','standard']], hap:'None.'},
@@ -771,12 +772,31 @@ const STATE={
 };
 const itemInner=(i,st)=>`<span class="ic">${STEP_IC[i]}${BADGE[st]||''}</span><span class="tx"><b>${STEPS[i]}</b><small>${STATE[st][2]}</small></span>${st==='next'?'<span class="go">Start</span>':`<span class="chev">${ICON.arrow}</span>`}`;
 const item=(i,st)=>`<button class="item ${STATE[st][0]} ${st==='next'?'next':''}" data-i="${i}">${itemInner(i,st)}</button>`;
+// a status change redraws the step icon like a pen: the old strokes are erased, the new ones are drawn in the new colour,
+// then the badge pops and its mark draws itself (same idea as the tips chips on the licence intro)
+const strokes=sv=>[...sv.querySelectorAll('path,circle,rect,line')].filter(p=>p.getAttribute('fill')!=='currentColor');
 async function morph(el,i,st){
-  const parts=[...el.querySelectorAll('.ic,.tx,.go,.chev')];
-  await Promise.all(parts.map(p=>anim(p,[{opacity:1},{opacity:0}],260,'cubic-bezier(.4,0,.2,1)')));
+  const pen='cubic-bezier(.45,0,.55,1)';
+  const old=$('.ic > svg',el), ob=$('.bdg',el);
+  strokes(old).forEach(p=>{ p.setAttribute('pathLength','1'); p.style.strokeDasharray='1'; });
+  const txt=[...el.querySelectorAll('.tx,.go,.chev')];
+  await Promise.all([
+    ...strokes(old).map(p=>anim(p,[{strokeDashoffset:0},{strokeDashoffset:-1}],380,pen)),
+    ...[...old.querySelectorAll('[fill="currentColor"]')].map(p=>anim(p,[{opacity:1},{opacity:0}],200,'ease')),
+    ob?anim(ob,[{transform:'scale(1)'},{transform:'scale(0)'}],220,EASE.accel):null,
+    ...txt.map(p=>anim(p,[{opacity:1},{opacity:0}],260,'cubic-bezier(.4,0,.2,1)'))]);
   el.className=`item ${STATE[st][0]} ${st==='next'?'next':''}`; el.innerHTML=itemInner(i,st);
-  anim($('.ic',el),[{opacity:0},{opacity:1}],420,'cubic-bezier(.4,0,.2,1)'); const bd=$('.bdg',el); if(bd) anim(bd,[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:120*K});
-  el.querySelectorAll('.tx,.go,.chev').forEach(p=>anim(p,[{opacity:0},{opacity:1}],480,'cubic-bezier(.4,0,.2,1)'));
+  const sv=$('.ic > svg',el), bd=$('.bdg',el);
+  const ss=strokes(sv);
+  ss.forEach(p=>{ p.setAttribute('pathLength','1'); p.style.strokeDasharray='1'; p.style.strokeDashoffset='1'; });
+  sv.querySelectorAll('[fill="currentColor"]').forEach(p=>anim(p,[{opacity:0},{opacity:1}],300,'ease',{delay:500*K,fill:'both'}));
+  ss.forEach((p,k)=>anim(p,[{strokeDashoffset:1},{strokeDashoffset:0}],750,pen,{delay:k*90*K,fill:'both'}));
+  el.querySelectorAll('.tx,.go,.chev').forEach(p=>anim(p,[{opacity:0},{opacity:1}],480,'cubic-bezier(.4,0,.2,1)',{delay:150*K,fill:'both'}));
+  if(bd){
+    const bs=strokes($('svg',bd)); bs.forEach(p=>{ p.setAttribute('pathLength','1'); p.style.strokeDasharray='1'; p.style.strokeDashoffset='1'; });
+    await anim(bd,[{transform:'scale(0)'},{transform:'scale(1)'}],SPR.pop.ms,SPR.pop.e,{delay:(450+ss.length*90)*K,fill:'both'});
+    await Promise.all(bs.map((p,k)=>anim(p,[{strokeDashoffset:1},{strokeDashoffset:0}],450,pen,{delay:k*120*K,fill:'both'})));
+  } else await wait(750+ss.length*90);
 }
 function ring(frac,label){
   const c=2*Math.PI*24;
@@ -1039,9 +1059,12 @@ async function realCamera(v,t){
   // 2. we read the date straight away and stop before the flip; the camera stays live behind the sheet
   const sheet=expiredSheet(v,t);
   // the old card leaves the table, then the feed waits for the tap, so the new card never arrives under the sheet
-  (async()=>{ while(alive(t) && vid.currentTime<7.4 && $('.xsheet',v)) await new Promise(r=>requestAnimationFrame(r));
-    if($('.xsheet',v)){ hold=true; vid.pause(); } })();
-  const ok=await sheet; if(!alive(t)||!ok) return;
+  const STOP=7.4, guard=()=>{ if(!alive(t)) return; if(!hold && $('.xsheet',v) && vid.currentTime>=STOP-.05){ hold=true; }
+    if(hold){ if(!vid.paused) vid.pause(); if(vid.currentTime>STOP) vid.currentTime=STOP; } };
+  vid.addEventListener('timeupdate',guard); vid.addEventListener('play',guard);
+  let raf=true; (function loop(){ guard(); if(raf&&alive(t)) requestAnimationFrame(loop); })();
+  const ok=await sheet; raf=false; vid.removeEventListener('timeupdate',guard); vid.removeEventListener('play',guard);
+  if(!alive(t)||!ok) return;
   hold=false; cardOld=false; vid.play().catch(()=>{});
   gd.classList.remove('locked','warn'); anim(prog,[{strokeDashoffset:0},{strokeDashoffset:220}],300,EASE.std);
   setPill(pill,'',`<span>Place your current licence in the frame</span>`); setHint(ch,'Use a plain, contrasting surface and avoid direct light');
@@ -1271,25 +1294,28 @@ async function reading(){
     fx.onclick=()=>{
       fe.classList.remove('unsure'); fe.classList.add('editing','hinting');
       const vv=$('.val',fe);
-      vv.innerHTML=`<span class="numgap"><span>M</span><input id="ein" maxlength="1" inputmode="numeric" pattern="[0-9]" enterkeyhint="done" autocomplete="off" aria-label="Licence number, second character"><span>234-56789-01234</span></span><button class="fix" id="ok2" style="color:var(--ink)">Done</button>`;
-      $('.note',fe).textContent='Type the character after M, as printed on your card';
+      vv.innerHTML=`<input id="ein" value="M?234-56789-01234" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done" autocomplete="off" aria-label="Licence number. The second character is unclear"><button class="fix" id="ok2" style="color:var(--ink)">Done</button>`;
+      const NOTE='Replace the ? with the character on your card';
+      $('.note',fe).textContent=NOTE;
       const inp=$('#ein',fe);
-      inp.focus();
+      inp.focus(); inp.setSelectionRange(1,2);               // the unclear character is selected: one keystroke replaces it, the rest stays editable
       let done=false;
       const confirm=()=>{
         if(done) return;
-        const d=inp.value.trim();
-        if(!/^\d$/.test(d)){ fe.classList.add('invalid'); $('.note',fe).textContent=d?'Licence numbers have only digits after the first letter':'Type the missing digit';
+        const val=inp.value.toUpperCase().replace(/\s/g,'');
+        const bad = val.includes('?') ? 'Replace the ? with the character on your card'
+                  : !/^[A-Z]\d{4}-\d{5}-\d{5}$/.test(val) ? 'Use the format on the card: a letter, then 14 digits (A1234-56789-01234)' : '';
+        if(bad){ fe.classList.add('invalid'); $('.note',fe).textContent=bad;
           anim(fe,[{transform:'translateX(0)'},{transform:'translateX(-5px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],360,EASE.inout); return; }
         done=true; inp.blur();
-        vv.innerHTML=`<span class="v">M${d}234-56789-01234</span><span class="ok">${ICON.check}</span>`;
+        vv.innerHTML=`<span class="v">${val}</span><span class="ok">${ICON.check}</span>`;
         $('.note',fe).textContent=''; fe.classList.remove('editing','hinting','invalid'); fe.classList.add('filled'); haptic('light');
         anim($('.ok',fe),[{opacity:0,transform:'scale(.4)'},{opacity:1,transform:'scale(1)'}],SPR.pop);
         const bx=si.querySelector('.ocrbox.unsure'); if(bx){bx.classList.remove('unsure');anim(bx,[{opacity:1},{opacity:.3}],600,EASE.std);}
         status(`<span style="color:var(--green)">${ICON.check}</span>All details read. Please check they’re right`);
         enable();
       };
-      inp.addEventListener('input',()=>{ inp.value=inp.value.slice(-1); fe.classList.remove('invalid'); $('.note',fe).textContent='Type the character after M, as printed on your card'; if(/^\d$/.test(inp.value)) setTimeout(confirm,250*K); });
+      inp.addEventListener('input',()=>{ fe.classList.remove('invalid'); $('.note',fe).textContent=NOTE; });
       inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); confirm(); } });
       $('#ok2',fe).addEventListener('pointerdown',e=>e.preventDefault());
       $('#ok2',fe).onclick=confirm;
@@ -1409,7 +1435,11 @@ async function underReview(){
     if(nt.classList.contains('on')) return;
     nt.classList.add('on'); haptic('light');
     anim($('.bell',nt),[{transform:'rotate(0)'},{transform:'rotate(-18deg)',offset:.14},{transform:'rotate(13deg)',offset:.32},{transform:'rotate(-8deg)',offset:.5},{transform:'rotate(4deg)',offset:.68},{transform:'rotate(-1.5deg)',offset:.84},{transform:'rotate(0)'}],1500,'cubic-bezier(.4,0,.2,1)');
-    const nl=$('.nl',nt); anim(nl,[{opacity:1},{opacity:0}],350,'cubic-bezier(.4,0,.2,1)').then(()=>{ nl.textContent='We’ll notify you'; anim(nl,[{opacity:0},{opacity:1}],600,'cubic-bezier(.4,0,.2,1)'); });
+    const nl=$('.nl',nt), w0=nl.getBoundingClientRect().width/ratio();
+    anim(nl,[{opacity:1},{opacity:0}],350,'cubic-bezier(.4,0,.2,1)').then(()=>{
+      nl.textContent='You’ll get a notification'; nl.style.width='auto'; const w1=nl.getBoundingClientRect().width/ratio();
+      anim(nl,[{width:w0+'px'},{width:w1+'px'}],700,'cubic-bezier(.4,0,.2,1)');
+      anim(nl,[{opacity:0},{opacity:1}],600,'cubic-bezier(.4,0,.2,1)',{delay:150*K,fill:'both'}); });
   };
 }
 
@@ -1479,7 +1509,7 @@ async function autopilot(){
     await tapEl('#scan',t,7800);          // let the tips play out on the example card first
     if(f.expired){ await waitFor('#exSc',t); return; }
     if(f.expiredFirst||f.real){ await tapEl('#exSc',t,3200); }
-    if(f.unsure && f.unsureKey==='num'){ await tapEl('#fix',t,1600); const inp=await waitFor('#ein',t); await wait(900); inp.value='1'; inp.dispatchEvent(new Event('input')); }
+    if(f.unsure && f.unsureKey==='num'){ await tapEl('#fix',t,1600); const inp=await waitFor('#ein',t); await wait(900); inp.value='M1234-56789-01234'; inp.dispatchEvent(new Event('input')); await wait(600); inp.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'})); }
     else if(f.unsure){ await tapEl('#fix',t,1600); const inp=await waitFor('#ein',t); await wait(900); inp.value+='9'; inp.dispatchEvent(new Event('input'));
       await wait(700); inp.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'})); }
     await waitFor('#go:not([disabled])',t);
