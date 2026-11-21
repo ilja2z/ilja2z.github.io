@@ -1635,7 +1635,7 @@ let saved={}; try{ saved=JSON.parse(localStorage.getItem('urideRec')||'{}'); }ca
 if(REC){
   document.body.classList.add('rec'); if(innerWidth<600) document.body.classList.add('bare');
   scenario = 'real';
-  AUTO = !!saved.auto; if(saved.pace) setPace(+saved.pace);
+  if(Q.has('record')){ AUTO = !!saved.auto; if(saved.pace) setPace(+saved.pace); }   // director settings only for the recording link
 }
 if(Q.get('s') && SCEN[Q.get('s')]) scenario=Q.get('s');
 if(Q.has('auto')) AUTO = Q.get('auto')!=='0';
@@ -1682,7 +1682,10 @@ if(STUDY){
     const sc=document.createElement('script'); sc.src='/assets/analytics.js'; document.head.appendChild(sc);
     ov.remove(); T0.t=performance.now(); start(); setTimeout(()=>ptrack('proto_study_start',{w:innerWidth,h:innerHeight}),1500); };
 }
-if(matchMedia('(prefers-reduced-motion: reduce)').matches) setPace(.01);
+// Reduce Motion used to collapse every animation to zero, so phones with that setting saw everything already finished.
+// This page is a motion demo: it keeps its calm timings for everyone.
+// Opened again from the back/forward cache (Safari, in-app browsers): start over
+addEventListener('pageshow',e=>{ if(e.persisted) location.reload(); });
 if(!STUDY) start();
 if(Q.has('record')&&!STUDY&&!Q.get('s')){ let seen=false; try{seen=localStorage.getItem('urideHint')==='1';}catch(e){}
   if(!seen){ const h=document.createElement('div'); h.className='hint1'; h.textContent='Hold the top edge for the menu'; document.body.appendChild(h);
