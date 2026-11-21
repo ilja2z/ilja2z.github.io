@@ -190,8 +190,8 @@ body.rec.bare .foot{padding-bottom:12px}
 .hc-frame.ok path{stroke:#1E8E3E}
 .chips span i{display:inline-grid;place-items:center;width:16px;height:16px;font-style:normal}
 .chips span{transition:border-color calc(300ms*var(--k)),background calc(300ms*var(--k)),color calc(300ms*var(--k));cursor:pointer}
-.chips span.done{border-color:#A6D8B4;background:var(--green-soft);color:#1B5E30}
-.chips span.done svg{color:var(--green)}
+.chips span.on{border-color:var(--ink);color:var(--ink);box-shadow:0 0 0 1px var(--ink) inset}
+.chips span.on svg{color:var(--ink)}
 .sidebox{display:flex;flex-direction:column;align-items:center;gap:6px}
 .sides{position:relative;display:flex;gap:6px;font-size:12px;font-weight:500}
 .sides span{position:relative;z-index:1;padding:3px 9px;border-radius:10px;color:rgba(255,255,255,.6);transition:color calc(400ms*var(--k)) ease}
@@ -897,29 +897,26 @@ async function tipsStory(v){
   const card=$('.hc-card',v), surf=$('.hc-surface',v), dim=$('.hc-dim',v), frame=$('.hc-frame',v), chips=[...v.querySelectorAll('.chips span')];
   const calm='cubic-bezier(.45,0,.55,1)', soft='cubic-bezier(.4,0,.2,1)';
   [card,surf,dim,frame].forEach(e=>e.getAnimations().forEach(a=>a.cancel()));
-  chips.forEach(c=>{ c.classList.remove('done'); c.querySelector('i').innerHTML=[ICON.sun,ICON.surface,ICON.hand][+c.dataset.c]; });
+  chips.forEach(c=>c.classList.remove('done','on'));
   frame.classList.remove('ok'); dim.style.opacity=.72; surf.classList.remove('dark'); card.style.filter=''; card.style.transform='';
-  // a tip is ticked only after its change has happened on the card:
-  // the chip turns green first, then the icon turns away and a tick draws itself in
-  const done=async i=>{ const c=chips[i], ic=c.querySelector('i');
-    c.classList.add('done');
-    await anim(ic.firstElementChild,[{transform:'rotate(0) scale(1)',opacity:1},{transform:'rotate(-90deg) scale(.4)',opacity:0}],180,EASE.accel);
-    ic.innerHTML=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="24" stroke-dashoffset="24"/></svg>`;
-    const p=ic.querySelector('path'); anim(ic.firstElementChild,[{transform:'scale(.7)'},{transform:'scale(1)'}],SPR.pop);
-    await anim(p,[{strokeDashoffset:24},{strokeDashoffset:0}],260,soft); };
+  // these are tips, not checks: the chip being illustrated is highlighted, nothing is ticked
+  const act=i=>chips.forEach((c,k)=>c.classList.toggle('on',k===i));
   await wait(150); if(!ok()) return;
   // 1 · good light: the card comes out of the dark
+  act(0);
   await anim(dim,[{opacity:.72},{opacity:0}],420,'cubic-bezier(.3,0,.2,1)'); dim.style.opacity=0; if(!ok()) return;
-  await done(0); await wait(220); if(!ok()) return;
-  // 2 · contrasting surface: the table under the card slowly darkens, then the tip is ticked
+  await wait(450); if(!ok()) return;
+  act(1);
+  // 2 · contrasting surface: the table under the card slowly darkens
   surf.classList.add('dark'); await wait(850); if(!ok()) return;
-  await done(1); await wait(80); if(!ok()) return;
+  await wait(300); if(!ok()) return;
+  act(2);
   // 3 · hold still: a real hand shake (small, quick, irregular jerks with a little blur), then the card stops
   await shake(card,450,ok); if(!ok()) return;
   frame.classList.add('ok'); await wait(60); if(!ok()) return;
-  await done(2);
   const hb=$('.hc-beam',v); await wait(150); if(!ok()) return;
   hb.animate([{transform:'translateY(-10px)',opacity:0},{opacity:.9,offset:.1},{opacity:.9,offset:.88},{transform:'translateY(160px)',opacity:0}],{duration:1200*K,easing:'linear'});
+  await wait(1400); if(!ok()) return; act(-1);
 }
 /* hand shake: a new random target every 60–110 ms, reached quickly, so the movement is jerky like a real hand */
 function shake(el,ms,ok){
