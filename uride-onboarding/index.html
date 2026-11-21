@@ -80,7 +80,7 @@ input{font:inherit;color:inherit}
 /* expired sheet over the camera */
 .xsheet{position:absolute;left:0;right:0;bottom:0;z-index:30;background:#fff;border-radius:24px 24px 0 0;padding:10px 20px 30px;box-shadow:0 -10px 30px rgba(0,0,0,.35);color:var(--body)}
 .xsheet .grab{width:36px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto 14px}
-.xsheet .xs-ic{width:44px;height:44px;border-radius:50%;background:var(--red-soft);color:var(--red-text);display:grid;place-items:center;margin-bottom:12px}
+.xsheet .xs-ic{width:44px;height:44px;border-radius:50%;background:var(--amber-soft);color:var(--amber);display:grid;place-items:center;margin-bottom:12px}
 .xsheet h3{font-size:20px;line-height:26px;color:var(--ink);font-weight:700}
 .xsheet p{font-size:15px;line-height:22px;margin:6px 0 18px}
 .xsheet .btn{width:100%}
@@ -424,7 +424,7 @@ body.rec.bare .haptic{top:6px}
 @media (prefers-reduced-motion:reduce){:root{--k:.01}}
 </style>
 </head>
-<body class="show-taps"><script>if(/[?&]record/.test(location.search)){document.body.classList.add('rec');if(innerWidth<600)document.body.classList.add('bare');}</script>
+<body class="show-taps"><script>if(!/[?&]full/.test(location.search)){document.body.classList.add('rec');if(innerWidth<600)document.body.classList.add('bare');}</script>
 <div class="page">
   <div class="intro">
     <div>
@@ -878,7 +878,7 @@ async function licenceIntro(dir='push'){
     <p class="privacy">${ICON.lock}<span>Only used to check you can drive with Uride</span></p>
   </div>
   <div class="foot">
-    <button class="btn primary" id="scan">${ICON.cam} Scan front of licence</button>
+    <button class="btn primary" id="scan">${ICON.cam} Scan your licence</button>
     <button class="btn ghost" id="man">Enter details manually</button>
   </div>`;
   const v=await show(html,dir);
@@ -984,7 +984,7 @@ async function camera(retry=false, side=null){
     <div class="cardwrap" id="cw"${f.real?' style="display:none"':''}><div class="card3d" id="c3"><div class="face front"><div class="art">${cardFront(EXP(),{old:cardOld,holo:f.unsure&&!cardOld})}</div><div class="glare" id="gl"><i class="sheen"></i><i class="core"></i></div></div><div class="face back">${cardBack()}</div></div></div></div>
     <div class="hole"></div>
     <div class="topbar"><button class="iconbtn" id="cx" aria-label="Close camera">${ICON.close}</button><div class="sidebox"><b id="side">Scan your licence</b><div class="sides"><i class="sdhl"></i><span id="sdF">Front</span><span id="sdB">Back</span></div></div><span style="width:44px"></span></div>
-    <div class="pill" id="pill">Place your licence in the frame</div>
+    <div class="pill" id="pill" role="status" aria-live="polite">Place your licence in the frame</div>
     <div class="guide" id="gd"><svg width="312" height="197" viewBox="0 0 312 197" overflow="visible" fill="none" stroke-width="3.5" stroke-linecap="round">
       <path class="cn tl" d="M-2 24V12A14 14 0 0 1 12 -2H26"/><path class="cn tr" d="M286 -2H300A14 14 0 0 1 314 12V24"/>
       <path class="cn bl" d="M-2 173V185A14 14 0 0 0 12 199H26"/><path class="cn br" d="M286 199H300A14 14 0 0 0 314 185V173"/></svg></div>
@@ -1630,11 +1630,11 @@ $('#taps').onclick=e=>{const on=e.currentTarget.getAttribute('aria-checked')!=='
 
 /* ---------- record mode + director menu ---------- */
 const Q=new URLSearchParams(location.search);
-const REC=Q.has('record');
+const REC=!Q.has('full');   // default: just the phone; ?full shows the annotated page
 let saved={}; try{ saved=JSON.parse(localStorage.getItem('urideRec')||'{}'); }catch(e){}
 if(REC){
   document.body.classList.add('rec'); if(innerWidth<600) document.body.classList.add('bare');
-  scenario = saved.s && SCEN[saved.s] ? saved.s : 'story';
+  scenario = 'real';
   AUTO = !!saved.auto; if(saved.pace) setPace(+saved.pace);
 }
 if(Q.get('s') && SCEN[Q.get('s')]) scenario=Q.get('s');
@@ -1684,7 +1684,7 @@ if(STUDY){
 }
 if(matchMedia('(prefers-reduced-motion: reduce)').matches) setPace(.01);
 if(!STUDY) start();
-if(REC&&!STUDY&&!Q.get('s')){ let seen=false; try{seen=localStorage.getItem('urideHint')==='1';}catch(e){}
+if(Q.has('record')&&!STUDY&&!Q.get('s')){ let seen=false; try{seen=localStorage.getItem('urideHint')==='1';}catch(e){}
   if(!seen){ const h=document.createElement('div'); h.className='hint1'; h.textContent='Hold the top edge for the menu'; document.body.appendChild(h);
     setTimeout(()=>h.remove(),3500); try{localStorage.setItem('urideHint','1');}catch(e){} } }
 </script>
