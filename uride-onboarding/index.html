@@ -1236,6 +1236,7 @@ async function expiredSheet(v,t){
     <button class="btn ghost" id="exTmp">I only have a temporary licence</button>`;
   $('.cam',v).appendChild(sh);
   anim(sh,[{transform:'translateY(105%)'},{transform:'none'}],SPR.sheet);
+  anim($('.xs-ic',sh),[{transform:'scale(.4)',opacity:0},{transform:'scale(1)',opacity:1}],SPR.pop.ms,SPR.pop.e,{delay:260*K,fill:'both'});   // one pop, no looping pulse
   return new Promise(res=>{
     $('#exSc',sh).onclick=async()=>{ await anim(sh,[{transform:'none'},{transform:'translateY(105%)'}],280,EASE.accel); sh.remove(); res(true); };
     $('#exTmp',sh).onclick=()=>toast(`<span>Temporary licences aren’t part of this prototype</span>`);
@@ -1520,6 +1521,7 @@ async function underReview(){
   const s1=seg(cy[0]+R+2,cy[1]-R-2,G), c2=ring(cy[1],B);
   const dot=el('circle',{cx:12,cy:cy[1],r:4,fill:B,opacity:0}), halo=el('circle',{cx:12,cy:cy[1],r:4,fill:B,opacity:0});
   const s2=seg(cy[1]+R+2,cy[2]-R-2,L), c3r=ring(cy[2],L);
+  anim($('#nt',v),[{opacity:0},{opacity:1}],400,'ease',{delay:300*K,fill:'both'});   // actions don't wait for decoration
   await wait(200); if(!alive(t))return;
   fade(items[0],350); await draw(c1,CR,380); if(!alive(t))return;
   anim(fill1,[{opacity:0},{opacity:1}],180,'ease'); await draw(tick,14,200); if(!alive(t))return;
@@ -1529,7 +1531,7 @@ async function underReview(){
   halo.animate([{r:4,opacity:.45},{r:10,opacity:0}],{duration:2400,iterations:Infinity,easing:'ease-out'});
   await draw(s2,cy[2]-cy[1]-2*R-4,400); if(!alive(t))return;
   fade(items[2],350); await draw(c3r,CR,350); if(!alive(t))return;
-  const nt=$('#nt',v); anim(nt,[{opacity:0},{opacity:1}],400,'ease');
+  const nt=$('#nt',v);
   // a preference, so a real switch: on and off are both fine, and the state is always visible
   nt.onclick=()=>{
     const on=!nt.classList.contains('on');
