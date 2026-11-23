@@ -568,9 +568,9 @@ function anim(el, kf, d, easing=EASE.out, extra={}){
 
 const BOLT='M13.2 2.5 5 13.6h6l-1.2 7.9 8.2-11.1h-6l1.2-7.9Z';
 const FLASH = {
-  auto:`<svg width="22" height="22" viewBox="0 0 24 24"><path d="${BOLT}" fill="currentColor"/><circle cx="19" cy="18.5" r="5" fill="#15181B"/><text x="19" y="21.3" text-anchor="middle" font-family="Google Sans,Arial" font-size="7.5" font-weight="700" fill="currentColor">A</text></svg>`,
+  auto:`<svg width="22" height="22" viewBox="0 0 24 24"><defs><mask id="fa-b"><rect width="24" height="24" fill="#fff"/><circle cx="18.6" cy="18.2" r="6.4" fill="#000"/></mask><mask id="fa-a"><rect width="24" height="24" fill="#fff"/><text x="18.6" y="20.9" text-anchor="middle" font-family="Google Sans,Arial" font-size="7.6" font-weight="700" fill="#000">A</text></mask></defs><path d="${BOLT}" fill="currentColor" mask="url(#fa-b)"/><circle cx="18.6" cy="18.2" r="5" fill="currentColor" mask="url(#fa-a)"/></svg>`,   // Apple style: a white badge with the A cut out, a clear gap around it, no dark fill
   on:`<svg width="22" height="22" viewBox="0 0 24 24"><path d="${BOLT}" fill="#FFD60A"/></svg>`,
-  off:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="${BOLT}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 3l16 18" stroke="#15181B" stroke-width="4"/><path d="M4 3l16 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+  off:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><defs><mask id="fo-g"><rect width="24" height="24" fill="#fff"/><path d="M4 3l16 18" stroke="#000" stroke-width="4.4"/></mask></defs><path d="${BOLT}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" mask="url(#fo-g)"/><path d="M4 3l16 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,   // the gap is cut out, not painted, so the feed shows through
 };
 let FLASH_MODE='auto';
 const ICON = {
