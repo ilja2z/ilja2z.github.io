@@ -3,8 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Uride licence scan: a working prototype · Illia Vostrikov</title>
-<meta name="robots" content="noindex">
+<title>Driver’s licence scan: from a 2024 screen to a working prototype · Illia Vostrikov</title>
+<link rel="canonical" href="https://illiavostrikov.com/uride-onboarding/process/">
+<meta property="og:url" content="https://illiavostrikov.com/uride-onboarding/process/">
+<meta property="og:title" content="Driver’s licence scan: from a 2024 screen to a working prototype">
+<meta property="og:description" content="The Uride driver licence step prototyped in code on real iPhone footage: motion, timing, edge cases, testing and the motion system behind them.">
 <meta name="description" content="The Uride driver licence step prototyped in code on real iPhone footage: motion, timing, edge cases and the motion system behind them.">
 <meta name="theme-color" content="#0A1A14">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -22,7 +25,13 @@
 <link rel="stylesheet" href="/assets/site.css?v=1794952732">
 <style>
 .pp-hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:clamp(32px,6vw,80px);align-items:center;margin-top:8px}
-.pp-hero .case-title{font-size:clamp(2.25rem,4.6vw,3.6rem);margin-bottom:20px}
+.pp-hero .case-title{font-size:clamp(2.5rem,5.6vw,4.5rem);margin-bottom:10px}
+.pp-kicker{font:500 clamp(1.25rem,2.2vw,1.625rem)/1.3 var(--display);color:var(--accent);margin:0 0 18px}
+.pp-test{width:100%;border-collapse:collapse;margin-top:20px;font-size:.9375rem}
+.pp-test th{text-align:left;font-size:.6875rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);padding:10px 16px 10px 0;border-bottom:1px solid var(--line)}
+.pp-test td{padding:12px 16px 12px 0;border-bottom:1px solid rgba(37,71,59,.6);vertical-align:top;color:var(--muted)}
+.pp-test td:first-child{color:var(--text);width:46%}
+@media (max-width:600px){.pp-test,.pp-test tbody,.pp-test tr,.pp-test td{display:block;width:100%!important}.pp-test tr:first-child{display:none}.pp-test tr{border-bottom:1px solid var(--line);padding:10px 0}.pp-test td{border:0;padding:2px 0}}
 .pp-btns{display:flex;flex-wrap:nowrap;gap:10px}
 .pp-btns .btn{white-space:nowrap}
 .pp-vid{margin:0;width:300px}
@@ -83,7 +92,8 @@
       <a class="crumb" href="/work/uride/"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Uride case study</a>
       <div class="pp-hero">
         <div>
-          <h1 class="case-title" id="post-h">Driver’s licence scan, from a 2024 screen to a working prototype</h1>
+          <h1 class="case-title" id="post-h">Driver’s licence scan</h1>
+          <p class="pp-kicker">From a 2024 screen to a working prototype</p>
           <p class="case-sub">Uride driver onboarding, step 2 of 10. I took the step I shipped in 2024 and prototyped it in code, on real iPhone footage of a printed specimen card, to work out the motion, the timing and the edge cases. Built with Claude Code; the decisions and the direction are mine.</p>
           <div class="pp-btns">
             <a class="btn primary" href="../">Try it on phone</a>
@@ -172,6 +182,20 @@
             <p class="note">Only for moments that matter. Safari on iPhone can’t play haptics, so this is the spec for the native build.</p>
           </div>
         </div>
+
+
+        <h2>Tested on real phones</h2>
+        <span class="pp-tag">Testing · What changed after</span>
+        <p>Before sending it anywhere, I asked designers and a developer I’ve worked with, plus one person outside tech, to go through it on their own phones and tell me where they stumbled. Then I changed the prototype.</p>
+        <table class="pp-test">
+          <tr><th>What they ran into</th><th>What I changed</th></tr>
+          <tr><td>“The green ticks on the tips look like checks the camera already passed.”</td><td>Tips light up one at a time, with no ticks.</td></tr>
+          <tr><td>“The tips look like buttons I should tap.”</td><td>They became one plain caption line.</td></tr>
+          <tr><td>“Messages disappear before I can read them.”</td><td>Shorter text; every message stays at least 4 seconds and closes on tap.</td></tr>
+          <tr><td>“I tapped Notify again and nothing happened.”</td><td>A real switch: on and off, the state always visible.</td></tr>
+          <tr><td>On one phone the whole flow had already played when the page opened.</td><td>Reduced Motion no longer skips the flow, and the prototype starts over every time it opens.</td></tr>
+          <tr><td>“Why can’t I upload from the gallery, or edit the other fields?”</td><td>Kept on purpose: a live camera proves it’s a real card, and the document is the source of truth. For a misread field I’d add “Something’s wrong?”, which sends it to a person for review.</td></tr>
+        </table>
 
         <h2>The result</h2>
         <span class="pp-tag">Now · Prototype</span>
