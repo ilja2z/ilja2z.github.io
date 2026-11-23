@@ -122,6 +122,7 @@ input{font:inherit;color:inherit}
 .notify .sw i{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(16,24,40,.3);transition:transform calc(320ms*var(--k)) cubic-bezier(.3,.7,.4,1.15)}
 .notify.on .sw{background:var(--green)}
 .notify.on .sw i{transform:translateX(18px)}
+.notify{-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none}.notify .sw i{transition:transform calc(320ms*var(--k)) cubic-bezier(.3,.7,.4,1.15),width calc(150ms*var(--k)) ease}.notify:active .sw i{width:28px}.notify.on:active .sw i{transform:translateX(12px)}
 .notify .bell{display:inline-block;transform-origin:50% 10%}
 .notify .nl{display:inline-block;white-space:nowrap;overflow:hidden;vertical-align:bottom}
 
@@ -757,7 +758,7 @@ async function toast(html){
 }
 
 /* ---------- touch feedback: press < 100 ms, spring release ---------- */
-const PRESSABLE='.btn,.item,.iconbtn,.fix,.rtk,.pside button,.shutter,#toscan,.slot,.notify,.camctl';
+const PRESSABLE='.btn,.item,.iconbtn,.fix,.rtk,.pside button,.shutter,#toscan,.slot,.camctl';
 const ratio=()=>screen.getBoundingClientRect().width/screen.offsetWidth;
 function tapRing(x,y){
   const d=document.createElement('div'); d.className='tap'; d.style.left=x+'px'; d.style.top=y+'px'; screen.appendChild(d);
@@ -1522,6 +1523,13 @@ async function underReview(){
   const dot=el('circle',{cx:12,cy:cy[1],r:4,fill:B,opacity:0}), halo=el('circle',{cx:12,cy:cy[1],r:4,fill:B,opacity:0});
   const s2=seg(cy[1]+R+2,cy[2]-R-2,L), c3r=ring(cy[2],L);
   anim($('#nt',v),[{opacity:0},{opacity:1}],400,'ease',{delay:300*K,fill:'both'});   // actions don't wait for decoration
+  const nt=$('#nt',v);
+  // a preference, so a real switch: on and off are both fine, and the state is always visible
+  nt.onclick=()=>{   // bound at once, so the first tap always works
+    const on=!nt.classList.contains('on');
+    nt.classList.toggle('on',on); nt.setAttribute('aria-checked',on); haptic('light');
+    if(on) anim($('.bell',nt),[{transform:'rotate(0)'},{transform:'rotate(-18deg)',offset:.14},{transform:'rotate(13deg)',offset:.32},{transform:'rotate(-8deg)',offset:.5},{transform:'rotate(4deg)',offset:.68},{transform:'rotate(-1.5deg)',offset:.84},{transform:'rotate(0)'}],1500,'cubic-bezier(.4,0,.2,1)');
+  };
   await wait(200); if(!alive(t))return;
   fade(items[0],350); await draw(c1,CR,380); if(!alive(t))return;
   anim(fill1,[{opacity:0},{opacity:1}],180,'ease'); await draw(tick,14,200); if(!alive(t))return;
@@ -1531,13 +1539,6 @@ async function underReview(){
   halo.animate([{r:4,opacity:.45},{r:10,opacity:0}],{duration:2400,iterations:Infinity,easing:'ease-out'});
   await draw(s2,cy[2]-cy[1]-2*R-4,400); if(!alive(t))return;
   fade(items[2],350); await draw(c3r,CR,350); if(!alive(t))return;
-  const nt=$('#nt',v);
-  // a preference, so a real switch: on and off are both fine, and the state is always visible
-  nt.onclick=()=>{
-    const on=!nt.classList.contains('on');
-    nt.classList.toggle('on',on); nt.setAttribute('aria-checked',on); haptic('light');
-    if(on) anim($('.bell',nt),[{transform:'rotate(0)'},{transform:'rotate(-18deg)',offset:.14},{transform:'rotate(13deg)',offset:.32},{transform:'rotate(-8deg)',offset:.5},{transform:'rotate(4deg)',offset:.68},{transform:'rotate(-1.5deg)',offset:.84},{transform:'rotate(0)'}],1500,'cubic-bezier(.4,0,.2,1)');
-  };
 }
 
 /* ================= manual entry ================= */
