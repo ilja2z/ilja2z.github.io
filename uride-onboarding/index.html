@@ -144,7 +144,7 @@ input{font:inherit;color:inherit}
 .tlist{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
 .tlist div{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;line-height:20px;text-align:left}
 .tlist i{width:36px;height:36px;border-radius:10px;background:var(--violet-soft);color:var(--violet);display:grid;place-items:center;flex:none;font-style:normal}
-.tlist b{display:block;color:var(--ink);font-weight:500;font-size:15px}
+.tlist b{display:block;color:var(--ink);font-weight:600;font-size:15.5px;line-height:21px}.tlist span{color:var(--ink-2,#4A5560)}
 .urtl .line i{transform:scaleY(0)}
 .ti{opacity:0}
 /* intro illustration + tips as plain tags (not buttons) */
@@ -1183,10 +1183,10 @@ function moveSide(v,i){ const hl=$('.sdhl',v), tg=$(i?'#sdB':'#sdF',v); const r=
   $('#sdB',v).classList.toggle('on',!!i); $('#sdF',v).classList.toggle('on',!i); }
 
 /* camera controls: flash cycles like the iOS camera, tips pause the flow */
-const TIPS=[
-  [ICON.sun,'Bright, even light. No lamp right above'],
-  [ICON.surface,'A plain surface that contrasts with the card'],
-  [ICON.hand,'Hold still. We take the photo for you'],
+const TIPS=[   // same three words as the intro line, each with one short how-to
+  [ICON.sun,'Good light','No lamp right above the card'],
+  [ICON.surface,'Contrasting surface','Plain and darker than the card'],
+  [ICON.hand,'Hold still','We take the photo for you'],
 ];
 function camChip(v,txt){ const chip=$('#cchip',v); if(!chip) return; chip.textContent=txt; chip.getAnimations().forEach(a=>a.cancel());
   anim(chip,[{opacity:0,transform:'translateX(-50%) translateY(4px)'},{opacity:1,transform:'translateX(-50%)',offset:.12},{opacity:1,transform:'translateX(-50%)',offset:.85},{opacity:0,transform:'translateX(-50%)'}],2800,EASE.std); }
@@ -1209,7 +1209,7 @@ function wireCamControls(v){
     running.forEach(a=>a.pause()); PAUSED=true;
     const sh=document.createElement('div'); sh.className='xsheet tsheet';
     sh.innerHTML=`<div class="grab"></div><h3>Tips for a sharp photo</h3>
-      <div class="tlist">${TIPS.map(t=>`<div><i>${t[0]}</i><span>${t[1]}</span></div>`).join('')}</div>
+      <div class="tlist">${TIPS.map(t=>`<div><i>${t[0]}</i><span><b>${t[1]}</b>${t[2]}</span></div>`).join('')}</div>
       <button class="btn primary" id="tgo">Got it</button>`;
     const shade=document.createElement('div'); shade.className='tshade';
     $('.cam',v).append(shade,sh);
