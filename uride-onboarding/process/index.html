@@ -1,200 +1,237 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Uride licence scan · how it evolved · Illia Vostrikov</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Uride licence scan: a working prototype · Illia Vostrikov</title>
 <meta name="robots" content="noindex">
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400..700&display=swap" rel="stylesheet">
+<meta name="description" content="The Uride driver licence step prototyped in code on real iPhone footage: motion, timing, edge cases and the motion system behind them.">
+<meta name="theme-color" content="#0A1A14">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://illiavostrikov.com/assets/og-ai-in-the-design-process.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://illiavostrikov.com/assets/og-ai-in-the-design-process.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css?v=1794952732">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Google Sans",-apple-system,Segoe UI,Roboto,sans-serif;background:#F3F5F6;color:#1F2A37;-webkit-font-smoothing:antialiased;line-height:1.5}
-a{color:inherit}
-.wrap{max-width:1120px;margin:0 auto;padding:56px 24px 80px}
-header h1{font-size:clamp(28px,4vw,40px);line-height:1.15;font-weight:700;letter-spacing:-.3px;max-width:760px}
-header p{margin-top:14px;font-size:17px;color:#4A5965;max-width:680px}
-.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
-.links a{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:15px;font-weight:600;padding:10px 16px;border-radius:22px;border:1px solid #CBD3D9;background:#fff}
-.links a.main{background:#C8372D;border-color:#C8372D;color:#fff}
-section{margin-top:64px}
-.step{display:flex;align-items:baseline;gap:12px}
-.step span{font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#7A8A96}
-section h2{font-size:24px;line-height:1.25;font-weight:700;margin-top:6px}
-section > p{margin-top:8px;font-size:16px;color:#4A5965;max-width:720px}
-.strip{display:flex;gap:16px;margin-top:22px;overflow-x:auto;padding:4px 2px 18px;scroll-snap-type:x mandatory}
-.strip figure{flex:none;width:calc((100% - 80px)/6);min-width:150px;max-width:200px;scroll-snap-align:start}
-.strip img{width:100%;display:block;border-radius:22px;background:#fff;box-shadow:0 12px 28px -16px rgba(16,24,40,.45);border:1px solid #E1E6EA}
-.strip figcaption{margin-top:10px;font-size:13.5px;line-height:1.4;color:#4A5965}
-.strip figcaption b{display:block;color:#1F2A37;font-weight:600}
-ul.notes{margin-top:6px;list-style:none;display:grid;gap:8px;max-width:760px}
-ul.notes li{position:relative;padding-left:18px;font-size:15.5px;color:#3E4958}
-ul.notes li::before{content:"";position:absolute;left:2px;top:10px;width:6px;height:6px;border-radius:50%;background:#9AA8B3}
-ul.notes b{color:#1F2A37;font-weight:600}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:22px}
-.card{background:#fff;border:1px solid #E1E6EA;border-radius:16px;padding:18px 18px 20px}
-.card .n{width:26px;height:26px;border-radius:50%;background:#1F2A37;color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center}
-.card h3{margin-top:12px;font-size:17px;line-height:1.3;font-weight:700}
-.card p{margin-top:6px;font-size:14.5px;color:#4A5965}
-.tag{display:inline-block;margin-top:4px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:10px}
-.t-old{background:#ECEFF1;color:#5B6B78}.t-ai{background:#FEF4DD;color:#9A5B00}.t-new{background:#E6F4EA;color:#1E8E3E}
-.hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:48px;align-items:center}
-.phone{position:relative;width:300px;border-radius:44px;background:#0E1114;padding:10px;box-shadow:0 30px 60px -24px rgba(16,24,40,.45)}
-.phone video{display:block;width:100%;border-radius:34px;background:#15181B}
-.vid figcaption button{flex:none;width:30px;height:30px;border-radius:50%;border:0;background:#1F2A37;display:grid;place-items:center;cursor:pointer}.vid figcaption{display:flex;align-items:center;justify-content:center;gap:10px;text-align:left!important}
-.vid{width:300px}.vid figcaption{margin-top:12px;text-align:center;font-size:13.5px;color:#4A5965}
-.rules{margin-top:22px;display:grid;gap:10px;max-width:820px;counter-reset:r}
-.rules li{list-style:none;background:#fff;border:1px solid #E1E6EA;border-radius:14px;padding:14px 16px 14px 52px;position:relative;font-size:15.5px;color:#3E4958}
-.rules li::before{counter-increment:r;content:counter(r);position:absolute;left:16px;top:14px;width:24px;height:24px;border-radius:50%;background:#1F2A37;color:#fff;font-size:12.5px;font-weight:700;display:grid;place-items:center}
-.rules b{color:#1F2A37;font-weight:700}
-.tables{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-top:22px}
-.tbl{background:#fff;border:1px solid #E1E6EA;border-radius:16px;padding:16px 18px;overflow-x:auto}
-.tbl h3{font-size:15px;font-weight:700;margin-bottom:8px}
-.tbl table{width:100%;border-collapse:collapse;font-size:14px}
-.tbl th{text-align:left;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#7A8A96;padding:6px 10px 6px 0;border-bottom:1px solid #E1E6EA}
-.tbl td{padding:7px 10px 7px 0;border-bottom:1px solid #F0F3F5;color:#3E4958;vertical-align:top}
-.tbl td:first-child{font-weight:600;color:#1F2A37;white-space:nowrap}
-.tbl code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:#F3F5F6;padding:1px 5px;border-radius:5px;white-space:nowrap}
-.tbl .note{margin-top:10px;font-size:13px;color:#7A8A96}
-.also{margin-top:26px;background:#fff;border:1px solid #E1E6EA;border-radius:16px;padding:16px 18px;max-width:820px}
-.also h3{font-size:15px;font-weight:700}
-@media (max-width:860px){.hero{grid-template-columns:1fr}.vid{margin:0 auto;width:260px}.phone{width:260px}.tables{grid-template-columns:1fr}}
-footer{margin-top:64px;font-size:13.5px;color:#7A8A96;border-top:1px solid #E1E6EA;padding-top:18px}
-@media (max-width:600px){.wrap{padding:36px 16px 60px}.strip figure{width:170px;min-width:170px}}
+.pp-hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:clamp(32px,6vw,80px);align-items:center;margin-top:8px}
+.pp-hero .case-title{font-size:clamp(2.25rem,4.6vw,3.6rem);margin-bottom:20px}
+.pp-btns{display:flex;flex-wrap:nowrap;gap:10px}
+.pp-btns .btn{white-space:nowrap}
+.pp-vid{margin:0;width:300px}
+.pp-phone{border-radius:44px;background:#05100C;padding:10px;border:1px solid var(--line);box-shadow:0 40px 80px -30px rgba(0,0,0,.7)}
+.pp-phone video{display:block;width:100%;border-radius:34px;background:#15181B}
+.pp-vid figcaption{margin-top:28px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:.875rem;color:var(--soft);white-space:nowrap}
+.pp-vid figcaption button{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);display:grid;place-items:center;cursor:pointer}
+.pp-vid figcaption button:hover{border-color:var(--accent);color:var(--accent)}
+.pp-tag{display:inline-block;font:600 .75rem/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:6px 10px;margin-bottom:12px}
+.pp-strip{display:flex;gap:16px;overflow-x:auto;padding:6px 2px 18px;scroll-snap-type:x mandatory;margin-top:24px}
+.pp-strip figure{flex:none;width:200px;margin:0!important;scroll-snap-align:start}
+.pp-strip img{display:block;width:100%;border-radius:22px;border:1px solid var(--line);background:#fff}
+.pp-strip figcaption{font-size:.875rem;color:var(--muted)!important;line-height:1.45}
+.pp-strip figcaption b{display:block;color:var(--text);font-weight:600}
+.pp-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:24px}
+.pp-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px}
+.pp-card .n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:700 .8125rem/1 var(--body)}
+.pp-card h3{font:600 1.125rem/1.3 var(--display);margin:12px 0 6px;color:var(--text)}
+.pp-card p{margin:0;font-size:.9375rem;color:var(--muted)}
+.pp-rules{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:10px;counter-reset:r}
+.pp-rules li{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px 16px 58px;color:var(--muted)}
+.pp-rules li::before{counter-increment:r;content:counter(r);position:absolute;left:18px;top:16px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:700 .8125rem/26px var(--body);text-align:center}
+.pp-rules b{color:var(--text)}
+.pp-tables{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-top:20px}
+.pp-tbl{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;overflow-x:auto}
+.pp-tbl h3{font:600 1.0625rem/1.3 var(--display);margin:0 0 8px;color:var(--text)}
+.pp-tbl table{width:100%;border-collapse:collapse;font-size:.875rem}
+.pp-tbl th{text-align:left;font-size:.6875rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);padding:8px 12px 8px 0;border-bottom:1px solid var(--line)}
+.pp-tbl td{padding:8px 12px 8px 0;border-bottom:1px solid rgba(37,71,59,.5);color:var(--muted);vertical-align:top}
+.pp-tbl td:first-child{color:var(--text);font-weight:600;white-space:nowrap}
+.pp-tbl code{font:500 .8125rem/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);white-space:nowrap}
+.pp-tbl .note{margin:12px 0 0;font-size:.8125rem;color:var(--soft)}
+.pp-also{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin-top:20px}
+.pp-also h3{font:600 1.0625rem/1.3 var(--display);margin:0 0 6px}
+@media (max-width:860px){.pp-hero{grid-template-columns:1fr}.pp-vid{margin:12px auto 0;width:260px}.pp-tables{grid-template-columns:1fr}}
+@media (max-width:380px){.pp-btns .btn{padding:0 14px;font-size:.875rem}}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header class="hero">
-  <div>
-  <h1>Driver’s licence scan: from a 2024 screen to a working prototype</h1>
-  <p>Uride driver onboarding, step 2 of 10. I took the step I shipped in 2024 and prototyped it in code, on real iPhone footage of a printed specimen card, to work out the motion, the timing and the edge cases. Built with Claude Code; the decisions and the direction are mine.</p>
-  <div class="links">
-    <a class="main" href="../">Try it on your phone →</a>
-    <a href="../v1/">Open the AI first pass</a>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header" id="top">
+  <div class="wrap">
+    <p class="status"><i aria-hidden="true"></i><span class="long">Open to Head of Design roles · Spain, remote (CET)</span><span class="short">Open to new roles</span></p>
+    <nav class="nav" aria-label="Main">
+      <a href="/#work">Work</a>
+      <a href="/#leadership" class="hide-xs">Leadership</a>
+      <a href="/#writing" class="hide-sm">Writing</a>
+      <a href="/#experience" class="hide-sm">Experience</a>
+      <a class="btn primary" href="#contact">Contact</a>
+    </nav>
   </div>
-  </div>
-  <figure class="vid"><div class="phone">
-    <video id="walk" autoplay muted loop playsinline preload="metadata" poster="img/walk-poster.jpg" aria-label="One-minute walkthrough of the prototype on an iPhone">
-      <source src="walk.webm" type="video/webm"><source src="walk.mp4" type="video/mp4">
-    </video>
-    </div>
-    <figcaption><button id="wbtn" aria-label="Pause video"><svg width="14" height="14" viewBox="0 0 14 14" fill="#fff"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg></button><span>The whole flow in one minute, recorded on an iPhone</span></figcaption>
-  </figure>
 </header>
 
-<section>
-  <div class="step"><span>1 · 2024</span><span class="tag t-old">Shipped</span></div>
-  <h2>Where it started</h2>
-  <div class="strip">
-    <figure><img src="img/olist.jpg" alt="2024 checklist" loading="lazy"><figcaption><b>Checklist</b>“Rejected” had a green tick; labels were about 1.6:1 contrast.</figcaption></figure>
-    <figure><img src="img/olicence.jpg" alt="2024 licence step" loading="lazy"><figcaption><b>Licence step</b>A camera icon covered the photo; “Skip” on a legal step.</figcaption></figure>
-    <figure><img src="img/oexpired.jpg" alt="2024 expired warning" loading="lazy"><figcaption><b>Expired document</b>The warning could be closed and Continue still worked.</figcaption></figure>
-  </div>
-</section>
+<main id="main">
+  <article class="case-page post" aria-labelledby="post-h">
+    <div class="wrap">
+      <a class="crumb" href="/work/uride/"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Uride case study</a>
+      <div class="pp-hero">
+        <div>
+          <h1 class="case-title" id="post-h">Driver’s licence scan, from a 2024 screen to a working prototype</h1>
+          <p class="case-sub">Uride driver onboarding, step 2 of 10. I took the step I shipped in 2024 and prototyped it in code, on real iPhone footage of a printed specimen card, to work out the motion, the timing and the edge cases. Built with Claude Code; the decisions and the direction are mine.</p>
+          <div class="pp-btns">
+            <a class="btn primary" href="../">Try it on phone</a>
+            <a class="btn" href="../v1/">Open the 1st pass</a>
+          </div>
+        </div>
+        <figure class="pp-vid">
+          <div class="pp-phone"><video id="walk" autoplay muted loop playsinline preload="metadata" poster="img/walk-poster.jpg" aria-label="59-second walkthrough of the prototype on an iPhone"><source src="walk.webm" type="video/webm"><source src="walk.mp4" type="video/mp4"></video></div>
+          <figcaption><button id="wbtn" type="button" aria-label="Pause video"></button><span>The whole flow in 59 s, on iPhone</span></figcaption>
+        </figure>
+      </div>
 
-<section>
-  <div class="step"><span>2 · First pass</span><span class="tag t-ai">AI, from my brief</span></div>
-  <h2>Looked right in a screenshot</h2>
-  <p>The first version came straight from my brief. Every screen was there, but in motion it fell apart:</p>
-  <ul class="notes">
-    <li><b>Too fast and jumpy</b>: the card flew in, statuses changed faster than you could read them.</li>
-    <li><b>Every state announced</b>: “Hold still”, “Great, now flip it over”, haptic labels on screen.</li>
-    <li><b>No rule for problems</b>: what stops the flow, what waits for review, which colour means what.</li>
-    <li><b>A drawn card</b>, so glare, blur and an expired licence were only claims.</li>
-  </ul>
-  <div class="strip">
-    <figure><img src="img/v1.jpg" alt="First pass intro" loading="lazy"><figcaption><b>Intro</b>Empty slots that look like drop zones.</figcaption></figure>
-    <figure><img src="img/v2.jpg" alt="First pass camera" loading="lazy"><figcaption><b>Camera</b>A message for every moment.</figcaption></figure>
-    <figure><img src="img/v3.jpg" alt="First pass back side" loading="lazy"><figcaption><b>Back</b>Drawn card, no real conditions.</figcaption></figure>
-    <figure><img src="img/v4.jpg" alt="First pass check details" loading="lazy"><figcaption><b>Check details</b>Everything always green.</figcaption></figure>
-  </div>
-</section>
+      <div class="post-body">
+        <h2>Where it started</h2>
+        <span class="pp-tag">2024 · Shipped</span>
+        <div class="pp-strip">
+          <figure><img src="img/olist.jpg" alt="2024 checklist" loading="lazy"><figcaption><b>Checklist</b>“Rejected” had a green tick; labels were about 1.6:1 contrast.</figcaption></figure>
+          <figure><img src="img/olicence.jpg" alt="2024 licence step" loading="lazy"><figcaption><b>Licence step</b>A camera icon covered the photo; “Skip” on a legal step.</figcaption></figure>
+          <figure><img src="img/oexpired.jpg" alt="2024 expired warning" loading="lazy"><figcaption><b>Expired document</b>The warning could be closed and Continue still worked.</figcaption></figure>
+        </div>
 
-<section>
-  <div class="step"><span>3 · Direction</span><span class="tag t-new">My decisions</span></div>
-  <h2>What I changed, and why</h2>
-  <div class="cards">
-    <div class="card"><div class="n">1</div><h3>One rule for messages</h3><p>The camera speaks only for an action, a problem or a result. Problems are amber, a taken photo is green, nothing in between. The Front/Back switch says where you are, so the pill doesn’t.</p></div>
-    <div class="card"><div class="n">2</div><h3>Stop only when going on is pointless</h3><p>Expiry is read on-device right after the front photo, so nobody flips a card we can’t accept. Anything fixable in a second waits for one review screen.</p></div>
-    <div class="card"><div class="n">3</div><h3>Fix it first, retake as a fallback</h3><p>A trace of glare hid one character. Typing it is faster than shooting again: the character is pre-selected and the number keypad opens. Retake stays one tap away.</p></div>
-    <div class="card"><div class="n">4</div><h3>Calm, honest motion</h3><p>Nothing that stays the same moves. Each tip is highlighted while it is shown, never ticked: a tip is not a check. The shutter ring never rewinds. A status changes in place: colour eases, the badge draws itself.</p></div>
-    <div class="card"><div class="n">5</div><h3>Real footage, real problems</h3><p>One take on an iPhone: an expired card, a swap, lamp glare, both sides. The back is read too: the barcode cross-checks the front.</p></div>
-    <div class="card"><div class="n">6</div><h3>Less to read under stress</h3><p>One sentence per line, one-line hints, a two-line expired sheet that ends with “Your other steps are saved”. Status messages are announced to VoiceOver.</p></div>
-  </div>
-</section>
+        <h2>Looked right in a screenshot</h2>
+        <span class="pp-tag">First pass · AI, from my brief</span>
+        <p>The first version came straight from my brief. Every screen was there, but in motion it fell apart:</p>
+        <ul class="post-list">
+          <li><strong>Too fast and jumpy</strong>: the card flew in, statuses changed faster than you could read them.</li>
+          <li><strong>Every state announced</strong>: “Hold still”, “Great, now flip it over”, haptic labels on screen.</li>
+          <li><strong>No rule for problems</strong>: what stops the flow, what waits for review, which colour means what.</li>
+          <li><strong>A drawn card</strong>, so glare, blur and an expired licence were only claims.</li>
+        </ul>
+        <div class="pp-strip">
+          <figure><img src="img/v1.jpg" alt="First pass intro" loading="lazy"><figcaption><b>Intro</b>Empty slots that look like drop zones.</figcaption></figure>
+          <figure><img src="img/v2.jpg" alt="First pass camera" loading="lazy"><figcaption><b>Camera</b>A message for every moment.</figcaption></figure>
+          <figure><img src="img/v3.jpg" alt="First pass back side" loading="lazy"><figcaption><b>Back</b>Drawn card, no real conditions.</figcaption></figure>
+          <figure><img src="img/v4.jpg" alt="First pass check details" loading="lazy"><figcaption><b>Check details</b>Everything always green.</figcaption></figure>
+        </div>
 
+        <h2>What I changed, and why</h2>
+        <span class="pp-tag">Direction · My decisions</span>
+        <div class="pp-cards">
+          <div class="pp-card"><span class="n">1</span><h3>One rule for messages</h3><p>The camera speaks only for an action, a problem or a result. Problems are amber, a taken photo is green, nothing in between. The Front/Back switch says where you are, so the message doesn’t.</p></div>
+          <div class="pp-card"><span class="n">2</span><h3>Stop only when going on is pointless</h3><p>Expiry is read on the phone right after the front photo, so nobody flips a card we can’t accept. Anything fixable in a second waits for one review screen.</p></div>
+          <div class="pp-card"><span class="n">3</span><h3>Fix it first, retake as a fallback</h3><p>Glare hid one character. Typing it is faster than shooting again: the character is pre-selected and the number pad opens. Retake stays one tap away.</p></div>
+          <div class="pp-card"><span class="n">4</span><h3>Calm, honest motion</h3><p>Nothing that stays the same moves. Tips light up one at a time, with no ticks: a tip is not a check. The capture ring never rewinds. A status changes in place: the colour eases, the badge draws itself.</p></div>
+          <div class="pp-card"><span class="n">5</span><h3>Real footage, real problems</h3><p>One take on an iPhone: an expired card, a swap, lamp glare, both sides. The back is read too: the barcode cross-checks the front.</p></div>
+          <div class="pp-card"><span class="n">6</span><h3>Less to read under stress</h3><p>One sentence per line, one-line hints, a two-line expired sheet that ends with “Your other steps are saved”. Status messages are announced to VoiceOver.</p></div>
+        </div>
 
-<section>
-  <div class="step"><span>4 · Motion system</span><span class="tag t-new">Rules, not one-offs</span></div>
-  <h2>Five rules behind every screen</h2>
-  <p>Every animation in the prototype follows the same rules and uses the same tokens, so they can move straight into a design system.</p>
-  <ol class="rules">
-    <li><b>Motion explains a change, it never decorates.</b> If nothing changed, nothing moves. On the checklist only the updated step changes colour and the counter rolls.</li>
-    <li><b>Enter calm, leave fast.</b> Arrivals decelerate over about 550–700 ms, exits accelerate in about 250 ms.</li>
-    <li><b>Springs without bounce for screens and sheets.</b> A little bounce only as a reward: a tick, a status badge.</li>
-    <li><b>Nothing rewinds.</b> The capture ring fades and resets instead of spinning back.</li>
-    <li><b>Readable before it moves on.</b> Messages stay at least 4 seconds (1.5 s + 350 ms per word) and close on tap. Nothing loops.</li>
-  </ol>
-  <div class="tables">
-    <div class="tbl"><h3>Motion tokens</h3>
-      <table>
-        <tr><th>Token</th><th>Value</th><th>Used for</th></tr>
-        <tr><td>press</td><td><code>100 ms ease-out</code></td><td>Touch down, always under 100 ms</td></tr>
-        <tr><td>release</td><td><code>spring 350 ms · 0.2</code></td><td>Button comes back</td></tr>
-        <tr><td>push</td><td><code>spring 550 ms · 0</code></td><td>Screen push and back</td></tr>
-        <tr><td>sheet</td><td><code>spring 600 ms · 0</code></td><td>Camera, bottom sheets</td></tr>
-        <tr><td>settle</td><td><code>spring 700 ms · 0</code></td><td>Card comes to rest in the frame</td></tr>
-        <tr><td>snap</td><td><code>spring 450 ms · 0.15</code></td><td>Frame corners lock on</td></tr>
-        <tr><td>pop</td><td><code>spring 400 ms · 0.25</code></td><td>Ticks, status icons, badges</td></tr>
-        <tr><td>toast</td><td><code>spring 550 ms · 0.12</code></td><td>Messages arrive</td></tr>
-        <tr><td>exit</td><td><code>250 ms (.3,0,.8,.15)</code></td><td>Anything leaving</td></tr>
-      </table>
-      <p class="note">Spring values are duration · bounce. Arrivals use decelerate <code>(.05,.7,.1,1)</code>, colour changes use standard <code>(.2,0,0,1)</code>.</p>
+        <h2>Five rules behind every screen</h2>
+        <span class="pp-tag">Motion system · Rules, not one-offs</span>
+        <p>Every animation follows the same rules and uses the same tokens, so they can move straight into a design system.</p>
+        <ol class="pp-rules">
+          <li><b>Motion explains a change, it never decorates.</b> If nothing changed, nothing moves. On the checklist only the updated step changes colour and the counter rolls.</li>
+          <li><b>Enter calm, leave fast.</b> Arrivals decelerate over about 550–700 ms, exits accelerate in about 250 ms.</li>
+          <li><b>Springs without bounce for screens and sheets.</b> A little bounce only as a reward: a tick, a status badge.</li>
+          <li><b>Nothing rewinds.</b> The capture ring fades and resets instead of spinning back.</li>
+          <li><b>Readable before it moves on.</b> Messages stay at least 4 seconds (1.5 s + 350 ms per word) and close on tap. Nothing loops.</li>
+        </ol>
+        <div class="pp-tables">
+          <div class="pp-tbl"><h3>Motion tokens</h3>
+            <table>
+              <tr><th>Token</th><th>Value</th><th>Used for</th></tr>
+              <tr><td>press</td><td><code>100 ms ease-out</code></td><td>Touch down, always under 100 ms</td></tr>
+              <tr><td>release</td><td><code>spring 350 · 0.2</code></td><td>Button comes back</td></tr>
+              <tr><td>push</td><td><code>spring 550 · 0</code></td><td>Screen push and back</td></tr>
+              <tr><td>sheet</td><td><code>spring 600 · 0</code></td><td>Camera, bottom sheets</td></tr>
+              <tr><td>settle</td><td><code>spring 700 · 0</code></td><td>Card comes to rest in the frame</td></tr>
+              <tr><td>snap</td><td><code>spring 450 · 0.15</code></td><td>Frame corners lock on</td></tr>
+              <tr><td>pop</td><td><code>spring 400 · 0.25</code></td><td>Ticks, status icons, badges</td></tr>
+              <tr><td>toast</td><td><code>spring 550 · 0.12</code></td><td>Messages arrive</td></tr>
+              <tr><td>exit</td><td><code>250 ms accelerate</code></td><td>Anything leaving</td></tr>
+            </table>
+            <p class="note">Springs are duration in ms · bounce. Arrivals use decelerate <code>(.05,.7,.1,1)</code>, colour changes use standard <code>(.2,0,0,1)</code>, exits <code>(.3,0,.8,.15)</code>.</p>
+          </div>
+          <div class="pp-tbl"><h3>Haptics</h3>
+            <table>
+              <tr><th>Moment</th><th>Haptic</th></tr>
+              <tr><td>Photo taken</td><td>Medium impact</td></tr>
+              <tr><td>Glare, a problem</td><td>Warning</td></tr>
+              <tr><td>Expired, wrong input</td><td>Error</td></tr>
+              <tr><td>Saved, sent for review</td><td>Success</td></tr>
+              <tr><td>Field fixed, switch on</td><td>Light</td></tr>
+              <tr><td>Flash mode</td><td>Selection</td></tr>
+              <tr><td>Everything else</td><td>None</td></tr>
+            </table>
+            <p class="note">Only for moments that matter. Safari on iPhone can’t play haptics, so this is the spec for the native build.</p>
+          </div>
+        </div>
+
+        <h2>The result</h2>
+        <span class="pp-tag">Now · Prototype</span>
+        <div class="pp-strip">
+          <figure><img src="img/r1.jpg" alt="Intro with tips" loading="lazy"><figcaption><b>Intro</b>Tips light up one at a time.</figcaption></figure>
+          <figure><img src="img/r2.jpg" alt="Expired licence" loading="lazy"><figcaption><b>Expired</b>Caught after the front photo.</figcaption></figure>
+          <figure><img src="img/r3.jpg" alt="Glare warning" loading="lazy"><figcaption><b>Glare</b>One problem, one action.</figcaption></figure>
+          <figure><img src="img/r4.jpg" alt="Front captured" loading="lazy"><figcaption><b>Captured</b>Green only for a taken photo.</figcaption></figure>
+          <figure><img src="img/r5.jpg" alt="Check details" loading="lazy"><figcaption><b>Check details</b>Fix it first, retake as a fallback.</figcaption></figure>
+          <figure><img src="img/r6.jpg" alt="Sent for review" loading="lazy"><figcaption><b>Sent for review</b>A calm wait, drawn like one pen line.</figcaption></figure>
+        </div>
+        <div class="pp-also"><h3>Also in the prototype</h3>
+          <ul class="post-list">
+            <li><strong>Retake instead of Fix it</strong>: reshoots only the side with the problem.</li>
+            <li><strong>Tips on the camera</strong>: the same three words as the intro, each with one short how-to.</li>
+            <li><strong>Flash</strong>: Auto, On and Off, like the iPhone camera.</li>
+            <li><strong>Enter details manually</strong>, for anyone who prefers typing.</li>
+          </ul>
+        </div>
+        <div class="post-cta"><a class="btn primary" href="../">Try it on phone <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></div>
+        <p style="margin-top:28px;font-size:.875rem;color:var(--soft)">Sample data only. The card is a printed specimen with my photo, not a real document.</p>
+      </div>
     </div>
-    <div class="tbl"><h3>Haptics</h3>
-      <table>
-        <tr><th>Moment</th><th>Haptic</th></tr>
-        <tr><td>Photo taken</td><td>Medium impact</td></tr>
-        <tr><td>Glare, a problem</td><td>Warning</td></tr>
-        <tr><td>Expired, wrong input</td><td>Error</td></tr>
-        <tr><td>Saved, sent for review</td><td>Success</td></tr>
-        <tr><td>Field fixed, switch on</td><td>Light</td></tr>
-        <tr><td>Flash mode</td><td>Selection</td></tr>
-        <tr><td>Everything else</td><td>None</td></tr>
-      </table>
-      <p class="note">Only for moments that matter. Safari on iPhone can’t play haptics, so this is the spec for the native build.</p>
+  </article>
+
+  <section id="contact" aria-labelledby="contact-h" class="band">
+    <div class="wrap contact">
+      <h2 id="contact-h">Need <span class="thin">someone to</span> <span class="thin hl">lead</span><br class="br-d"> <span class="thin">your</span><br class="br-m"> design team?</h2>
+      <p>I’m looking for a Head of Design role, remote from Spain. English, Ukrainian and Russian, intermediate Spanish.</p>
+      <div class="links">
+        <a class="btn primary" href="mailto:hi@illiavostrikov.com">Email me</a>
+        <a class="btn" href="https://www.linkedin.com/in/ilja2z/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href="/assets/Illia_Vostrikov_Head_of_Design_CV_2026.pdf" download>Download CV <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"/></svg></a>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+</main>
 
-<section>
-  <div class="step"><span>5 · Now</span><span class="tag t-new">Prototype</span></div>
-  <h2>The result</h2>
-  <div class="strip">
-    <figure><img src="img/f1.jpg" alt="Intro with tips" loading="lazy"><figcaption><b>Intro</b>Each tip lights up while it’s shown.</figcaption></figure>
-    <figure><img src="img/f2.jpg" alt="Expired licence" loading="lazy"><figcaption><b>Expired</b>Caught after the front photo.</figcaption></figure>
-    <figure><img src="img/f3.jpg" alt="Glare warning" loading="lazy"><figcaption><b>Glare</b>One problem, one action.</figcaption></figure>
-    <figure><img src="img/f4.jpg" alt="Front captured" loading="lazy"><figcaption><b>Captured</b>Green only for a taken photo.</figcaption></figure>
-    <figure><img src="img/f5.jpg" alt="Check details" loading="lazy"><figcaption><b>Check details</b>Fix it, or retake.</figcaption></figure>
-    <figure><img src="img/f6.jpg" alt="Sent for review" loading="lazy"><figcaption><b>Sent for review</b>A calm wait, drawn like one pen line.</figcaption></figure>
-  </div>
-  <div class="also"><h3>Also in the prototype</h3>
-    <ul class="notes" style="margin-top:8px">
-      <li><b>Retake instead of Fix it</b>: reshoots only the side with the problem.</li>
-      <li><b>Tips on the camera</b>: the same three words as the intro, each with one short how-to.</li>
-      <li><b>Flash</b>: Auto, On and Off, like the iPhone camera.</li>
-      <li><b>Enter details manually</b>, for anyone who prefers typing.</li>
-    </ul>
-  </div>
-  <div class="links"><a class="main" href="../">Try it on your phone →</a></div>
-</section>
+<footer><div class="wrap"><span>© 2026 Illia Vostrikov</span><a href="mailto:hi@illiavostrikov.com">hi@illiavostrikov.com</a></div></footer>
 
-<footer>Illia Vostrikov · Sample data only. The card is a printed specimen with my photo, not a real document.</footer>
-</div>
+<dialog class="rec-dlg" aria-labelledby="rd-name">
+  <button class="icon-btn rd-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="rd-inner"></div>
+</dialog>
+<dialog class="lb" aria-label="Enlarged slide">
+  <div class="lb-inner"><img alt=""></div>
+  <button class="icon-btn lb-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="lb-nav">
+    <button class="icon-btn" type="button" data-lb-prev aria-label="Previous image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <span class="g-count lb-count"></span>
+    <button class="icon-btn" type="button" data-lb-next aria-label="Next image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+  </div>
+</dialog>
+
+<script src="/assets/site.js?v=1794952732"></script>
+<script src="/assets/analytics.js?v=1794952732"></script>
 <script>
-(function(){const v=document.getElementById('walk'),b=document.getElementById('wbtn');
-const P='<svg width="14" height="14" viewBox="0 0 14 14" fill="#fff"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg>',
-      G='<svg width="14" height="14" viewBox="0 0 14 14" fill="#fff"><path d="M3 1.5v11l9.5-5.5z"/></svg>';
+(function(){const v=document.getElementById('walk'),b=document.getElementById('wbtn');if(!v||!b)return;
+const P='<svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg>',
+      G='<svg width="12" height="12" viewBox="0 0 14 14" fill="currentColor"><path d="M3 1.5v11l9.5-5.5z"/></svg>';
 const sync=()=>{b.innerHTML=v.paused?G:P;b.setAttribute('aria-label',v.paused?'Play video':'Pause video');};
 if(matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause();}
 const t=()=>{v.paused?v.play():v.pause();};b.onclick=t;v.onclick=t;v.onplay=sync;v.onpause=sync;sync();})();
