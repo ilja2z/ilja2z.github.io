@@ -421,6 +421,7 @@ body.rec{overflow:hidden}
 body.rec .intro,body.rec .left,body.rec .right{display:none}
 body.rec .page{display:flex;justify-content:center;align-items:center;min-height:100vh;min-height:100dvh;padding:20px}
 body.rec.bare{background:#fff}
+html.camdark,html.camdark body.rec.bare{background:#15181B}
 body.rec.bare .page{padding:0}
 body.rec.bare .device{background:none;padding:0;box-shadow:none;border-radius:0;width:360px;height:800px}
 body.rec.bare .screen{border-radius:0}
@@ -767,6 +768,16 @@ async function toast(html){
   document.addEventListener('focusout',()=>{ setTimeout(reset,60); setTimeout(reset,350); });
   window.addEventListener('scroll',()=>{ if(!typing()) reset(); },{passive:true});
   if(window.visualViewport) visualViewport.addEventListener('resize',()=>{ if(!typing()) { reset(); setTimeout(reset,300); } });
+})();
+
+
+/* Safari paints the area under the status bar with the page colour. On the camera that strip showed white over the table,
+   so the page colour follows the screen: dark while the camera is open, white otherwise. */
+(function pageColourFollowsScreen(){
+  let meta=document.querySelector('meta[name="theme-color"]');
+  if(!meta){ meta=document.createElement('meta'); meta.name='theme-color'; document.head.appendChild(meta); }
+  const sync=()=>{ const dark=!!screen.querySelector('.cam'); document.documentElement.classList.toggle('camdark',dark); meta.content=dark?'#15181B':'#ffffff'; };
+  new MutationObserver(sync).observe(screen,{childList:true,subtree:true}); sync();
 })();
 
 /* ---------- touch feedback: press < 100 ms, spring release ---------- */
