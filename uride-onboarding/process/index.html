@@ -37,19 +37,49 @@ ul.notes b{color:#1F2A37;font-weight:600}
 .card p{margin-top:6px;font-size:14.5px;color:#4A5965}
 .tag{display:inline-block;margin-top:4px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:10px}
 .t-old{background:#ECEFF1;color:#5B6B78}.t-ai{background:#FEF4DD;color:#9A5B00}.t-new{background:#E6F4EA;color:#1E8E3E}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:48px;align-items:center}
+.phone{position:relative;width:300px;border-radius:44px;background:#0E1114;padding:10px;box-shadow:0 30px 60px -24px rgba(16,24,40,.45)}
+.phone video{display:block;width:100%;border-radius:34px;background:#15181B}
+.vid figcaption button{flex:none;width:30px;height:30px;border-radius:50%;border:0;background:#1F2A37;display:grid;place-items:center;cursor:pointer}.vid figcaption{display:flex;align-items:center;justify-content:center;gap:10px;text-align:left!important}
+.vid{width:300px}.vid figcaption{margin-top:12px;text-align:center;font-size:13.5px;color:#4A5965}
+.rules{margin-top:22px;display:grid;gap:10px;max-width:820px;counter-reset:r}
+.rules li{list-style:none;background:#fff;border:1px solid #E1E6EA;border-radius:14px;padding:14px 16px 14px 52px;position:relative;font-size:15.5px;color:#3E4958}
+.rules li::before{counter-increment:r;content:counter(r);position:absolute;left:16px;top:14px;width:24px;height:24px;border-radius:50%;background:#1F2A37;color:#fff;font-size:12.5px;font-weight:700;display:grid;place-items:center}
+.rules b{color:#1F2A37;font-weight:700}
+.tables{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-top:22px}
+.tbl{background:#fff;border:1px solid #E1E6EA;border-radius:16px;padding:16px 18px;overflow-x:auto}
+.tbl h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.tbl table{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#7A8A96;padding:6px 10px 6px 0;border-bottom:1px solid #E1E6EA}
+.tbl td{padding:7px 10px 7px 0;border-bottom:1px solid #F0F3F5;color:#3E4958;vertical-align:top}
+.tbl td:first-child{font-weight:600;color:#1F2A37;white-space:nowrap}
+.tbl code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:#F3F5F6;padding:1px 5px;border-radius:5px;white-space:nowrap}
+.tbl .note{margin-top:10px;font-size:13px;color:#7A8A96}
+.also{margin-top:26px;background:#fff;border:1px solid #E1E6EA;border-radius:16px;padding:16px 18px;max-width:820px}
+.also h3{font-size:15px;font-weight:700}
+@media (max-width:860px){.hero{grid-template-columns:1fr}.vid{margin:0 auto;width:260px}.phone{width:260px}.tables{grid-template-columns:1fr}}
 footer{margin-top:64px;font-size:13.5px;color:#7A8A96;border-top:1px solid #E1E6EA;padding-top:18px}
 @media (max-width:600px){.wrap{padding:36px 16px 60px}.strip figure{width:170px;min-width:170px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header>
+<header class="hero">
+  <div>
   <h1>Driver’s licence scan: from a 2024 screen to a working prototype</h1>
-  <p>Uride driver onboarding, step 2 of 10. I took the step I shipped in 2024 and rebuilt it as a click-through prototype on real iPhone footage of a printed specimen card. Built with Claude Code; the decisions and the direction are mine.</p>
+  <p>Uride driver onboarding, step 2 of 10. I took the step I shipped in 2024 and prototyped it in code, on real iPhone footage of a printed specimen card, to work out the motion, the timing and the edge cases. Built with Claude Code; the decisions and the direction are mine.</p>
   <div class="links">
     <a class="main" href="../">Try it on your phone →</a>
     <a href="../v1/">Open the AI first pass</a>
   </div>
+  </div>
+  <figure class="vid"><div class="phone">
+    <video id="walk" autoplay muted loop playsinline preload="metadata" poster="img/walk-poster.jpg" aria-label="One-minute walkthrough of the prototype on an iPhone">
+      <source src="walk.webm" type="video/webm"><source src="walk.mp4" type="video/mp4">
+    </video>
+    </div>
+    <figcaption><button id="wbtn" aria-label="Pause video"><svg width="14" height="14" viewBox="0 0 14 14" fill="#fff"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg></button><span>The whole flow in one minute, recorded on an iPhone</span></figcaption>
+  </figure>
 </header>
 
 <section>
@@ -93,8 +123,52 @@ footer{margin-top:64px;font-size:13.5px;color:#7A8A96;border-top:1px solid #E1E6
   </div>
 </section>
 
+
 <section>
-  <div class="step"><span>4 · Now</span><span class="tag t-new">Prototype</span></div>
+  <div class="step"><span>4 · Motion system</span><span class="tag t-new">Rules, not one-offs</span></div>
+  <h2>Five rules behind every screen</h2>
+  <p>Every animation in the prototype follows the same rules and uses the same tokens, so they can move straight into a design system.</p>
+  <ol class="rules">
+    <li><b>Motion explains a change, it never decorates.</b> If nothing changed, nothing moves. On the checklist only the updated step changes colour and the counter rolls.</li>
+    <li><b>Enter calm, leave fast.</b> Arrivals decelerate over about 550–700 ms, exits accelerate in about 250 ms.</li>
+    <li><b>Springs without bounce for screens and sheets.</b> A little bounce only as a reward: a tick, a status badge.</li>
+    <li><b>Nothing rewinds.</b> The capture ring fades and resets instead of spinning back.</li>
+    <li><b>Readable before it moves on.</b> Messages stay at least 4 seconds (1.5 s + 350 ms per word) and close on tap. Nothing loops.</li>
+  </ol>
+  <div class="tables">
+    <div class="tbl"><h3>Motion tokens</h3>
+      <table>
+        <tr><th>Token</th><th>Value</th><th>Used for</th></tr>
+        <tr><td>press</td><td><code>100 ms ease-out</code></td><td>Touch down, always under 100 ms</td></tr>
+        <tr><td>release</td><td><code>spring 350 ms · 0.2</code></td><td>Button comes back</td></tr>
+        <tr><td>push</td><td><code>spring 550 ms · 0</code></td><td>Screen push and back</td></tr>
+        <tr><td>sheet</td><td><code>spring 600 ms · 0</code></td><td>Camera, bottom sheets</td></tr>
+        <tr><td>settle</td><td><code>spring 700 ms · 0</code></td><td>Card comes to rest in the frame</td></tr>
+        <tr><td>snap</td><td><code>spring 450 ms · 0.15</code></td><td>Frame corners lock on</td></tr>
+        <tr><td>pop</td><td><code>spring 400 ms · 0.25</code></td><td>Ticks, status icons, badges</td></tr>
+        <tr><td>toast</td><td><code>spring 550 ms · 0.12</code></td><td>Messages arrive</td></tr>
+        <tr><td>exit</td><td><code>250 ms (.3,0,.8,.15)</code></td><td>Anything leaving</td></tr>
+      </table>
+      <p class="note">Spring values are duration · bounce. Arrivals use decelerate <code>(.05,.7,.1,1)</code>, colour changes use standard <code>(.2,0,0,1)</code>.</p>
+    </div>
+    <div class="tbl"><h3>Haptics</h3>
+      <table>
+        <tr><th>Moment</th><th>Haptic</th></tr>
+        <tr><td>Photo taken</td><td>Medium impact</td></tr>
+        <tr><td>Glare, a problem</td><td>Warning</td></tr>
+        <tr><td>Expired, wrong input</td><td>Error</td></tr>
+        <tr><td>Saved, sent for review</td><td>Success</td></tr>
+        <tr><td>Field fixed, switch on</td><td>Light</td></tr>
+        <tr><td>Flash mode</td><td>Selection</td></tr>
+        <tr><td>Everything else</td><td>None</td></tr>
+      </table>
+      <p class="note">Only for moments that matter. Safari on iPhone can’t play haptics, so this is the spec for the native build.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="step"><span>5 · Now</span><span class="tag t-new">Prototype</span></div>
   <h2>The result</h2>
   <div class="strip">
     <figure><img src="img/f1.jpg" alt="Intro with tips" loading="lazy"><figcaption><b>Intro</b>Each tip lights up while it’s shown.</figcaption></figure>
@@ -104,10 +178,26 @@ footer{margin-top:64px;font-size:13.5px;color:#7A8A96;border-top:1px solid #E1E6
     <figure><img src="img/f5.jpg" alt="Check details" loading="lazy"><figcaption><b>Check details</b>Fix it, or retake.</figcaption></figure>
     <figure><img src="img/f6.jpg" alt="Sent for review" loading="lazy"><figcaption><b>Sent for review</b>A calm wait, drawn like one pen line.</figcaption></figure>
   </div>
+  <div class="also"><h3>Also in the prototype</h3>
+    <ul class="notes" style="margin-top:8px">
+      <li><b>Retake instead of Fix it</b>: reshoots only the side with the problem.</li>
+      <li><b>Tips on the camera</b>: the same three words as the intro, each with one short how-to.</li>
+      <li><b>Flash</b>: Auto, On and Off, like the iPhone camera.</li>
+      <li><b>Enter details manually</b>, for anyone who prefers typing.</li>
+    </ul>
+  </div>
   <div class="links"><a class="main" href="../">Try it on your phone →</a></div>
 </section>
 
 <footer>Illia Vostrikov · Sample data only. The card is a printed specimen with my photo, not a real document.</footer>
 </div>
+<script>
+(function(){const v=document.getElementById('walk'),b=document.getElementById('wbtn');
+const P='<svg width="14" height="14" viewBox="0 0 14 14" fill="#fff"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg>',
+      G='<svg width="14" height="14" viewBox="0 0 14 14" fill="#fff"><path d="M3 1.5v11l9.5-5.5z"/></svg>';
+const sync=()=>{b.innerHTML=v.paused?G:P;b.setAttribute('aria-label',v.paused?'Play video':'Pause video');};
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause();}
+const t=()=>{v.paused?v.play():v.pause();};b.onclick=t;v.onclick=t;v.onplay=sync;v.onpause=sync;sync();})();
+</script>
 </body>
 </html>
