@@ -757,6 +757,18 @@ async function toast(html){
   t.remove();
 }
 
+
+/* iOS scrolls the whole page to bring a focused field above the keyboard and often leaves it scrolled after.
+   In the bare/record view the page must never scroll: a scrolled page slides the header under Safari's blurred status-bar edge. */
+(function keepPageAtTop(){
+  const rec=()=>document.body.classList.contains('rec');
+  const typing=()=>{ const a=document.activeElement; return a && /^(INPUT|TEXTAREA)$/.test(a.tagName); };
+  const reset=()=>{ if(rec() && (window.scrollY||document.documentElement.scrollTop||document.body.scrollTop)){ window.scrollTo(0,0); document.documentElement.scrollTop=0; document.body.scrollTop=0; } };
+  document.addEventListener('focusout',()=>{ setTimeout(reset,60); setTimeout(reset,350); });
+  window.addEventListener('scroll',()=>{ if(!typing()) reset(); },{passive:true});
+  if(window.visualViewport) visualViewport.addEventListener('resize',()=>{ if(!typing()) { reset(); setTimeout(reset,300); } });
+})();
+
 /* ---------- touch feedback: press < 100 ms, spring release ---------- */
 const PRESSABLE='.btn,.item,.iconbtn,.fix,.rtk,.pside button,.shutter,#toscan,.slot,.camctl';
 const ratio=()=>screen.getBoundingClientRect().width/screen.offsetWidth;
