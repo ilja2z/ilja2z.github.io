@@ -191,3 +191,23 @@
     });
   });
 })();
+
+/* IV logo: flip to the photo a few times, slowly; hover also flips */
+(function(){
+  var a=document.querySelector('.home-logo'); if(!a||!a.querySelector('.hl-flip')) return;
+  var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var shown=0, max=4, t;
+  function flip(on){ a.classList.toggle('is-flipped',on); }
+  function cycle(){
+    if(document.hidden||shown>=max) return;
+    flip(true); shown++;
+    setTimeout(function(){ flip(false); },3200);
+    t=setTimeout(cycle,14000);
+  }
+  if(!rm){ t=setTimeout(cycle,6000); }
+  a.addEventListener('mouseenter',function(){ flip(true); });
+  a.addEventListener('mouseleave',function(){ flip(false); });
+  a.addEventListener('focus',function(){ flip(true); });
+  a.addEventListener('blur',function(){ flip(false); });
+  document.addEventListener('visibilitychange',function(){ if(document.hidden){ clearTimeout(t); flip(false); } else if(!rm&&shown<max){ clearTimeout(t); t=setTimeout(cycle,6000); } });
+})();

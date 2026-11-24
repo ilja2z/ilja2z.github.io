@@ -387,3 +387,16 @@ ul.post-links{list-style:none;padding:0;margin:0;border-top:1px solid var(--line
 
 /* internal article links: arrow, not the external ↗ */
 .articles a:not([target="_blank"])::after{content:"→"}
+
+/* IV logo flips to the photo now and then */
+.home-logo{perspective:240px;overflow:visible}
+.hl-flip{position:relative;display:block;width:40px;height:40px;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.45,0,.2,1)}
+.hl-face{position:absolute;inset:0;border-radius:10px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.hl-back{transform:rotateY(180deg);background:#1C4A3A}
+.hl-back img{display:block;width:40px;height:40px;object-fit:cover}
+.home-logo.is-flipped .hl-flip{transform:rotateY(180deg)}
+@media (prefers-reduced-motion:reduce){
+  .hl-flip{transition:none;transform:none!important}
+  .hl-back{transform:none;opacity:0;transition:opacity .3s}
+  .home-logo.is-flipped .hl-back{opacity:1}
+}
