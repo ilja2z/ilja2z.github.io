@@ -70,7 +70,7 @@
   .post-body > .pp-strip{max-width:none}
   .pp-strip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:20px;overflow:visible;padding:6px 0 0;width:calc(min(var(--wrap),100vw) - 2*var(--pad))}
   .pp-strip figure{width:auto}
-  .pp-strip.n4{width:calc((min(var(--wrap),100vw) - 2*var(--pad)) * .8)}
+  .post-body > .pp-cards{max-width:none;width:calc(min(var(--wrap),100vw) - 2*var(--pad));grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
 }
 @media (max-width:860px){.pp-hero{grid-template-columns:1fr}.pp-vid{margin:12px auto 0;width:260px}.pp-tables{grid-template-columns:1fr}}
 @media (max-width:380px){.pp-btns .btn{padding:0 14px;font-size:.875rem}}
@@ -132,11 +132,12 @@
           <li><strong>No rule for problems</strong>: what stops the flow, what waits for review, which colour means what.</li>
           <li><strong>A drawn card</strong>, so glare, blur and an expired licence were only claims.</li>
         </ul>
-        <div class="pp-strip n4">
+        <div class="pp-strip">
           <figure><img src="img/v1.jpg" alt="First pass intro" loading="lazy"><figcaption><b>Intro</b>Empty slots that look like drop zones.</figcaption></figure>
           <figure><img src="img/v2.jpg" alt="First pass camera" loading="lazy"><figcaption><b>Camera</b>A message for every moment.</figcaption></figure>
           <figure><img src="img/v3.jpg" alt="First pass back side" loading="lazy"><figcaption><b>Back</b>Drawn card, no real conditions.</figcaption></figure>
           <figure><img src="img/v4.jpg" alt="First pass check details" loading="lazy"><figcaption><b>Check details</b>Everything always green.</figcaption></figure>
+          <figure><img src="img/v5.jpg" style="aspect-ratio:520/1125;object-fit:cover;object-position:top" alt="First pass after saving" loading="lazy"><figcaption><b>Saved</b>Everything changes at once, under a toast.</figcaption></figure>
         </div>
 
         <h2>What I changed, and why</h2>
