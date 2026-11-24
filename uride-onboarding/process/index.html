@@ -66,6 +66,12 @@
 .pp-tbl .note{margin:12px 0 0;font-size:.8125rem;color:var(--soft)}
 .pp-also{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin-top:20px}
 .pp-also h3{font:600 1.0625rem/1.3 var(--display);margin:0 0 6px}
+@media (min-width:1000px){
+  .post-body > .pp-strip{max-width:none}
+  .pp-strip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:20px;overflow:visible;padding:6px 0 0;width:calc(min(var(--wrap),100vw) - 2*var(--pad))}
+  .pp-strip figure{width:auto}
+  .pp-strip.n4{width:calc((min(var(--wrap),100vw) - 2*var(--pad)) * .8)}
+}
 @media (max-width:860px){.pp-hero{grid-template-columns:1fr}.pp-vid{margin:12px auto 0;width:260px}.pp-tables{grid-template-columns:1fr}}
 @media (max-width:380px){.pp-btns .btn{padding:0 14px;font-size:.875rem}}
 </style>
@@ -112,6 +118,8 @@
         <div class="pp-strip">
           <figure><img src="img/olist.jpg" alt="2024 checklist" loading="lazy"><figcaption><b>Checklist</b>“Rejected” had a green tick; labels were about 1.6:1 contrast.</figcaption></figure>
           <figure><img src="img/olicence.jpg" alt="2024 licence step" loading="lazy"><figcaption><b>Licence step</b>A camera icon covered the photo; “Skip” on a legal step.</figcaption></figure>
+          <figure><img src="img/ocamera.jpg" alt="2024 camera" loading="lazy"><figcaption><b>Camera</b>No frame for the card, no auto-capture, tips behind a small link.</figcaption></figure>
+          <figure><img src="img/omanual.jpg" alt="2024 manual entry" loading="lazy"><figcaption><b>Manual entry</b>Three empty fields to type, and both photos still required.</figcaption></figure>
           <figure><img src="img/oexpired.jpg" alt="2024 expired warning" loading="lazy"><figcaption><b>Expired document</b>The warning could be closed and Continue still worked.</figcaption></figure>
         </div>
 
@@ -124,7 +132,7 @@
           <li><strong>No rule for problems</strong>: what stops the flow, what waits for review, which colour means what.</li>
           <li><strong>A drawn card</strong>, so glare, blur and an expired licence were only claims.</li>
         </ul>
-        <div class="pp-strip">
+        <div class="pp-strip n4">
           <figure><img src="img/v1.jpg" alt="First pass intro" loading="lazy"><figcaption><b>Intro</b>Empty slots that look like drop zones.</figcaption></figure>
           <figure><img src="img/v2.jpg" alt="First pass camera" loading="lazy"><figcaption><b>Camera</b>A message for every moment.</figcaption></figure>
           <figure><img src="img/v3.jpg" alt="First pass back side" loading="lazy"><figcaption><b>Back</b>Drawn card, no real conditions.</figcaption></figure>
