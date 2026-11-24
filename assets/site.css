@@ -384,3 +384,6 @@ ul.post-links{list-style:none;padding:0;margin:0;border-top:1px solid var(--line
 .home-logo:hover{box-shadow:0 0 0 2px var(--accent)}
 .home-logo:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .home-logo:active{transform:scale(.96)}
+
+/* internal article links: arrow, not the external ↗ */
+.articles a:not([target="_blank"])::after{content:"→"}
