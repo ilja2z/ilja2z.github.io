@@ -409,6 +409,6 @@ ul.post-links{list-style:none;padding:0;margin:0;border-top:1px solid var(--line
 @media (prefers-reduced-motion:no-preference){
   .hero h1 .first{animation:hero-thin 12s cubic-bezier(.45,0,.55,1) infinite}
   .hero h1 .last{animation:hero-fill 12s cubic-bezier(.45,0,.55,1) infinite}
-  .hero h1 .role{background:linear-gradient(100deg,var(--accent) 40%,#C9F7E1 50%,var(--accent) 60%) 100% 0/250% 100% no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:hero-shine 2.8s cubic-bezier(.45,0,.55,1) 1.4s 1 both}
+  .hero h1 .role{width:fit-content;background:linear-gradient(100deg,var(--accent) 40%,#C9F7E1 50%,var(--accent) 60%) 100% 0/250% 100% no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:hero-shine 2.8s cubic-bezier(.45,0,.55,1) 1.4s 1 both}
   .hero-news .new{animation:new-pulse 1.6s cubic-bezier(.22,1,.36,1) .8s 2}
 }
