@@ -400,3 +400,15 @@ ul.post-links{list-style:none;padding:0;margin:0;border-top:1px solid var(--line
   .hl-back{transform:none;opacity:0;transition:opacity .3s}
   .home-logo.is-flipped .hl-back{opacity:1}
 }
+
+/* hero motion: name weight swap, one soft shine on the role, NEW pulses twice */
+@keyframes hero-thin{0%,15%,100%{font-weight:800}50%,65%{font-weight:240}}
+@keyframes hero-fill{0%,15%,100%{font-weight:200}50%,65%{font-weight:760}}
+@keyframes hero-shine{from{background-position:100% 0}to{background-position:0 0}}
+@keyframes new-pulse{0%{box-shadow:0 0 0 0 rgba(82,224,161,.45)}100%{box-shadow:0 0 0 10px rgba(82,224,161,0)}}
+@media (prefers-reduced-motion:no-preference){
+  .hero h1 .first{animation:hero-thin 12s cubic-bezier(.45,0,.55,1) infinite}
+  .hero h1 .last{animation:hero-fill 12s cubic-bezier(.45,0,.55,1) infinite}
+  .hero h1 .role{background:linear-gradient(100deg,var(--accent) 40%,#C9F7E1 50%,var(--accent) 60%) 100% 0/250% 100% no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:hero-shine 2.8s cubic-bezier(.45,0,.55,1) 1.4s 1 both}
+  .hero-news .new{animation:new-pulse 1.6s cubic-bezier(.22,1,.36,1) .8s 2}
+}
