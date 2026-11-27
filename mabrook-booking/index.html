@@ -415,7 +415,7 @@ body.rec .page{display:flex;min-height:100vh;min-height:100dvh;justify-content:c
     <div class="panel">
       <h2>Things to try</h2>
       <ul>
-        <li><b>Tap Book now</b> on the resort in the feed. The same button reads Order or Buy on food and shop posts.</li>
+        <li><b>Tap Book now</b> on the resort in the feed: stays sit in the same full-screen feed as video, food and shop.</li>
         <li><b>Change the dates</b>: tap a start and an end day. Nights and every price after it update.</li>
         <li><b>Add a child</b> in Rooms and guests: an age row opens only when it’s needed.</li>
         <li><b>Swipe the price plans</b> under a room: flexible or saver, and the checkout follows your choice.</li>
@@ -641,7 +641,7 @@ function vDone(){
   <div class="body"><div class="done">
     <div class="badge ${held?'':'ok'}">${ic(held?'lock':'check')}</div>
     <div class="h">${held?'Done!':'You’re booked!'}</div>
-    <p>${held?'Your booking’s locked in for the next 15 minutes.':S.placed.type==='prop'?`Pay ${usd2(S.placed.amount)} at the property. Confirmation <span style="white-space:nowrap">${S.placed.no}</span>.`:`${usd2(S.placed.amount)} paid. Confirmation <span style="white-space:nowrap">${S.placed.no}</span>.`}</p>
+    <p id="holdmsg">${held?'Your booking’s locked in for the next 15 minutes.':S.placed.type==='prop'?`Pay ${usd2(S.placed.amount)} at the property. Confirmation <span style="white-space:nowrap">${S.placed.no}</span>.`:`${usd2(S.placed.amount)} paid. Confirmation <span style="white-space:nowrap">${S.placed.no}</span>.`}</p>
     ${held?`<div class="timer"><i></i><span id="timer">15:00</span> left to pay</div>`:`<p class="cap" style="font-size:14px;margin-top:10px">We sent the details to ${esc(S.email)}.</p>`}
   </div>
   ${bookingCard()}
@@ -680,20 +680,20 @@ function editSheet(tab){
     body = `<div class="body" style="flex:1">${stp('rooms','Rooms',1,4)}${stp('adults','Adults',1,8)}${stp('children','Children',0,4,'Ages 0–17')}
       ${Array.from({length:d.children},(_,i)=>`<div class="stp expand" style="padding-left:32px"><span class="c2" style="font-size:14px">Child ${i+1} age</span><select class="sel" data-age="${i}" aria-label="Child ${i+1} age">${Array.from({length:18},(_,a)=>`<option ${a===d.ages[i]?'selected':''} value="${a}">${a} year${a===1?'':'s'}</option>`).join('')}</select></div>`).join('')}
       <div class="stp"><span>Traveling with pets</span><button class="toggle" role="switch" aria-checked="${d.pets}" data-act="pets" aria-label="Traveling with pets"></button></div>
-      ${d.pets?`<div class="stp expand" style="padding-left:32px;border-bottom:0"><span class="c2" style="font-size:14px">This hotel accepts small pets for US$25 a night. We’ll tell the property.</span></div>`:''}
+      ${d.pets?`<div class="stp expand" style="padding-left:32px;border-bottom:0"><span class="c2" style="font-size:14px">We’ll show pet-friendly rooms and tell the property you’re bringing a pet.</span></div>`:''}
     </div>`;
   }
   return `<div class="dim" data-act="close"></div><div class="sheet tall" role="dialog" aria-label="Edit details">${head}${body}<div class="sfoot"><button class="btn out" data-act="reset">Reset</button><button class="btn" data-act="apply" ${tab==='dates'&&!(d.ci&&d.co)?'disabled':''}>Apply</button></div></div>`;
 }
 function infoSheet(k){
   const T = {
-    about:['About hotel','A beachfront resort on Natadola Bay, one hour from Nadi airport. Rooms open to gardens or the lagoon, with three pools, a spa and an 18-hole golf course.'],
+    about:['About hotel','A beachfront resort on Natadola Bay. Rooms open to gardens or the lagoon, with pools, restaurants and a spa.'],
     facilities:['Facilities','3 swimming pools · Beachfront · 3 restaurants · Spa · Golf course · Kids’ club · Free WiFi · Airport shuttle'],
-    reviews:['Guest reviews','5.0 from 1,284 reviews. Cleanliness 9.3 · Comfort 9.2 · Facilities 9.2. “The lagoon pool is the best part of the stay.”'],
+    reviews:['Guest reviews','Rated 5.0. Reviews are grouped by cleanliness, comfort and facilities, with the newest first.'],
     policies:['Property policies','Check-in from 3:00 PM, check-out until 11:00 AM. Children of all ages are welcome. Small pets on request.'],
-    sustain:['Sustainability certification','The resort holds a third-party sustainability certification for water, energy and waste. This is sample text for the prototype.']
+    sustain:['Sustainability certification','The badge on the hotel page links here: what the certification covers and who issued it.']
   }[k];
-  return `<div class="dim" data-act="close"></div><div class="sheet" role="dialog" aria-label="${T[0]}"><div class="grab"></div><div class="shead"><div class="t">${T[0]}</div><button class="ib" data-act="close" aria-label="Close">${ic('x','width:16px;height:16px')}</button></div><p class="pad c2" style="font-size:16px;line-height:24px;padding-bottom:48px">${T[1]}</p></div>`;
+  return `<div class="dim" data-act="close"></div><div class="sheet" role="dialog" aria-label="${T[0]}"><div class="grab"></div><div class="shead"><div class="t">${T[0]}</div><button class="ib" data-act="close" aria-label="Close">${ic('x','width:16px;height:16px')}</button></div><p class="pad c2" style="font-size:16px;line-height:24px">${T[1]}</p><p class="pad cap c3" style="padding-top:12px;padding-bottom:48px">Sample content for the prototype.</p></div>`;
 }
 function paySheet(){
   const P = S.pay;
@@ -725,7 +725,7 @@ function appleSheet(){
     <div class="arow"><span class="cardart"></span><span class="f1">Revolut Visa</span><span style="color:#8e8e93">•••• 1234</span></div>
     <div class="arow" style="color:#8e8e93">Change payment method</div>
     <div class="atot">Pay Mabrook · ${esc(HOTEL.split(' by')[0])}<b>${usd2(S.placed && S.placed.type==='hold' ? S.placed.amount : due())}</b></div>
-    <div class="aside">${A==='wait'?`<button class="dbl" data-act="applego" aria-label="Confirm with side button">Tap</button>Double-click to pay (tap the circle)`:A==='ok'?`<span class="dbl ok">✓</span>Done`:`<span class="dbl bad">!</span><span>Payment not completed</span><button class="btn s" style="width:auto;padding:0 18px;background:#3a3a3c;color:#fff" data-act="paystep" data-v="card">Update card information</button>`}</div>
+    <div class="aside">${A==='wait'?`<button class="dbl" data-act="applego" aria-label="Confirm with side button">Tap</button>Double-click to pay (tap the circle)`:A==='proc'?`<span class="dbl" style="animation:sp .9s linear infinite;border-right-color:transparent"></span>Processing…`:A==='ok'?`<span class="dbl ok">✓</span>Done`:`<span class="dbl bad">!</span><span>Payment not completed</span><button class="btn s" style="width:auto;padding:0 18px;background:#3a3a3c;color:#fff" data-act="paystep" data-v="card">Update card information</button>`}</div>
   </div>`;
 }
 
@@ -774,7 +774,9 @@ let timerT;
 function tickTimer(){
   clearInterval(timerT);
   const el = () => document.getElementById('timer');
-  const f = () => { const left = Math.max(0, S.holdUntil - Date.now()), m = Math.floor(left/60000), s = Math.floor(left%60000/1000); if(el()) el().textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; else clearInterval(timerT); };
+  const f = () => { const left = Math.max(0, S.holdUntil - Date.now()), m = Math.floor(left/60000), s = Math.floor(left%60000/1000); const n = el(); if(!n){ clearInterval(timerT); return; }
+    if(left<=0){ clearInterval(timerT); n.parentElement.innerHTML = 'Pay now to check if the room is still free.'; const h=document.getElementById('holdmsg'); if(h) h.textContent='The 15-minute hold has ended.'; return; }
+    n.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
   f(); timerT = setInterval(f, 1000);
 }
 
@@ -894,6 +896,7 @@ function fit(){
 }
 addEventListener('resize', fit); fit();
 
+Object.defineProperty(window,'__S',{get:()=>S});   // read-only hook for automated checks
 const start = SEEDS[Q.get('s')] ? Q.get('s') : 'happy';
 setScenario(start);
 addEventListener('pageshow', e=>{ if(e.persisted) location.reload(); });
