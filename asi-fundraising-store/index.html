@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ESP+ Stores · Fundraising storefront prototype · Illia Vostrikov</title>
+<meta name="description" content="A clickable prototype of a fundraising web store on ESP+ by ASI Central: storefront, product configurator, cart and a four-step checkout. Sample data only.">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ Page shell (around the prototype) ============ */
+:root{
+  --p-ink:#1F2A37; --p-body:#3E4958; --p-muted:#5B6B78; --p-line:#E3E8EB; --p-bg:#ECEFF1;
+  --p-font:"Google Sans","Product Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+
+  /* Cosmos 1.2 tokens, ESP+ mode (from the Figma file) */
+  --color-bg-canvas:#F5F7FA; --color-bg-surface:#FFFFFF; --color-bg-subtle:#F0F2F5; --color-bg-overlay:rgba(10,18,33,.48);
+  --color-border-default:#E1E5EA; --color-border-strong:#C9CFD6;
+  --color-text-primary:#111827; --color-text-secondary:#5B6573; --color-text-tertiary:#636B78; --color-text-inverse:#FFFFFF;
+  --color-brand-primary:#0B7A55; --color-brand-primary-hover:#096647; --color-brand-subtle:#E6F4EE; --color-brand-text:#0B7A55;
+  --color-status-success-fg:#12773D; --color-status-success-bg:#E7F6EC;
+  --color-status-warning-fg:#9A5B00; --color-status-warning-bg:#FEF4DD;
+  --color-status-danger-fg:#C2271D; --color-status-danger-bg:#FDECEA;
+  --color-status-neutral-fg:#5B6573; --color-status-neutral-bg:#F0F2F5;
+  --space-4:4px; --space-8:8px; --space-12:12px; --space-16:16px; --space-24:24px; --space-32:32px; --space-40:40px; --space-48:48px; --space-64:64px; --space-80:80px;
+  --radius-sm:4px; --radius-md:8px; --radius-lg:12px; --radius-xl:16px; --radius-full:999px;
+  --elevation-card:0 1px 3px rgba(10,18,33,.06);
+  --elevation-overlay:0 12px 32px rgba(10,18,33,.16),0 2px 6px rgba(10,18,33,.08);
+  --ease-out:cubic-bezier(.2,.8,.2,1); --ease-in:cubic-bezier(.3,0,.8,.15);
+  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:var(--p-font);background:var(--p-bg);color:var(--p-body);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select{font:inherit;color:inherit}
+a{color:inherit}
+.page{max-width:1520px;margin:0 auto;padding:28px 32px 56px;display:flex;flex-direction:column;gap:16px}
+.intro{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.intro h1{font-size:28px;line-height:34px;font-weight:700;color:var(--p-ink);letter-spacing:-.2px}
+.intro p{font-size:15px;line-height:22px;color:var(--p-muted);max-width:760px;margin-top:6px}
+.intro .by{font-size:13px;color:var(--p-muted)}
+.intro .by a{color:var(--p-ink)}
+.mnote{display:none;background:#fff;border-radius:14px;padding:14px 16px;gap:12px;align-items:flex-start;box-shadow:0 1px 2px rgba(16,24,40,.06)}
+.mnote b{display:block;color:var(--p-ink);font-size:15px;margin-bottom:2px}
+.mnote p{font-size:13.5px;line-height:19px;color:var(--p-muted)}
+.mnote button{margin-top:10px;padding:8px 12px;border-radius:10px;border:1px solid var(--p-line);font-size:13.5px;font-weight:500;color:var(--p-ink)}
+.mnote .mic{flex:none;width:36px;height:36px;border-radius:10px;background:var(--p-bg);display:grid;place-items:center}
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 1px 2px rgba(16,24,40,.06)}
+.bar .lbl{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--p-muted);font-weight:700;margin:0 2px 0 6px}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg button{padding:7px 12px;border-radius:9px;border:1px solid var(--p-line);font-size:13.5px;color:var(--p-ink);transition:background .15s,border-color .15s}
+.seg button:hover{background:var(--p-bg)}
+.seg button[aria-pressed="true"]{background:var(--p-ink);border-color:var(--p-ink);color:#fff}
+.bar .sp{flex:1}
+.bar select{padding:7px 10px;border-radius:9px;border:1px solid var(--p-line);font-size:13.5px;color:var(--p-ink);background:#fff}
+.tg{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--p-ink)}
+.switch{width:36px;height:22px;border-radius:11px;background:#C9D3D9;position:relative;transition:background .2s}
+.switch::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .2s var(--ease-out)}
+.switch[aria-checked="true"]{background:var(--p-ink)}
+.switch[aria-checked="true"]::after{transform:translateX(14px)}
+.restart{padding:7px 12px;border-radius:9px;border:1px solid var(--p-line);font-size:13.5px;color:var(--p-ink);font-weight:500}
+.restart:hover{background:var(--p-bg)}
+.stage{width:100%}
+.browser{width:1440px;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 24px 60px rgba(16,24,40,.16),0 2px 6px rgba(16,24,40,.08)}
+.chrome{height:44px;background:#E9ECEF;display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid #DADFE3}
+.dots{display:flex;gap:7px}.dots i{width:12px;height:12px;border-radius:50%;background:#C9CFD4}
+.addr{flex:1;max-width:560px;margin:0 auto;height:28px;border-radius:8px;background:#fff;display:flex;align-items:center;gap:8px;padding:0 12px;font-family:var(--font);font-size:13px;color:#5B6573}
+.addr .ic{width:14px;height:14px}
+.chrome .tag{font-family:var(--font);font-size:12px;color:#5B6573;background:#fff;border-radius:6px;padding:4px 8px}
+.vp{position:relative;width:1440px;overflow:hidden;background:var(--color-bg-surface)}
+.scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scroll-behavior:auto}
+.notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.panel{background:#fff;border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(16,24,40,.06)}
+.panel h2{font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--p-muted);font-weight:700;margin-bottom:12px}
+.panel ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.panel li{font-size:13.5px;line-height:20px;color:var(--p-body);padding-left:14px;position:relative}
+.panel li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:#AEB8C0}
+.panel li b{color:var(--p-ink);font-weight:500}
+.panel p{font-size:13.5px;line-height:20px}
+.links{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.links a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--p-line);font-size:14px;font-weight:500;color:var(--p-ink);text-decoration:none}
+.links a:hover{background:var(--p-bg)}
+.links a span{font-weight:400;color:var(--p-muted);font-size:12.5px}
+@media (max-width:1100px){.notes{grid-template-columns:1fr 1fr}}
+@media (max-width:820px){
+  .page{padding:16px 12px 40px;gap:12px}
+  .intro h1{font-size:22px;line-height:28px}
+  .intro p{font-size:14px;line-height:20px}
+  .mnote{display:flex}
+  .bar .lbl{display:none}
+  .notes{grid-template-columns:1fr}
+}
+/* record / embed mode: only the browser window */
+body.rec{overflow:hidden;background:#E4E8EB}
+body.rec .intro,body.rec .bar,body.rec .notes,body.rec .mnote{display:none}
+body.rec .page{min-height:100vh;min-height:100dvh;justify-content:center;align-items:center;padding:12px;max-width:none}
+body.rec .stage{display:flex;justify-content:center}
+
+/* tap ripples */
+.tap{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(17,24,39,.18);border:2px solid rgba(17,24,39,.35);pointer-events:none;z-index:90;animation:tap .55s var(--ease-out) forwards}
+@keyframes tap{from{transform:scale(.4);opacity:1}to{transform:scale(1.25);opacity:0}}
+
+/* ============ Icons: Figma SVGs used as masks, coloured by currentColor ============ */
+.ic{display:inline-block;flex:none;width:20px;height:20px;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat}
+.ic.s16{width:16px;height:16px}
+
+/* ============ The ESP+ storefront (1440 design) ============ */
+.app{font-family:var(--font);color:var(--color-text-primary);font-size:14px;line-height:20px;min-height:100%;background:var(--color-bg-surface)}
+.app.canvas{background:var(--color-bg-canvas)}
+.app h1,.app h2,.app h3{font-weight:600}
+.t-display{font-size:32px;line-height:40px;font-weight:700;letter-spacing:-.5px}
+.t-h1{font-size:24px;line-height:32px;font-weight:600;letter-spacing:-.3px}
+.t-h2{font-size:20px;line-height:28px;font-weight:600;letter-spacing:-.2px}
+.t-h3{font-size:16px;line-height:24px;font-weight:600}
+.t-lg{font-size:16px;line-height:24px}
+.t-med{font-weight:500}
+.t-semi{font-weight:600}
+.t-cap{font-size:12px;line-height:16px}
+.c2{color:var(--color-text-secondary)} .c3{color:var(--color-text-tertiary)} .cb{color:var(--color-brand-text)} .cd{color:var(--color-status-danger-fg)}
+.screen{animation:scrIn .32s var(--ease-out)}
+@keyframes scrIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* countdown + store header */
+.countdown{background:var(--color-text-primary);color:var(--color-text-inverse);display:flex;justify-content:center;align-items:center;gap:var(--space-8);padding:var(--space-8);font-size:12px;line-height:16px;font-weight:500}
+.shead{display:flex;align-items:center;gap:var(--space-24);padding:var(--space-16) var(--space-64);border-bottom:1px solid var(--color-border-default);background:var(--color-bg-surface);position:sticky;top:0;z-index:20}
+.shead .logo{width:40px;height:40px;border-radius:var(--radius-md);object-fit:cover}
+.shead .home{display:flex;align-items:center;gap:var(--space-24);flex:1;text-align:left}
+.shead .home b{font-size:16px;line-height:24px;font-weight:600}
+.shead .nav{font-size:14px;line-height:20px;font-weight:500;color:var(--color-text-secondary);padding:6px 0;border-bottom:2px solid transparent}
+.shead .nav:hover{color:var(--color-text-primary)}
+.cartbtn{display:flex;align-items:center;gap:var(--space-8);padding:var(--space-8) var(--space-12);border:1px solid var(--color-border-strong);border-radius:var(--radius-md);font-weight:500;background:var(--color-bg-surface);transition:background .15s}
+.cartbtn:hover{background:var(--color-bg-subtle)}
+.cartbtn .n{display:inline-block;min-width:8px}
+.cartbtn.bump{animation:bump .45s var(--ease-out)}
+@keyframes bump{30%{transform:scale(1.08)}}
+
+/* buttons (Cosmos Button: Primary / Secondary / Ghost, M 40 / S 32) */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-8);height:40px;padding:0 var(--space-16);border-radius:var(--radius-md);font-size:14px;line-height:20px;font-weight:600;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+.btn.s{height:32px;padding:0 var(--space-12)}
+.btn.pri{background:var(--color-brand-primary);color:var(--color-text-inverse)}
+.btn.pri:hover{background:var(--color-brand-primary-hover)}
+.btn.sec{background:var(--color-bg-surface);border:1px solid var(--color-border-strong);color:var(--color-text-primary)}
+.btn.sec:hover{background:var(--color-bg-subtle)}
+.btn.gho{color:var(--color-brand-text)}
+.btn.gho:hover{background:var(--color-brand-subtle)}
+.btn.wide{width:100%}
+.btn[disabled]{opacity:1;background:var(--color-bg-subtle);color:var(--color-text-tertiary);cursor:default}
+.btn.loading{pointer-events:none}
+.spin{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+:focus-visible{outline:2px solid var(--color-brand-primary);outline-offset:2px}
+.link{color:var(--color-brand-text);font-weight:500}
+.link:hover{text-decoration:underline}
+
+/* badge, chip, tag */
+.badge{display:inline-flex;align-items:center;gap:var(--space-4);padding:var(--space-4) var(--space-8);border-radius:var(--radius-full);font-size:12px;line-height:16px;font-weight:500}
+.badge.ok{background:var(--color-status-success-bg);color:var(--color-status-success-fg)}
+.chip{display:inline-flex;align-items:center;gap:var(--space-4);height:32px;padding:0 var(--space-12);border-radius:var(--radius-full);border:1px solid var(--color-border-strong);background:var(--color-bg-surface);font-weight:500;color:var(--color-text-primary);transition:background .15s,border-color .15s}
+.chip:hover{background:var(--color-bg-subtle)}
+.chip[aria-pressed="true"],.chip[aria-checked="true"]{background:var(--color-brand-subtle);border-color:var(--color-brand-primary);color:var(--color-brand-text)}
+.chip .ic{display:none}
+.chip[aria-pressed="true"] .ic,.chip[aria-checked="true"] .ic{display:inline-block}
+.chips{display:flex;gap:var(--space-8);flex-wrap:wrap}
+.chips.err .chip:not([aria-checked="true"]){border-color:var(--color-status-danger-fg)}
+.ctag{display:inline-flex;align-items:center;gap:var(--space-4);padding:var(--space-4) var(--space-8);border-radius:var(--radius-full);background:var(--color-brand-subtle);color:var(--color-brand-text);font-size:12px;line-height:16px;font-weight:500;white-space:nowrap}
+
+/* progress bar */
+.pbar{height:8px;border-radius:999px;background:var(--color-bg-subtle);overflow:hidden;position:relative}
+.pbar i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--color-brand-primary);transition:width 1.2s var(--ease-out)}
+
+/* cards */
+.card{background:var(--color-bg-surface);border:1px solid var(--color-border-default);border-radius:var(--radius-lg);box-shadow:var(--elevation-card);padding:var(--space-24)}
+.stack{display:flex;flex-direction:column}
+.row{display:flex;align-items:center}
+.g4{gap:var(--space-4)}.g8{gap:var(--space-8)}.g12{gap:var(--space-12)}.g16{gap:var(--space-16)}.g24{gap:var(--space-24)}.g32{gap:var(--space-32)}.g48{gap:var(--space-48)}
+.f1{flex:1;min-width:0}
+.divider{height:1px;background:var(--color-border-default);width:100%}
+
+/* hero */
+.hero{background:var(--color-bg-canvas);display:flex;gap:var(--space-48);padding:var(--space-48) var(--space-64)}
+.hero .copy{width:560px;display:flex;flex-direction:column;gap:var(--space-24);align-items:flex-start}
+.hero .himg{flex:1;height:456px;border-radius:var(--radius-xl);object-fit:cover;min-width:0}
+.goal{width:100%;display:flex;flex-direction:column;gap:var(--space-12)}
+.goal .amt{display:flex;align-items:flex-end;gap:var(--space-8)}
+.goal .amt b{font-size:24px;line-height:32px;font-weight:600;letter-spacing:-.3px;color:var(--color-brand-text);font-variant-numeric:tabular-nums}
+.goal .meta{display:flex;gap:var(--space-24);color:var(--color-text-secondary)}
+.goal .meta span{display:flex;align-items:center;gap:var(--space-8)}
+.goal .meta .ic{color:var(--color-text-tertiary)}
+
+/* products */
+.products{padding:var(--space-48) var(--space-64) var(--space-64);display:flex;flex-direction:column;gap:var(--space-24)}
+.sortw{position:relative}
+.sortbtn{display:flex;align-items:center;gap:var(--space-4);font-weight:500;color:var(--color-text-secondary)}
+.menu{position:absolute;right:0;top:28px;background:var(--color-bg-surface);border:1px solid var(--color-border-default);border-radius:var(--radius-md);box-shadow:var(--elevation-overlay);padding:var(--space-4);min-width:200px;z-index:30;animation:pop .16s var(--ease-out)}
+.menu button{display:flex;width:100%;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:6px;text-align:left}
+.menu button:hover{background:var(--color-bg-subtle)}
+@keyframes pop{from{opacity:0;transform:translateY(-4px)}}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-24)}
+.pcard{display:flex;flex-direction:column;gap:var(--space-12);align-items:flex-start;text-align:left;border-radius:var(--radius-lg)}
+.pcard .pimg{width:100%;height:296px;border-radius:var(--radius-lg);background:var(--color-bg-surface);display:grid;place-items:center;overflow:hidden;transition:background .2s}
+.pcard .pimg img{max-width:100%;max-height:100%;object-fit:contain;transition:transform .35s var(--ease-out)}
+.pcard:hover .pimg{background:var(--color-bg-canvas)}
+.pcard:hover .pimg img{transform:scale(1.03)}
+.pcard .nm{font-weight:600}
+.empty{grid-column:1/-1;border:1px dashed var(--color-border-strong);border-radius:var(--radius-lg);padding:var(--space-48);text-align:center;color:var(--color-text-secondary)}
+
+/* product page */
+.ppage{padding:var(--space-24) var(--space-64) var(--space-64);display:flex;flex-direction:column;gap:var(--space-24)}
+.back{display:inline-flex;align-items:center;gap:var(--space-8);color:var(--color-brand-text);font-weight:500;align-self:flex-start}
+.back:hover{text-decoration:underline}
+.gallery{display:flex;gap:var(--space-16);flex:1;min-width:0}
+.thumbs{display:flex;flex-direction:column;gap:var(--space-8)}
+.thumb{width:72px;height:72px;border-radius:var(--radius-md);border:1px solid var(--color-border-default);overflow:hidden;background:#fff}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb.on{border:2px solid var(--color-brand-primary)}
+button.thumb:hover{border-color:var(--color-border-strong)}
+.mainimg{flex:1;height:600px;border-radius:var(--radius-xl);display:grid;place-items:center;overflow:hidden;position:relative}
+.mainimg img{max-width:100%;max-height:100%;object-fit:contain;transition:opacity .25s}
+.config{width:560px;display:flex;flex-direction:column;gap:var(--space-24)}
+.swatches{display:flex;gap:var(--space-8)}
+.sw{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;position:relative}
+.sw::before{content:"";position:absolute;inset:1px;border-radius:50%;border:2px solid transparent;transition:border-color .15s}
+.sw[aria-checked="true"]::before{border-color:var(--color-brand-primary)}
+.sw:hover::before{border-color:var(--color-border-strong)}
+.sw[aria-checked="true"]:hover::before{border-color:var(--color-brand-primary)}
+.sw i{width:31px;height:31px;border-radius:50%;border:1px solid var(--color-border-strong);display:block}
+.stepper{display:flex;border:1px solid var(--color-border-strong);border-radius:var(--radius-md);overflow:hidden}
+.stepper button,.stepper span{width:40px;height:40px;display:grid;place-items:center;color:var(--color-text-secondary)}
+.stepper span{font-weight:600;color:var(--color-text-primary);font-variant-numeric:tabular-nums}
+.stepper button:hover{background:var(--color-bg-subtle)}
+.stepper button[disabled]{color:var(--color-border-strong);cursor:default;background:none}
+.stepper.s button,.stepper.s span{width:32px;height:32px}
+.summ{background:var(--color-bg-canvas);border-radius:var(--radius-lg);padding:var(--space-16);display:flex;flex-direction:column;gap:var(--space-8)}
+.line{display:flex;gap:var(--space-8);align-items:center}
+.line>span:first-child{flex:1;color:var(--color-text-secondary)}
+.line .v{font-variant-numeric:tabular-nums;white-space:nowrap}
+.line.tot{font-weight:600}
+.line.tot>span:first-child{color:var(--color-text-primary)}
+.flash{animation:flash .6s var(--ease-out)}
+@keyframes flash{0%{background:var(--color-brand-subtle)}100%{background:transparent}}
+
+/* inputs (Cosmos Input) */
+.field{display:flex;flex-direction:column;gap:var(--space-8);flex:1;min-width:0}
+.field label{font-weight:500}
+.ctl{height:40px;width:100%;border:1px solid var(--color-border-strong);border-radius:var(--radius-md);background:var(--color-bg-surface);padding:0 var(--space-12);font-size:14px;line-height:20px;color:var(--color-text-primary);transition:border-color .15s,box-shadow .15s;font-family:var(--font)}
+.ctl::placeholder{color:var(--color-text-tertiary)}
+.ctl:focus{outline:none;border-color:var(--color-brand-primary);box-shadow:0 0 0 3px var(--color-brand-subtle)}
+select.ctl{appearance:none;-webkit-appearance:none;padding-right:40px;background:var(--color-bg-surface) url("img/i/chevron-down.svg") right 12px center/20px no-repeat;cursor:pointer}
+select.ctl[disabled]{cursor:default}
+.field.bad .ctl{border:2px solid var(--color-status-danger-fg);padding:0 11px}
+.field.bad .ctl:focus{box-shadow:0 0 0 3px var(--color-status-danger-bg)}
+.help{font-size:12px;line-height:16px;color:var(--color-text-secondary);display:flex;gap:var(--space-4);align-items:center}
+.help.bad{color:var(--color-status-danger-fg)}
+.frow{display:flex;gap:var(--space-16);align-items:flex-start;width:100%}
+.check{display:flex;align-items:center;gap:var(--space-12);cursor:pointer;user-select:none}
+.box{width:20px;height:20px;border-radius:var(--radius-sm);border:1px solid var(--color-border-strong);display:grid;place-items:center;background:var(--color-bg-surface);color:#fff;flex:none}
+.box.on{background:var(--color-brand-primary);border-color:var(--color-brand-primary)}
+.box .ic{display:none}.box.on .ic{display:block}
+
+/* checkout */
+.checkout{padding:var(--space-32) var(--space-64) var(--space-64);display:flex;flex-direction:column;gap:var(--space-32)}
+.steps{display:flex;align-items:center;gap:var(--space-16)}
+.step{display:flex;align-items:center;gap:var(--space-8);font-weight:600;color:var(--color-text-tertiary);white-space:nowrap}
+.step .dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--color-border-strong);font-size:12px;line-height:16px;font-weight:500;color:var(--color-text-secondary)}
+.step.done{color:var(--color-text-primary);font-weight:500}
+.step.done .dot{background:var(--color-brand-primary);border-color:var(--color-brand-primary);color:#fff}
+.step.cur{color:var(--color-text-primary)}
+.step.cur .dot{background:var(--color-brand-primary);border-color:var(--color-brand-primary);color:#fff}
+button.step:hover{text-decoration:underline}
+.conn{flex:1;height:2px;background:var(--color-border-default)}
+.conn.on{background:var(--color-brand-primary)}
+.cols{display:flex;gap:var(--space-32);align-items:flex-start}
+.forms{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-24)}
+.aside{width:416px;display:flex;flex-direction:column;gap:var(--space-16);position:sticky;top:96px}
+.item{display:flex;gap:var(--space-12);align-items:flex-start}
+.item img{width:64px;height:64px;border-radius:var(--radius-md);object-fit:cover;flex:none;background:#fff}
+.contrib{background:var(--color-brand-subtle);color:var(--color-brand-text);border-radius:var(--radius-md);padding:var(--space-12);display:flex;gap:var(--space-8);align-items:flex-start;font-weight:500}
+.alert{border-radius:var(--radius-md);padding:var(--space-12) var(--space-16);display:flex;gap:var(--space-12);align-items:flex-start}
+.alert.danger{background:var(--color-status-danger-bg);color:var(--color-status-danger-fg)}
+.alert.info{align-items:center;background:var(--color-status-neutral-bg);color:var(--color-text-primary)}
+.alert.info .ic{color:var(--color-text-secondary)}
+.alert b{display:block;font-weight:600}
+.alert p{color:var(--color-text-primary)}
+.alert.shake{animation:shake .45s var(--ease-out)}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+.rv{display:flex;gap:var(--space-16);align-items:flex-start}
+.rv .ic{color:var(--color-text-tertiary);margin-top:2px}
+
+/* thank you */
+.thanks{max-width:760px;margin:0 auto;padding:var(--space-48) 0 var(--space-80);display:flex;flex-direction:column;gap:var(--space-24)}
+.okmark{width:56px;height:56px;border-radius:50%;background:var(--color-status-success-bg);color:var(--color-status-success-fg);display:grid;place-items:center;animation:okIn .5s var(--ease-out)}
+.okmark .ic{width:28px;height:28px}
+@keyframes okIn{from{transform:scale(.6);opacity:0}}
+.plus{animation:plusIn .5s .6s var(--ease-out) both}
+@keyframes plusIn{from{opacity:0;transform:translateY(6px)}}
+.tl{display:flex;flex-direction:column}
+.tl .st{display:flex;gap:var(--space-16);padding-bottom:var(--space-16);position:relative}
+.tl .st:not(:last-child)::after{content:"";position:absolute;left:11px;top:28px;bottom:4px;width:2px;background:var(--color-border-default)}
+.tl .st .dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--color-border-strong);background:#fff;flex:none}
+.tl .st.on .dot{border-color:var(--color-brand-primary);background:var(--color-brand-primary);box-shadow:inset 0 0 0 4px #fff}
+
+/* overlays: drawer, modal, toast */
+.scrim{position:absolute;inset:0;background:var(--color-bg-overlay);z-index:60;animation:fadeIn .2s var(--ease-out)}
+.scrim.out{animation:fadeOut .18s var(--ease-in) forwards}
+@keyframes fadeIn{from{opacity:0}} @keyframes fadeOut{to{opacity:0}}
+.drawer{position:absolute;top:0;right:0;bottom:0;width:440px;background:var(--color-bg-surface);z-index:61;display:flex;flex-direction:column;box-shadow:var(--elevation-overlay);animation:drIn .3s var(--ease-out);font-family:var(--font);color:var(--color-text-primary);font-size:14px;line-height:20px}
+.drawer.out{animation:drOut .2s var(--ease-in) forwards}
+@keyframes drIn{from{transform:translateX(100%)}} @keyframes drOut{to{transform:translateX(100%)}}
+.dhead{display:flex;align-items:center;gap:var(--space-12);padding:var(--space-24);border-bottom:1px solid var(--color-border-default)}
+.ibtn{width:40px;height:40px;border-radius:var(--radius-md);display:grid;place-items:center;color:var(--color-text-secondary)}
+.ibtn:hover{background:var(--color-bg-subtle);color:var(--color-text-primary)}
+.dbody{flex:1;overflow:auto;padding:var(--space-24);display:flex;flex-direction:column;gap:var(--space-16)}
+.dfoot{padding:var(--space-24);border-top:1px solid var(--color-border-default);display:flex;flex-direction:column;gap:var(--space-12)}
+.citem{display:flex;gap:var(--space-12);padding-bottom:var(--space-16);border-bottom:1px solid var(--color-border-default)}
+.citem.new{animation:flash 1.2s var(--ease-out)}
+.citem img{width:72px;height:72px;border-radius:var(--radius-md);object-fit:cover;flex:none;border:1px solid var(--color-border-default)}
+.rm{display:inline-flex;align-items:center;gap:var(--space-4);color:var(--color-text-secondary);font-weight:500;font-size:12px;line-height:16px;padding:4px;margin:-4px;border-radius:6px}
+.rm:hover{color:var(--color-status-danger-fg);background:var(--color-status-danger-bg)}
+.modal{position:absolute;left:50%;top:120px;width:560px;margin-left:-280px;background:var(--color-bg-surface);border-radius:var(--radius-lg);z-index:61;box-shadow:var(--elevation-overlay);animation:mIn .26s var(--ease-out);font-family:var(--font);color:var(--color-text-primary);font-size:14px;line-height:20px}
+.modal.out{animation:mOut .16s var(--ease-in) forwards}
+@keyframes mIn{from{opacity:0;transform:translateY(12px) scale(.98)}} @keyframes mOut{to{opacity:0;transform:translateY(8px)}}
+.mhead{display:flex;align-items:flex-start;gap:var(--space-12);padding:var(--space-24) var(--space-24) var(--space-16)}
+.mbody{padding:0 var(--space-24) var(--space-24);display:flex;flex-direction:column;gap:var(--space-16)}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th,.tbl td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--color-border-default)}
+.tbl th{font-weight:500;color:var(--color-text-secondary);background:var(--color-bg-canvas)}
+.toast{position:absolute;left:50%;bottom:32px;transform:translateX(-50%);z-index:80;background:var(--color-text-primary);color:#fff;border-radius:var(--radius-md);padding:var(--space-12) var(--space-16);display:flex;align-items:center;gap:var(--space-12);box-shadow:var(--elevation-overlay);font-family:var(--font);font-size:14px;line-height:20px;font-weight:500;animation:tIn .28s var(--ease-out);white-space:nowrap}
+.toast.out{animation:tOut .2s var(--ease-in) forwards}
+.toast button{color:#9FE3C6;font-weight:600}
+.toast .ic{color:#9FE3C6}
+@keyframes tIn{from{opacity:0;transform:translate(-50%,10px)}} @keyframes tOut{to{opacity:0;transform:translate(-50%,6px)}}
+.still{animation:none!important}
+.loadwrap{position:absolute;inset:0;background:rgba(255,255,255,.6);z-index:55;display:grid;place-items:center;animation:fadeIn .2s}
+@media (prefers-reduced-motion:reduce){.screen,.drawer,.modal,.toast,.scrim,.okmark,.plus{animation-duration:.01s!important}.pbar i{transition:none}}
+</style>
+</head>
+<body>
+<script>if(/[?&]rec\b/.test(location.search))document.body.classList.add('rec');</script>
+<div class="page">
+  <header class="intro">
+    <div>
+      <h1>ESP+ Stores · Fundraising storefront</h1>
+      <p>A clickable prototype of the buyer flow: a parent or student lands on a school fundraising store, picks a product, and checks out. Every step shows how much goes to the cause. Built from the Cosmos tokens and components in the case’s Figma file.</p>
+    </div>
+    <div class="by">By <a href="https://illiavostrikov.com">Illia Vostrikov</a> · sample data, no real payments</div>
+  </header>
+
+  <div class="mnote" id="mnote" role="note">
+    <span class="mic"><i class="ic" style="--i:url(img/i/info.svg);color:#5B6B78"></i></span>
+    <div>
+      <b>This prototype is built for a desktop screen</b>
+      <p>ESP+ stores are designed at 1440 px. On a phone you see the same page scaled down, so it works, but it’s small. Open it on a computer for the real feel.</p>
+      <button id="copyLink">Copy link to open later</button>
+    </div>
+  </div>
+
+  <div class="bar" role="toolbar" aria-label="Prototype controls">
+    <span class="lbl">Scenario</span>
+    <div class="seg" id="scen">
+      <button data-s="happy" aria-pressed="true">Happy path</button>
+      <button data-s="mistakes" aria-pressed="false">Mistakes and fixes</button>
+      <button data-s="blank" aria-pressed="false">Fill it in yourself</button>
+    </div>
+    <span class="sp"></span>
+    <label class="tg" for="jump">Jump to
+      <select id="jump" aria-label="Jump to screen">
+        <option value="">Choose a screen</option>
+        <option value="store">1 · Storefront</option>
+        <option value="product">2 · Product</option>
+        <option value="cart">3 · Cart</option>
+        <option value="shipping">4 · Checkout · Shipping</option>
+        <option value="payment">5 · Checkout · Payment</option>
+        <option value="review">6 · Checkout · Review</option>
+        <option value="thanks">7 · Order confirmed</option>
+      </select>
+    </label>
+    <span class="tg">Show taps <button class="switch" id="taps" role="switch" aria-checked="true" aria-label="Show taps"></button></span>
+    <button class="restart" id="restart">Restart</button>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="browser" id="browser">
+      <div class="chrome" aria-hidden="true">
+        <div class="dots"><i></i><i></i><i></i></div>
+        <div class="addr"><i class="ic s16" style="--i:url(img/i/lock-16.svg)"></i><span id="url">ballstate-spiritwear.espstores.sample</span></div>
+        <span class="tag">Prototype · 1440 px</span>
+      </div>
+      <div class="vp" id="vp">
+        <div class="scroll" id="scroll"><div id="app"></div></div>
+        <div id="layer"></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="notes">
+    <div class="panel">
+      <h2>Things to try</h2>
+      <ul>
+        <li><b>Pick a colour</b> on the sweatshirt: the photo, thumbnails and summary follow.</li>
+        <li><b>Type a name on back</b> or choose 2XL: the price summary and the amount for the fund update as you go.</li>
+        <li><b>Add to cart without a size</b> (Mistakes and fixes): the error says what to do.</li>
+        <li><b>Remove an item</b> in the cart, then undo it from the toast.</li>
+        <li><b>Leave a 4-digit ZIP</b> and continue: inline validation explains the fix.</li>
+        <li><b>Place the order with card 4000 0000 0000 0002</b>: a declined payment, and nothing is lost.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h2>Design decisions</h2>
+      <ul>
+        <li><b>The cause sits next to the products.</b> Raised amount, supporters and days left are above the fold, and the countdown bar makes the close date hard to miss.</li>
+        <li><b>The contribution is visible at every step:</b> product card, price summary, cart, checkout and confirmation, so the cause stays part of every decision.</li>
+        <li><b>No surprises at checkout.</b> The price summary updates as you choose, and the order summary stays on screen through all four steps.</li>
+        <li><b>Errors say how to fix them,</b> with an icon and words, never colour alone. Selected chips get a check, not only a colour.</li>
+        <li><b>One primary action per screen.</b> Back and edit are quiet ghost buttons.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h2>How it’s built</h2>
+      <p>Screens 1, 2 and 4 follow the Figma frames 05–07. The cart, payment, review and confirmation were designed straight in code from the same Cosmos components: Button, Chip, Input, Control, Badge, Progress bar and Toast. Colours, spacing and radii are the Figma variables, as CSS custom properties.</p>
+      <div class="links">
+        <a href="https://www.figma.com/design/FLDCyAUtIbh0WanNuO8EKZ/Illia-Vostrikov-%C2%B7-Web-cases--ASI-Central--Studytube-?node-id=1-3" target="_blank" rel="noopener">Figma file · Flows <span>opens Figma ↗</span></a>
+        <a href="/work/asi-esp/">Read the ASI Central case <span>illiavostrikov.com</span></a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* =====================================================================
+   ESP+ fundraising storefront · prototype
+   One state object, one render(). Event delegation via data-act.
+   ===================================================================== */
+const $ = (s, r=document) => r.querySelector(s);
+const app = $('#app'), layer = $('#layer'), scroller = $('#scroll'), vp = $('#vp');
+const Q = new URLSearchParams(location.search);
+const ic = (name, cls='') => `<i class="ic ${cls}" style="--i:url(img/i/${name}.svg)" aria-hidden="true"></i>`;
+const money = n => '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const whole = n => '$' + Math.round(n).toLocaleString('en-US');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function ptrack(name, params={}){ try{ if(typeof window.track==='function') window.track(name, Object.assign({proto:'asi-store', scenario:S.scenario}, params)); }catch(e){} }
+
+/* ---------- catalogue (sample data) ---------- */
+const COLOURS = {
+  white:{label:'White', hex:'#FFFFFF'}, scarlet:{label:'Scarlet', hex:'#C70F2E'}, charcoal:{label:'Charcoal', hex:'#40454D'},
+  green:{label:'Dark green', hex:'#1A4D33'}, navy:{label:'Navy', hex:'#12264D'}, heather:{label:'Heather grey', hex:'#B9BCC1'}
+};
+const SIZES = ['S','M','L','XL','2XL'];
+const P = {
+  sweat:{name:'Powerblend Crewneck Sweatshirt', short:'Sweatshirt', brand:'Champion · CPN-16224122', base:26.26, up:3.66, cat:'hoodies',
+    colours:['white','scarlet','charcoal','green','navy'], img:c=>`img/sweat-${c}.webp`, thumbs:c=>[`img/th1-${c}.webp`,`img/th2-${c}.webp`,`img/th3-${c}.webp`,'img/th4.webp']},
+  tee:{name:'Adult Softspun Tee', short:'Tee', brand:'Softspun · Unisex fit', base:20.00, up:2.00, cat:'tees',
+    colours:['scarlet','heather'], img:c=>`img/tee-${c}.webp`, thumbs:c=>[`img/tee-${c}.webp`]},
+  hoodie:{name:'Spirit Wear Hoodie', short:'Hoodie', brand:'Champion · Spirit Wear', base:38.00, up:4.00, cat:'hoodies',
+    colours:['scarlet','charcoal','navy','white'], img:c=>`img/sweat-${c}.webp`, thumbs:c=>[`img/th1-${c}.webp`,`img/th2-${c}.webp`,`img/th3-${c}.webp`]}
+};
+const CARDS = [
+  {id:'tee', colour:'scarlet', title:'Adult Softspun Tee', pop:1},
+  {id:'sweat', colour:'white', title:'Powerblend Crewneck Sweatshirt', pop:2},
+  {id:'tee', colour:'heather', title:'Softspun Tee · Heather Grey', pop:3},
+  {id:'hoodie', colour:'scarlet', title:'Spirit Wear Hoodie', pop:4}
+];
+const CATS = [['all','All · 24'],['tees','T-shirts · 8'],['hoodies','Hoodies & sweatshirts · 6'],['hats','Hats · 4'],['acc','Accessories · 6']];
+const FEE_NAME = 4, PER_ITEM = 5, SHIP = 8, TAX = 0.07, GOAL = 250000;
+const unit = (id,size) => P[id].base + (size==='2XL' ? P[id].up : 0);
+const lineTotal = l => (unit(l.id,l.size) + (l.name ? FEE_NAME : 0)) * l.qty;
+const variantText = l => [COLOURS[l.colour].label, l.size, l.name ? `“${l.name}”` : ''].filter(Boolean).join(' · ');
+const thumbOf = l => l.id==='tee' ? P.tee.img(l.colour) : `img/th1-${l.colour}.webp`;
+
+/* ---------- state ---------- */
+const SEEDS = {
+  happy:{ prod:{size:'L', name:'RUIZ 23', qty:2},
+    form:{first:'Ana', last:'Ruiz', email:'ana.ruiz@bsu.edu', phone:'', addr1:'1800 W Riverside Ave', addr2:'Apt 4B', city:'Muncie', state:'Indiana', zip:'47306', country:'United States', billSame:true},
+    pay:{num:'4242 4242 4242 4242', exp:'08 / 28', cvc:'123', holder:'Ana Ruiz'} },
+  mistakes:{ prod:{size:'', name:'RUIZ 23', qty:2},
+    form:{first:'Ana', last:'Ruiz', email:'ana.ruiz@bsu.edu', phone:'', addr1:'1800 W Riverside Ave', addr2:'Apt 4B', city:'Muncie', state:'Indiana', zip:'4730', country:'United States', billSame:true},
+    pay:{num:'4000 0000 0000 0002', exp:'08 / 28', cvc:'123', holder:'Ana Ruiz'} },
+  blank:{ prod:{size:'', name:'', qty:1},
+    form:{first:'', last:'', email:'', phone:'', addr1:'', addr2:'', city:'', state:'Indiana', zip:'', country:'United States', billSame:true},
+    pay:{num:'', exp:'', cvc:'', holder:''} }
+};
+const TEE_IN_CART = {key:'tee|scarlet|M|', id:'tee', colour:'scarlet', size:'M', name:'', qty:1};
+let S;
+function fresh(scenario){
+  const sd = SEEDS[scenario];
+  return { scenario, screen:'store', cat:'all', sort:'pop', sortOpen:false,
+    prod:{id:'sweat', colour:'white', size:sd.prod.size, name:sd.prod.name, qty:sd.prod.qty, err:false},
+    cart:[Object.assign({}, TEE_IN_CART)], justAdded:null,
+    form:Object.assign({}, sd.form), touched:{}, shipTried:false,
+    pay:Object.assign({}, sd.pay), payTouched:{}, payTried:false, declined:false, declinedNum:'',
+    fund:{raised:25000, supporters:412}, lastGift:0, order:null, placing:false };
+}
+
+/* ---------- money for the current cart ---------- */
+function totals(){
+  const items = S.cart.reduce((a,l)=>a+lineTotal(l),0);
+  const qty = S.cart.reduce((a,l)=>a+l.qty,0);
+  const tax = Math.round(items*TAX*100)/100;
+  return {items, qty, tax, ship: S.cart.length ? SHIP : 0, total: items + tax + (S.cart.length ? SHIP : 0), give: qty*PER_ITEM};
+}
+
+/* ---------- validation ---------- */
+const isCA = () => S.form.country==='Canada';
+function shipErrors(){
+  const f=S.form, e={};
+  if(!f.first.trim()) e.first='Enter your first name';
+  if(!f.last.trim()) e.last='Enter your last name';
+  if(!f.email.trim()) e.email='Enter an email for the order confirmation';
+  else if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.email='Check the email: it should look like name@example.com';
+  if(!f.addr1.trim()) e.addr1='Enter a street address';
+  if(!f.city.trim()) e.city='Enter a city';
+  if(isCA()){ if(!/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(f.zip.trim())) e.zip='Enter a postal code like K1A 0B1'; }
+  else if(!/^\d{5}$/.test(f.zip.trim())) e.zip='Enter a 5-digit ZIP code';
+  return e;
+}
+const digits = s => s.replace(/\D/g,'');
+function brandOf(n){ const d=digits(n); return d[0]==='4'?'Visa':d[0]==='5'?'Mastercard':d[0]==='3'?'American Express':'Card'; }
+function payErrors(){
+  const p=S.pay, e={}, d=digits(p.num), need = d[0]==='3' ? 15 : 16;
+  if(!d) e.num='Enter the card number';
+  else if(d.length!==need) e.num=`The card number should have ${need} digits`;
+  else if(S.declined && d===S.declinedNum) e.num='This card was declined. Use another card';
+  const m=p.exp.match(/^(\d{2})\s*\/\s*(\d{2})$/);
+  if(!p.exp.trim()) e.exp='Enter the expiry date';
+  else if(!m || +m[1]<1 || +m[1]>12) e.exp='Use the format MM / YY';
+  else if(+m[2]<26 || (+m[2]===26 && +m[1]<11)) e.exp='This card has expired';
+  if(!/^\d{3,4}$/.test(p.cvc.trim())) e.cvc = p.cvc.trim() ? 'Use the 3 digits on the back' : 'Enter the security code';
+  if(!p.holder.trim()) e.holder='Enter the name as it appears on the card';
+  return e;
+}
+
+/* ---------- shared pieces ---------- */
+function storeHeader(){
+  const n = S.cart.reduce((a,l)=>a+l.qty,0);
+  return `<header class="shead">
+    <button class="home" data-act="home" aria-label="Ball State Spirit Wear, store home"><img class="logo" src="img/logo.webp" alt=""><b>Ball State Spirit Wear</b></button>
+    <button class="nav" data-act="shopall">Shop all</button>
+    <button class="nav" data-act="modal" data-m="fund">Fundraiser</button>
+    <button class="nav" data-act="modal" data-m="size">Size guide</button>
+    <button class="nav" data-act="modal" data-m="faq">FAQ</button>
+    <button class="cartbtn" id="cartbtn" data-act="cart" aria-label="Cart, ${n} items">${ic('cart')}<span>Cart · <span class="n">${n}</span></span></button>
+  </header>`;
+}
+function input(path, label, opts={}){
+  const [grp,key] = path.split('.'), val = S[grp][key];
+  const err = opts.err, id = 'f-'+key;
+  const help = err ? `<span class="help bad" id="${id}-h">${ic('x-circle-16','s16')}${esc(err)}</span>` : (opts.help ? `<span class="help" id="${id}-h">${esc(opts.help)}</span>` : '');
+  let ctl;
+  if(opts.options){
+    ctl = `<select class="ctl" id="${id}" data-f="${path}" ${help?`aria-describedby="${id}-h"`:''}>${opts.options.map(o=>`<option ${o===val?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+  } else {
+    ctl = `<input class="ctl" id="${id}" data-f="${path}" value="${esc(val)}" ${opts.ph?`placeholder="${esc(opts.ph)}"`:''} ${opts.attrs||''} ${err?'aria-invalid="true"':''} ${help?`aria-describedby="${id}-h"`:''}>`;
+  }
+  return `<div class="field ${err?'bad':''}" ${opts.style?`style="${opts.style}"`:''}><label for="${id}">${esc(label)}</label>${ctl}${help}</div>`;
+}
+function goalCard(extra=''){
+  const pct = Math.max(0.6, S.fund.raised/GOAL*100);
+  return `<div class="card goal" style="padding:var(--space-24)">
+    <div class="amt"><b id="raised">${whole(S.fund.raised)}</b><span class="c2">raised of $250,000</span>${extra}</div>
+    <div class="pbar" role="progressbar" aria-label="Raised so far" aria-valuemin="0" aria-valuemax="${GOAL}" aria-valuenow="${S.fund.raised}"><i id="pfill" style="width:${pct}%"></i></div>
+    <div class="meta"><span>${ic('users','s16')}<span id="supp">${S.fund.supporters} supporters</span></span><span>${ic('clock-16','s16')}18 days left</span><span>${ic('heart-16','s16')}$5 per item</span></div>
+  </div>`;
+}
+
+/* ---------- screens ---------- */
+function vStore(){
+  let list = CARDS.filter(c => S.cat==='all' || P[c.id].cat===S.cat);
+  if(S.sort==='low') list = list.slice().sort((a,b)=>P[a.id].base-P[b.id].base);
+  if(S.sort==='high') list = list.slice().sort((a,b)=>P[b.id].base-P[a.id].base);
+  const sortLbl = {pop:'Popular', low:'Price: low to high', high:'Price: high to low'}[S.sort];
+  return `<div class="countdown">${ic('clock-16','s16')}This store closes in 18 days 6 hours. Orders ship together after Dec 15.</div>
+  ${storeHeader()}
+  <section class="hero">
+    <div class="copy">
+      <span class="badge ok">${ic('check-circle-16','s16')}Fundraiser</span>
+      <h1 class="t-display">Wear the cardinal. Help rebuild after Hurricane Milton.</h1>
+      <p class="t-lg c2">$5 from every item goes to the Hurricane Milton Relief Fund, run by the Ball State Foundation. Order by Dec 15, everything ships together.</p>
+      ${goalCard()}
+      <div class="row g12"><button class="btn pri" data-act="shopall">Shop the collection</button><button class="btn sec" data-act="modal" data-m="fund">About the fund</button></div>
+    </div>
+    <img class="himg" src="img/hero.webp" alt="Ball State spirit gear: a foam finger, a Go Rangers flag, sneakers and a gym bag">
+  </section>
+  <section class="products" id="products">
+    <div class="row g16"><h2 class="t-h1 f1">Shop the collection</h2>
+      <div class="sortw"><button class="sortbtn" data-act="sortmenu" aria-haspopup="menu" aria-expanded="${S.sortOpen}">Sort: ${sortLbl}${ic('chevron-down-16','s16')}</button>
+      ${S.sortOpen?`<div class="menu" role="menu">${[['pop','Popular'],['low','Price: low to high'],['high','Price: high to low']].map(([k,l])=>`<button role="menuitemradio" aria-checked="${S.sort===k}" data-act="sort" data-v="${k}">${l}${S.sort===k?ic('check-16','s16'):''}</button>`).join('')}</div>`:''}</div>
+    </div>
+    <div class="chips" role="group" aria-label="Categories">${CATS.map(([k,l])=>`<button class="chip" aria-pressed="${S.cat===k}" data-act="cat" data-v="${k}">${ic('check-16','s16')}${l}</button>`).join('')}</div>
+    <div class="grid">${list.length ? list.map(c=>`
+      <button class="pcard" data-act="open" data-id="${c.id}" data-c="${c.colour}">
+        <span class="pimg"><img src="${P[c.id].img(c.colour)}" alt="${esc(c.title)}, ${COLOURS[c.colour].label.toLowerCase()}"></span>
+        <span class="ctag">${ic('heart-16','s16')}$5 to the fund</span>
+        <span class="nm">${esc(c.title)}</span>
+        <span class="c2">From ${money(P[c.id].base)}</span>
+      </button>`).join('') : `<div class="empty"><p class="t-h3" style="color:var(--color-text-primary)">Not in this sample store</p><p style="margin-top:4px">The prototype carries 4 of the 24 products. Try T-shirts or Hoodies & sweatshirts.</p><button class="btn sec" style="margin-top:16px" data-act="cat" data-v="all">Show all products</button></div>`}
+    </div>
+  </section>`;
+}
+
+function vProduct(){
+  const pr = S.prod, p = P[pr.id];
+  const sizeTxt = pr.size || 'no size yet';
+  const u = unit(pr.id, pr.size||'L');
+  const items = u*pr.qty, nm = pr.name ? FEE_NAME*pr.qty : 0, total = items+nm;
+  const thumbs = p.thumbs(pr.colour);
+  return `${storeHeader()}
+  <div class="ppage">
+    <button class="back" data-act="home">${ic('arrow-left-16','s16')}All products</button>
+    <div class="row g48" style="align-items:flex-start">
+      <div class="gallery">
+        ${thumbs.length>1?`<div class="thumbs">${thumbs.map((t,i)=> i===3
+          ? `<button class="thumb" data-act="colour" data-v="green" aria-label="See it in dark green"><img src="${t}" alt=""></button>`
+          : `<div class="thumb ${i===0?'on':''}"><img src="${t}" alt=""></div>`).join('')}</div>`:''}
+        <div class="mainimg"><img id="mainimg" src="${p.img(pr.colour)}" alt="${esc(p.name)} in ${COLOURS[pr.colour].label.toLowerCase()}"></div>
+      </div>
+      <div class="config">
+        <div class="stack g8">
+          <span class="t-cap t-med c3">${esc(p.brand)}</span>
+          <h1 class="t-h1">${esc(p.name)}</h1>
+          <div class="row g12"><span class="t-h2">${money(p.base)} – ${money(p.base+p.up)}</span><span class="ctag">${ic('heart-16','s16')}$5 goes to the fund</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="stack g12">
+          <div class="row g4"><span class="t-med">Colour:</span><span class="c2">${COLOURS[pr.colour].label}</span></div>
+          <div class="swatches" role="radiogroup" aria-label="Colour">${p.colours.map(c=>`<button class="sw" role="radio" aria-checked="${pr.colour===c}" aria-label="${COLOURS[c].label}" data-act="colour" data-v="${c}"><i style="background:${COLOURS[c].hex}"></i></button>`).join('')}</div>
+        </div>
+        <div class="stack g12">
+          <div class="row g8 t-med"><span class="f1" id="sizeLbl">Size</span><button class="link" data-act="modal" data-m="size">Size guide</button></div>
+          <div class="chips ${pr.err?'err':''}" role="radiogroup" aria-labelledby="sizeLbl" ${pr.err?'aria-describedby="sizeErr"':''}>${SIZES.map(z=>`<button class="chip" role="radio" aria-checked="${pr.size===z}" data-act="size" data-v="${z}">${ic('check-16','s16')}${z}${z==='2XL'?` · +${money(p.up)}`:''}</button>`).join('')}</div>
+          ${pr.err?`<span class="help bad" id="sizeErr">${ic('x-circle-16','s16')}Choose a size to add this to your cart.</span>`:''}
+        </div>
+        <div class="frow">
+          ${input('prod.name','Name on back · optional',{help:`Up to 12 characters. Adds ${money(FEE_NAME)}.`, attrs:'maxlength="12" autocomplete="off" spellcheck="false"'})}
+          <div class="field"><label for="deco">Decoration</label><select class="ctl" id="deco" disabled><option>Screen print · 1 colour</option></select><span class="help">Set by the store.</span></div>
+        </div>
+        <div class="row g16"><span class="t-med f1" id="qtyLbl">Quantity</span>
+          <div class="stepper" role="group" aria-labelledby="qtyLbl"><button data-act="qty" data-v="-1" aria-label="One less" ${pr.qty<=1?'disabled':''}>${ic('minus')}</button><span aria-live="polite">${pr.qty}</span><button data-act="qty" data-v="1" aria-label="One more" ${pr.qty>=20?'disabled':''}>${ic('plus')}</button></div>
+        </div>
+        <div class="summ" id="summ" aria-live="polite">
+          <div class="line"><span>${p.short}, ${sizeTxt} × ${pr.qty}</span><span class="v">${money(items)}</span></div>
+          ${pr.name?`<div class="line"><span>Name on back × ${pr.qty}</span><span class="v">${money(nm)}</span></div>`:''}
+          <div class="line"><span>Screen print set-up</span><span class="v">$0.00</span></div>
+          <div class="divider"></div>
+          <div class="line tot"><span>Total</span><span class="v t-lg">${money(total)}</span></div>
+          <div class="row g8 cb t-cap t-med">${ic('heart-16','s16')}${money(PER_ITEM*pr.qty)} of this goes to Hurricane Milton Relief Fund</div>
+        </div>
+        <button class="btn pri wide" data-act="add">Add to cart · ${money(total)}</button>
+        <div class="row g8 t-cap c2">${ic('truck-16','s16')}Ships together after the store closes on Dec 15. Estimated delivery Dec 22–29.</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function checkoutShell(step, inner, lockText){
+  const t = totals();
+  const names = ['Cart','Shipping','Payment','Review'];
+  const steps = names.map((n,i)=>{
+    const st = i<step ? 'done' : i===step ? 'cur' : '';
+    const act = i<step ? (i===0 ? 'data-act="backcart"' : `data-act="go" data-v="${['','shipping','payment'][i]}"`) : '';
+    const tag = i<step ? 'button' : 'div';
+    return `<${tag} class="step ${st}" ${act} ${i===step?'aria-current="step"':''}><span class="dot">${i<step?ic('check-16','s16'):i+1}</span>${n}</${tag}>` + (i<3?`<span class="conn ${i<step?'on':''}"></span>`:'');
+  }).join('');
+  return `${storeHeader()}
+  <div class="checkout">
+    <nav class="steps" aria-label="Checkout steps">${steps}</nav>
+    <div class="cols">
+      <div class="forms">${inner}</div>
+      <aside class="card aside" aria-label="Order summary">
+        <div class="row g8"><span class="t-h3 f1">Order summary</span><button class="link" data-act="backcart">Edit cart</button></div>
+        ${S.cart.map(l=>`<div class="item"><img src="${thumbOf(l)}" alt=""><div class="f1 stack g4"><span class="t-med">${esc(P[l.id].name)}</span><span class="t-cap c2">${esc(variantText(l))} · Qty ${l.qty}</span></div><span class="t-med">${money(lineTotal(l))}</span></div>`).join('')}
+        <div class="divider"></div>
+        <div class="line"><span>Subtotal</span><span class="v">${money(t.items)}</span></div>
+        <div class="line"><span>Additional charges</span><span class="v">$0.00</span></div>
+        <div class="line"><span>Shipping · ships after Dec 15</span><span class="v">${money(t.ship)}</span></div>
+        <div class="line"><span>Estimated tax</span><span class="v">${money(t.tax)}</span></div>
+        <div class="divider"></div>
+        <div class="line tot"><span class="t-lg">Total</span><span class="v t-h2">${money(t.total)}</span></div>
+        <div class="contrib">${ic('heart')}<span>Your order adds ${money(t.give)} to Hurricane Milton Relief Fund.</span></div>
+        <div class="row g8 t-cap c2">${ic('lock-16','s16')}${lockText}</div>
+      </aside>
+    </div>
+  </div>`;
+}
+
+function vShipping(){
+  const e = shipErrors(), show = k => (S.shipTried || S.touched[k]) ? e[k] : '';
+  const ca = isCA();
+  const states = ca ? ['Alberta','British Columbia','Ontario','Quebec'] : ['Illinois','Indiana','Kentucky','Michigan','Ohio'];
+  if(!states.includes(S.form.state)) S.form.state = ca ? 'Ontario' : 'Indiana';
+  return checkoutShell(1, `
+    <div class="card stack g16">
+      <h2 class="t-h3">Contact</h2>
+      <div class="frow">${input('form.first','First name',{err:show('first'),attrs:'autocomplete="given-name"'})}${input('form.last','Last name',{err:show('last'),attrs:'autocomplete="family-name"'})}</div>
+      <div class="frow">${input('form.email','Email',{err:show('email'),help:'We send the order confirmation here.',attrs:'type="email" autocomplete="email"'})}${input('form.phone','Phone · optional',{attrs:'type="tel" autocomplete="tel"'})}</div>
+    </div>
+    <div class="card stack g16">
+      <h2 class="t-h3">Shipping address</h2>
+      <div class="frow">${input('form.addr1','Address line 1',{err:show('addr1'),attrs:'autocomplete="address-line1"'})}</div>
+      <div class="frow">${input('form.addr2','Address line 2 · optional',{attrs:'autocomplete="address-line2"'})}</div>
+      <div class="frow">${input('form.city','City',{err:show('city'),attrs:'autocomplete="address-level2"'})}${input('form.state', ca?'Province':'State',{options:states})}${input('form.zip', ca?'Postal code':'ZIP code',{err:show('zip'),attrs:`autocomplete="postal-code" ${ca?'':'inputmode="numeric"'} maxlength="${ca?7:5}"`})}</div>
+      <div class="frow">${input('form.country','Country',{options:['United States','Canada']})}</div>
+      <div class="check" role="checkbox" tabindex="0" aria-checked="${S.form.billSame}" data-act="bill"><span class="box ${S.form.billSame?'on':''}">${ic('check-16','s16')}</span>Billing address is the same</div>
+      ${S.form.billSame?'':`<div class="alert info">${ic('info')}<p>We’ll ask for the billing address with your card on the next step.</p></div>`}
+    </div>
+    <div class="row g12"><button class="btn gho" data-act="backcart">Back to cart</button><span class="f1"></span><button class="btn pri" data-act="toPayment">Continue to payment</button></div>`,
+    'Payment is processed securely. You pay on the next step.');
+}
+
+function vPayment(){
+  const e = payErrors(), show = k => (S.payTried || S.payTouched[k]) ? e[k] : '';
+  const sample = digits(S.pay.num)==='4242424242424242';
+  const declinedBanner = S.declined ? `<div class="alert danger shake" role="alert">${ic('alert')}<div><b>Your bank declined this card.</b><p>Nothing was charged and your order is saved. Try another card, or call the number on the back of this card.</p></div></div>` : '';
+  const hint = S.scenario==='mistakes' && !S.declined && !sample
+    ? 'Sample card 4000 0000 0000 0002 will be declined, to show the error.'
+    : 'This is a prototype. Use the sample card 4242 4242 4242 4242, nothing is charged.';
+  const f = S.form;
+  return checkoutShell(2, `
+    ${declinedBanner}
+    <div class="card stack g16">
+      <div class="row g12"><span class="ibtn" style="background:var(--color-bg-subtle);color:var(--color-text-primary)">${ic('card')}</span><div class="f1"><h2 class="t-h3">Card</h2><span class="t-cap c2">Visa, Mastercard, American Express</span></div></div>
+      <div class="alert info">${ic('info')}<div class="f1 row g12"><p class="f1">${hint}</p>${sample?'':`<button class="btn gho s" data-act="samplecard">Use sample card</button>`}</div></div>
+      <div class="frow">${input('pay.num','Card number',{err:show('num'),ph:'1234 1234 1234 1234',attrs:'inputmode="numeric" autocomplete="cc-number" maxlength="19"'})}</div>
+      <div class="frow">${input('pay.exp','Expiry date',{err:show('exp'),ph:'MM / YY',attrs:'inputmode="numeric" autocomplete="cc-exp" maxlength="7"'})}${input('pay.cvc','Security code',{err:show('cvc'),help:'3 digits on the back of the card',ph:'123',attrs:'inputmode="numeric" autocomplete="cc-csc" maxlength="4"'})}</div>
+      <div class="frow">${input('pay.holder','Name on card',{err:show('holder'),attrs:'autocomplete="cc-name"'})}</div>
+      <div class="divider"></div>
+      <div class="rv">${ic('mail')}<div class="f1"><span class="t-med">Billing address</span><p class="c2">${S.form.billSame ? `Same as shipping: ${esc([f.addr1,f.city,f.state,f.zip].filter(Boolean).join(', '))}` : 'You’ll confirm it with your bank, it’s different from shipping.'}</p></div><button class="link" data-act="go" data-v="shipping">Edit</button></div>
+    </div>
+    <div class="row g12"><button class="btn gho" data-act="go" data-v="shipping">Back to shipping</button><span class="f1"></span><button class="btn pri" data-act="toReview">Continue to review</button></div>`,
+    'You won’t be charged until you place the order on the next step.');
+}
+
+function vReview(){
+  const t = totals(), f = S.form, d = digits(S.pay.num);
+  return checkoutShell(3, `
+    <div class="card stack g16">
+      <div class="rv">${ic('mail')}<div class="f1"><span class="t-med">Contact</span><p class="c2">${esc(f.first)} ${esc(f.last)} · ${esc(f.email)}</p></div><button class="link" data-act="go" data-v="shipping">Edit</button></div>
+      <div class="divider"></div>
+      <div class="rv">${ic('truck-16')}<div class="f1"><span class="t-med">Ship to</span><p class="c2">${esc([f.addr1,f.addr2].filter(Boolean).join(', '))}<br>${esc(f.city)}, ${esc(f.state)} ${esc(f.zip)}, ${esc(f.country)}</p><p class="c2" style="margin-top:4px">Ships together after the store closes on Dec 15. Estimated delivery Dec 22–29.</p></div><button class="link" data-act="go" data-v="shipping">Edit</button></div>
+      <div class="divider"></div>
+      <div class="rv">${ic('card')}<div class="f1"><span class="t-med">Payment</span><p class="c2">${brandOf(S.pay.num)} ending ${d.slice(-4)} · Expires ${esc(S.pay.exp.replace(/\s/g,''))}</p></div><button class="link" data-act="go" data-v="payment">Edit</button></div>
+    </div>
+    <p class="t-cap c2">By placing the order you agree to the store’s terms. The fund receives ${money(t.give)} from this order when the store closes.</p>
+    <div class="row g12"><button class="btn gho" data-act="go" data-v="payment">Back to payment</button><span class="f1"></span>
+      <button class="btn pri ${S.placing?'loading':''}" data-act="place" ${S.placing?'aria-busy="true"':''}>${S.placing?'<span class="spin"></span>Placing order…':`Place order · ${money(t.total)}`}</button></div>`,
+    `You’ll be charged ${money(t.total)} when you place the order.`);
+}
+
+function vThanks(){
+  const o = S.order;
+  return `${storeHeader()}
+  <div class="thanks">
+    <div class="okmark">${ic('check-circle')}</div>
+    <div class="stack g8"><h1 class="t-display">Thank you, ${esc(o.first || 'Ana')}. Your order is in.</h1>
+      <p class="t-lg c2">Order ${o.no} · We sent the receipt to ${esc(o.email || 'your email')}.</p></div>
+    <div class="stack g12">
+      <div class="row g8"><h2 class="t-h3 f1">You’re supporter #${S.fund.supporters}</h2><span class="ctag plus">${ic('heart-16','s16')}+${money(o.give)} from your order</span></div>
+      ${goalCard()}
+    </div>
+    <div class="card stack g16">
+      <h2 class="t-h3">What happens next</h2>
+      <div class="tl">
+        <div class="st on"><span class="dot"></span><div><span class="t-med">Order placed</span><p class="c2">${o.items} item${o.items>1?'s':''} · ${money(o.total)} charged to ${o.card}</p></div></div>
+        <div class="st"><span class="dot"></span><div><span class="t-med">Dec 15 · The store closes</span><p class="c2">Everyone’s orders are printed together, so decoration costs stay low.</p></div></div>
+        <div class="st"><span class="dot"></span><div><span class="t-med">Dec 22–29 · Delivery</span><p class="c2">To ${esc(o.addr)}. You’ll get a tracking link by email.</p></div></div>
+        <div class="st"><span class="dot"></span><div><span class="t-med">Dec 22 · The fund receives the money</span><p class="c2">Ball State Foundation gets ${money(o.give)} from your order for the Hurricane Milton Relief Fund.</p></div></div>
+      </div>
+    </div>
+    <div class="row g12"><button class="btn pri" data-act="share">Share the fundraiser</button><button class="btn sec" data-act="home">Back to the store</button></div>
+  </div>`;
+}
+
+/* ---------- overlays ---------- */
+let overlay = null;   // 'cart' | 'fund' | 'size' | 'faq'
+function vDrawer(){
+  const t = totals(), n = t.qty;
+  const body = S.cart.length ? S.cart.map(l=>`
+    <div class="citem ${S.justAdded===l.key?'new':''}">
+      <img src="${thumbOf(l)}" alt="">
+      <div class="f1 stack g4">
+        <div class="row g8" style="align-items:flex-start"><span class="t-med f1">${esc(P[l.id].name)}</span><span class="t-med">${money(lineTotal(l))}</span></div>
+        <span class="t-cap c2">${esc(variantText(l))}</span>
+        <div class="row g12" style="margin-top:8px">
+          <div class="stepper s" role="group" aria-label="Quantity"><button data-act="cqty" data-k="${l.key}" data-v="-1" aria-label="One less" ${l.qty<=1?'disabled':''}>${ic('minus')}</button><span>${l.qty}</span><button data-act="cqty" data-k="${l.key}" data-v="1" aria-label="One more">${ic('plus')}</button></div>
+          <span class="f1"></span><button class="rm" data-act="remove" data-k="${l.key}">${ic('trash','s16')}Remove</button>
+        </div>
+      </div>
+    </div>`).join('') + `<div class="contrib">${ic('heart')}<span>Your cart adds ${money(t.give)} to Hurricane Milton Relief Fund.</span></div>`
+  : `<div style="text-align:center;padding:48px 8px" class="stack g12"><span class="okmark" style="margin:0 auto;background:var(--color-brand-subtle);color:var(--color-brand-text);animation:none">${ic('cart')}</span><h3 class="t-h3">Your cart is empty</h3><p class="c2">Every item you add puts $5 toward the fund.</p><button class="btn sec" data-act="shopall" style="align-self:center">Shop the collection</button></div>`;
+  return `<div class="scrim" data-act="close"></div>
+  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dt">
+    <div class="dhead"><h2 class="t-h2 f1" id="dt">Your cart${n?` · ${n} item${n>1?'s':''}`:''}</h2><button class="ibtn" data-act="close" aria-label="Close cart">${ic('x')}</button></div>
+    <div class="dbody">${body}</div>
+    ${S.cart.length?`<div class="dfoot">
+      <div class="line tot"><span>Subtotal</span><span class="v t-lg">${money(t.items)}</span></div>
+      <span class="t-cap c2">Shipping and tax are calculated at checkout.</span>
+      <button class="btn pri wide" data-act="checkout">Check out · ${money(t.items)}</button>
+      <button class="btn gho wide" data-act="close">Keep shopping</button>
+      <div class="row g8 t-cap c2">${ic('truck-16','s16')}Everything ships together after Dec 15.</div>
+    </div>`:''}
+  </aside>`;
+}
+function vModal(m){
+  const M = {
+    fund:['Hurricane Milton Relief Fund', `<p class="c2">Sample fundraiser for this prototype. In a real store, the organiser writes here who the fund helps and how the money is used.</p>${goalCard()}<div class="contrib">${ic('heart')}<span>$5 from every item goes to the fund. The store passes it on when it closes, on Dec 22.</span></div>`],
+    size:['Size guide', `<p class="c2">Unisex fit. Measure across the chest, armpit to armpit, and compare.</p><table class="tbl"><thead><tr><th>Size</th><th>Chest, in</th><th>Length, in</th></tr></thead><tbody>${[['S','18','27'],['M','20','28'],['L','22','29'],['XL','24','30'],['2XL','26','31']].map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table><p class="t-cap c2">Between sizes? Size up, the sweatshirt shrinks a little after the first wash.</p>`],
+    faq:['Questions', [['When will my order arrive?','The store prints everyone’s orders together after it closes on Dec 15. Delivery is Dec 22–29.'],['How much goes to the fund?','$5 from every item, no matter the size or decoration. You see the amount for your order at every step.'],['Can I change my order?','Yes, until the store closes. Reply to your confirmation email and the store organiser will update it.']].map(([q,a])=>`<div><span class="t-med">${q}</span><p class="c2" style="margin-top:4px">${a}</p></div>`).join('<div class="divider"></div>')]
+  }[m];
+  return `<div class="scrim" data-act="close"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <div class="mhead"><h2 class="t-h2 f1" id="mt">${M[0]}</h2><button class="ibtn" data-act="close" aria-label="Close">${ic('x')}</button></div>
+    <div class="mbody">${M[1]}</div>
+  </div>`;
+}
+function openOverlay(kind){
+  overlay = kind; renderOverlay();
+  const f = layer.querySelector('.ibtn'); if(f) setTimeout(()=>f.focus({preventScroll:true}),30);
+  ptrack('proto_screen',{screen: kind==='cart'?'cart':'modal_'+kind});
+}
+function renderOverlay(still){ layer.innerHTML = overlay==='cart' ? vDrawer() : overlay ? vModal(overlay) : '';
+  if(still) layer.querySelectorAll('.scrim,.drawer,.modal').forEach(n=>n.classList.add('still'));
+  if(S.justAdded){ clearTimeout(renderOverlay.t); renderOverlay.t = setTimeout(()=>{ S.justAdded=null; },1300); } }
+function closeOverlay(then){
+  if(!overlay){ then&&then(); return; }
+  layer.querySelectorAll('.scrim,.drawer,.modal').forEach(n=>n.classList.add('out'));
+  overlay = null; S.justAdded = null;
+  setTimeout(()=>{ if(!overlay) layer.innerHTML=''; then&&then(); }, 190);
+}
+
+/* toast (Cosmos Toast: 5 s, success feedback only) */
+let toastT;
+function toast(msg, action){
+  clearTimeout(toastT); vp.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t = document.createElement('div'); t.className='toast'; t.setAttribute('role','status');
+  t.innerHTML = `${ic('check-circle-16','s16')}<span>${esc(msg)}</span>${action?`<button>${action.label}</button>`:''}`;
+  if(action) t.querySelector('button').onclick = () => { action.run(); hideToast(t); };
+  vp.appendChild(t);
+  toastT = setTimeout(()=>hideToast(t), 5000);
+}
+function hideToast(t){ t.classList.add('out'); setTimeout(()=>t.remove(),200); }
+
+/* ---------- render ---------- */
+const VIEWS = {store:vStore, product:vProduct, shipping:vShipping, payment:vPayment, review:vReview, thanks:vThanks};
+let lastScreen = null;
+function render(){
+  const ae = document.activeElement, fid = ae && app.contains(ae) ? ae.id : null;
+  const sel = fid && ae.selectionStart!=null ? [ae.selectionStart, ae.selectionEnd] : null;
+  const changed = lastScreen !== S.screen;
+  app.className = 'app' + (['shipping','payment','review','thanks'].includes(S.screen) ? ' canvas' : '');
+  app.innerHTML = `<div class="${changed?'screen':''}">${VIEWS[S.screen]()}</div>`;
+  if(changed){ scroller.scrollTop = 0; lastScreen = S.screen; ptrack('proto_screen',{screen:S.screen});
+    $('#url').textContent = 'ballstate-spiritwear.espstores.sample' + ({store:'',product:'/products/'+S.prod.id,shipping:'/checkout/shipping',payment:'/checkout/payment',review:'/checkout/review',thanks:'/order/'+(S.order?S.order.no:'')}[S.screen]);
+  }
+  if(fid){ const n = document.getElementById(fid); if(n){ n.focus({preventScroll:true}); if(sel && n.setSelectionRange) try{ n.setSelectionRange(sel[0], sel[1]); }catch(e){} } }
+  if(overlay==='cart') renderOverlay(true);
+}
+function go(screen){ S.screen = screen; render(); if(innerWidth<=820) fit(); }
+function bumpCart(){ const b=$('#cartbtn'); if(b){ b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); } }
+
+/* ---------- actions ---------- */
+function openProduct(id, colour){
+  const sd = SEEDS[S.scenario].prod;
+  const designed = id==='sweat';
+  S.prod = {id, colour: colour || P[id].colours[0], size: designed ? sd.size : '', name: designed ? sd.name : '', qty: designed ? sd.qty : 1, err:false};
+  go('product');
+}
+function addToCart(){
+  const pr = S.prod;
+  if(!pr.size){ pr.err = true; render(); const e=$('.chips.err'); if(e) e.scrollIntoView({block:'center',behavior:'smooth'}); ptrack('proto_error',{what:'size'}); return; }
+  const key = [pr.id, pr.colour, pr.size, pr.name].join('|');
+  const ex = S.cart.find(l=>l.key===key);
+  if(ex) ex.qty += pr.qty; else S.cart.unshift({key, id:pr.id, colour:pr.colour, size:pr.size, name:pr.name, qty:pr.qty});
+  S.justAdded = key; render(); bumpCart(); openOverlay('cart');
+}
+function startCheckout(){ closeOverlay(()=>go('shipping')); }
+function toPayment(){
+  S.shipTried = true;
+  const e = shipErrors();
+  if(Object.keys(e).length){ render(); focusFirstError(); ptrack('proto_error',{what:'shipping', fields:Object.keys(e).join(',')}); return; }
+  go('payment');
+}
+function toReview(){
+  S.payTried = true;
+  const e = payErrors();
+  if(Object.keys(e).length){ render(); focusFirstError(); ptrack('proto_error',{what:'payment', fields:Object.keys(e).join(',')}); return; }
+  go('review');
+}
+function focusFirstError(){ const n = app.querySelector('.field.bad .ctl'); if(n){ n.scrollIntoView({block:'center',behavior:'smooth'}); n.focus({preventScroll:true}); } }
+function place(){
+  if(S.placing) return;
+  S.placing = true; render();
+  setTimeout(()=>{
+    S.placing = false;
+    const d = digits(S.pay.num);
+    if(d.endsWith('0002')){ S.declined = true; S.declinedNum = d; S.payTouched.num = true; go('payment'); ptrack('proto_error',{what:'declined'}); return; }
+    const t = totals();
+    S.order = {no:'BSU-' + (20418 + Math.floor(Math.random()*40)), first:S.form.first, email:S.form.email, give:t.give, total:t.total, items:t.qty,
+      card:`${brandOf(S.pay.num)} ending ${d.slice(-4)}`, addr:[S.form.addr1, S.form.city].filter(Boolean).join(', ')};
+    const from = S.fund.raised;
+    S.fund.supporters += 1; S.lastGift = t.give;
+    S.cart = [];
+    S.screen = 'thanks'; render();
+    // count the gift into the goal
+    const el = $('#raised'), fill = $('#pfill'), to = from + t.give, t0 = performance.now(), dur = 1400;
+    S.fund.raised = to;
+    (function tick(now){ const k = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-k,3); if(el) el.textContent = whole(from + (to-from)*e); if(k<1) requestAnimationFrame(tick); })(t0);
+    if(fill) fill.style.width = Math.max(0.6, to/GOAL*100) + '%';
+    ptrack('proto_complete',{total:t.total});
+  }, 1400);
+}
+
+/* click delegation for the prototype */
+vp.addEventListener('click', e=>{
+  const b = e.target.closest('[data-act]');
+  if(S.sortOpen && !e.target.closest('.sortw')){ S.sortOpen=false; render(); }
+  if(!b) return;
+  const a = b.dataset.act, v = b.dataset.v;
+  ptrack('proto_tap',{target:a, value:v||'', screen:S.screen});
+  switch(a){
+    case 'home': closeOverlay(()=>{ go('store'); }); break;
+    case 'shopall': closeOverlay(()=>{ if(S.screen!=='store') go('store'); setTimeout(()=>{ const p=$('#products'); if(p) scroller.scrollTo({top:p.offsetTop-80,behavior:'smooth'}); },60); }); break;
+    case 'cat': S.cat = v; render(); break;
+    case 'sortmenu': S.sortOpen = !S.sortOpen; render(); break;
+    case 'sort': S.sort = v; S.sortOpen = false; render(); break;
+    case 'open': openProduct(b.dataset.id, b.dataset.c); break;
+    case 'colour': S.prod.colour = v; render(); break;
+    case 'size': S.prod.size = v; S.prod.err = false; render(); break;
+    case 'qty': S.prod.qty = Math.min(20, Math.max(1, S.prod.qty + (+v))); render(); { const s=$('#summ'); if(s){ s.classList.remove('flash'); void s.offsetWidth; s.classList.add('flash'); } } break;
+    case 'add': addToCart(); break;
+    case 'cart': openOverlay('cart'); break;
+    case 'modal': openOverlay(b.dataset.m); break;
+    case 'close': closeOverlay(); break;
+    case 'cqty': { const l = S.cart.find(x=>x.key===b.dataset.k); l.qty = Math.max(1, l.qty + (+v)); render(); } break;
+    case 'remove': {
+      const i = S.cart.findIndex(x=>x.key===b.dataset.k), l = S.cart[i];
+      S.cart.splice(i,1); render();
+      toast(`Removed ${P[l.id].name}.`, {label:'Undo', run:()=>{ S.cart.splice(i,0,l); render(); }});
+    } break;
+    case 'checkout': startCheckout(); break;
+    case 'backcart': go('store'); setTimeout(()=>openOverlay('cart'),120); break;
+    case 'bill': S.form.billSame = !S.form.billSame; render(); break;
+    case 'toPayment': toPayment(); break;
+    case 'toReview': toReview(); break;
+    case 'go': go(v); break;
+    case 'samplecard': S.pay.num='4242 4242 4242 4242'; if(!S.pay.exp) S.pay.exp='08 / 28'; if(!S.pay.cvc) S.pay.cvc='123'; if(!S.pay.holder) S.pay.holder=[S.form.first,S.form.last].join(' ').trim()||'Ana Ruiz'; render(); break;
+    case 'place': place(); break;
+    case 'share': { const u = location.origin + location.pathname; try{ navigator.clipboard && navigator.clipboard.writeText(u); }catch(err){} toast('Link copied. Thanks for spreading the word.'); } break;
+  }
+});
+vp.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && overlay){ closeOverlay(); }
+  if((e.key===' '||e.key==='Enter') && e.target.matches('[role="checkbox"][data-act]')){ e.preventDefault(); e.target.click(); }
+});
+
+/* inputs */
+function fmtCard(v){ const d = digits(v).slice(0,16); return d.replace(/(\d{4})(?=\d)/g,'$1 '); }
+function fmtExp(v, prev){ const d = digits(v).slice(0,4); if(d.length<=2) return (d.length===2 && !(prev||'').endsWith(' / ')) ? d+' / ' : d; return d.slice(0,2)+' / '+d.slice(2); }
+vp.addEventListener('input', e=>{
+  const n = e.target, path = n.dataset.f; if(!path) return;
+  const [g,k] = path.split('.');
+  let v = n.value;
+  if(path==='prod.name') v = v.toUpperCase();
+  if(path==='pay.num') v = fmtCard(v);
+  if(path==='pay.exp') v = e.inputType && e.inputType.startsWith('delete') ? v : fmtExp(v, S.pay.exp);
+  if(path==='pay.cvc') v = digits(v).slice(0,4);
+  if(path==='form.zip' && !isCA()) v = digits(v).slice(0,5);
+  const changedFmt = v !== n.value;
+  S[g][k] = v;
+  if(g==='pay' && k==='num' && S.declined && digits(v)!==S.declinedNum) S.declined = false;
+  const hadErr = n.closest('.field') && n.closest('.field').classList.contains('bad');
+  if(path==='prod.name' || hadErr || n.tagName==='SELECT'){ render(); }
+  if(changedFmt){ const m = document.getElementById(n.id); if(m && m.tagName==='INPUT'){ m.value = v; try{ m.setSelectionRange(v.length, v.length); }catch(err){} } }
+});
+vp.addEventListener('change', e=>{ const n=e.target; if(n.tagName==='SELECT' && n.dataset.f){ const [g,k]=n.dataset.f.split('.'); S[g][k]=n.value; render(); } });
+vp.addEventListener('focusout', e=>{
+  const n = e.target, path = n.dataset && n.dataset.f; if(!path) return;
+  const [g,k] = path.split('.');
+  if(g==='form' && !S.touched[k] && S.form[k] !== ''){ S.touched[k] = true; setTimeout(render,0); }
+  if(g==='pay' && !S.payTouched[k] && S.pay[k] !== ''){ S.payTouched[k] = true; setTimeout(render,0); }
+});
+
+/* ---------- controls outside the prototype ---------- */
+function setScenario(s){
+  S = fresh(s); overlay = null; layer.innerHTML=''; lastScreen = null;
+  document.querySelectorAll('#scen button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.s===s));
+  render();
+}
+$('#scen').addEventListener('click', e=>{ const b=e.target.closest('button'); if(b) setScenario(b.dataset.s); });
+$('#restart').onclick = () => setScenario(S.scenario);
+$('#jump').addEventListener('change', e=>{
+  const v = e.target.value; e.target.value=''; if(!v) return;
+  const keep = S.scenario; S = fresh(keep); overlay=null; layer.innerHTML=''; lastScreen=null;
+  const sd = SEEDS[keep];
+  const sweat = {key:'sweat|white|L|RUIZ 23', id:'sweat', colour:'white', size:'L', name:'RUIZ 23', qty:2};
+  if(v!=='store' && v!=='product') S.cart = [sweat, Object.assign({},TEE_IN_CART)];
+  if(v==='product'){ openProduct('sweat','white'); return; }
+  if(v==='cart'){ S.cart = [sweat, Object.assign({},TEE_IN_CART)]; go('store'); openOverlay('cart'); return; }
+  if(v==='payment' || v==='review'){ S.form = Object.assign({}, SEEDS.happy.form); }
+  if(v==='review'){ S.pay = Object.assign({}, keep==='mistakes' ? sd.pay : SEEDS.happy.pay); }
+  if(v==='thanks'){ S.form = Object.assign({}, SEEDS.happy.form); S.pay = Object.assign({}, SEEDS.happy.pay); S.screen='review'; render(); place(); return; }
+  go(v);
+});
+const tapsBtn = $('#taps'); let SHOW_TAPS = !Q.has('notaps');
+tapsBtn.setAttribute('aria-checked', SHOW_TAPS);
+tapsBtn.onclick = () => { SHOW_TAPS = !SHOW_TAPS; tapsBtn.setAttribute('aria-checked', SHOW_TAPS); };
+vp.addEventListener('pointerdown', e=>{
+  if(!SHOW_TAPS) return;
+  const r = vp.getBoundingClientRect(), z = r.width / vp.offsetWidth;
+  const t = document.createElement('span'); t.className='tap';
+  t.style.left = ((e.clientX - r.left)/z) + 'px'; t.style.top = ((e.clientY - r.top)/z) + 'px';
+  vp.appendChild(t); setTimeout(()=>t.remove(), 600);
+}, true);
+$('#copyLink').onclick = () => { const u = location.href.split('#')[0]; const b=$('#copyLink');
+  const done = () => { b.textContent='Link copied'; setTimeout(()=>b.textContent='Copy link to open later',2200); };
+  if(navigator.share){ navigator.share({title:document.title, url:u}).catch(()=>{}); return; }
+  try{ navigator.clipboard.writeText(u).then(done,done); }catch(err){ done(); } };
+
+/* ---------- scale the 1440 px page into the window ---------- */
+const browser = $('#browser'), stage = $('#stage');
+function fit(){
+  const rec = document.body.classList.contains('rec');
+  const chromeH = 44;
+  const availW = rec ? innerWidth - 24 : stage.clientWidth;
+  const z = Math.min(1, availW / 1440);
+  browser.style.zoom = z;
+  let h;
+  if(rec) h = (innerHeight - 24) / z - chromeH;
+  else if(innerWidth <= 820) h = Math.max(900, Math.min((innerHeight * 0.78) / z - chromeH, app.scrollHeight || 900));
+  else h = Math.max(640, Math.min(900, (innerHeight - 32) / z - chromeH));
+  vp.style.height = Math.round(h) + 'px';
+}
+addEventListener('resize', fit);
+
+/* ---------- start ---------- */
+const startScen = SEEDS[Q.get('s')] ? Q.get('s') : 'happy';
+S = fresh(startScen);
+document.querySelectorAll('#scen button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.s===startScen));
+fit(); render(); fit();
+addEventListener('pageshow', e=>{ if(e.persisted) location.reload(); });
+</script>
+</body>
+</html>
