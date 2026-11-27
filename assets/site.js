@@ -211,3 +211,18 @@
   a.addEventListener('blur',function(){ flip(false); });
   document.addEventListener('visibilitychange',function(){ if(document.hidden){ clearTimeout(t); flip(false); } else if(!rm&&shown<max){ clearTimeout(t); t=setTimeout(cycle,6000); } });
 })();
+
+// hero: one shine on the role and two pulses on NEW, on load and again on hover
+(function(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  function player(el,cls){
+    if(!el) return function(){};
+    el.addEventListener('animationend',function(){el.classList.remove(cls)});
+    return function(){ if(el.classList.contains(cls)) return; void el.offsetWidth; el.classList.add(cls); };
+  }
+  var role=document.querySelector('.hero h1 .role'), news=document.querySelector('.hero-news');
+  var shine=player(role,'shine'), pulse=player(news&&news.querySelector('.new'),'pulse');
+  setTimeout(pulse,800); setTimeout(shine,1400);
+  if(role) role.addEventListener('mouseenter',shine);
+  if(news) news.addEventListener('mouseenter',pulse);
+})();
