@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mabrook · Book a hotel from the feed · prototype · Illia Vostrikov</title>
+<meta name="description" content="A clickable prototype of the Mabrook super app: from a hotel in the feed to a booked room, with dates, guests, room options, checkout, a 15-minute hold and failed payments. Sample data only.">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Instrument+Sans:wght@400;500;600&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ Page shell: illiavostrikov.com style (the Mabrook app inside the phone keeps its own look) ============ */
+:root{
+  --s-bg:#0A1A14; --s-surface:#10251D; --s-surface-2:#163228; --s-line:#25473B; --s-emerald:#1C4A3A;
+  --s-accent:#52E0A1; --s-accent-hover:#7BEBBA; --s-accent-ink:#06130E;
+  --s-text:#EDF5F1; --s-muted:#A6BEB4; --s-soft:#7F988E;
+  --s-display:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif;
+  --s-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+
+  /* Mabrook tokens (from the Figma file) */
+  --bg-canvas:#141414; --bg-surface:#2D2D2D; --border-subtle:#2D2D2D; --border-strong:#5F5F5F;
+  --text-primary:#FFFFFF; --text-secondary:#B8B8B8; --text-tertiary:#A0A0A0; --text-on-brand:#141414;
+  --brand:#F4862F; --brand-text:#F4862F; --orange-500:#E46500; --grey-500:#888888;
+  --green-400:#45BD4B; --green-800:#0E6712; --green-900:#073409; --red:#E94235;
+  --brand-gradient:linear-gradient(90deg,#E94235 0%,#F7A841 100%);
+  --font:"Open Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --ease-out:cubic-bezier(.2,.8,.2,1); --ease-in:cubic-bezier(.3,0,.8,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:var(--s-body);background:var(--s-bg);color:var(--s-text);-webkit-font-smoothing:antialiased;color-scheme:dark}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select{font:inherit;color:inherit}
+a{color:inherit}
+.top{max-width:1400px;margin:0 auto;padding:14px 32px 0;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.me{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:600;font-size:15px}
+.me svg{display:block;border-radius:12px}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--s-line);font-weight:600;font-size:14.5px;text-decoration:none;color:var(--s-text);transition:border-color .15s,color .15s;white-space:nowrap}
+.pill:hover{border-color:var(--s-accent);color:var(--s-accent)}
+.page{max-width:1400px;margin:0 auto;padding:24px 32px 64px;display:grid;grid-template-columns:minmax(0,1fr) 400px minmax(0,1fr);gap:36px;align-items:start}
+.intro{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--s-muted);margin-bottom:12px}
+.kicker i{width:8px;height:8px;border-radius:50%;background:var(--s-accent);box-shadow:0 0 0 4px rgba(82,224,161,.15)}
+.intro h1{font-family:var(--s-display);font-size:clamp(30px,3.4vw,46px);line-height:1.05;font-weight:700;letter-spacing:-.02em;text-wrap:balance}
+.intro p{font-size:17px;line-height:1.6;color:var(--s-muted);max-width:760px;margin-top:12px}
+.intro .by{font-size:14px;color:var(--s-soft)}
+.col{display:flex;flex-direction:column;gap:16px}
+.col.left{align-items:flex-end}
+.panel{background:var(--s-surface);border:1px solid var(--s-line);border-radius:20px;padding:22px;width:100%;max-width:360px}
+.panel h2{font-family:var(--s-display);font-size:20px;line-height:1.15;letter-spacing:-.01em;font-weight:700;margin-bottom:14px}
+.panel ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+.panel li{font-size:14.5px;line-height:1.5;color:var(--s-muted);padding-left:16px;position:relative}
+.panel li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--s-accent)}
+.panel li b{color:var(--s-text);font-weight:600}
+.panel p{font-size:14.5px;line-height:1.55;color:var(--s-muted)}
+.scen{display:flex;flex-direction:column;gap:8px}
+.scen button{text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--s-line);transition:border-color .15s,background .15s}
+.scen button:hover{border-color:var(--s-accent)}
+.scen button[aria-pressed="true"]{border-color:var(--s-accent);background:var(--s-surface-2)}
+.scen b{display:block;font-size:15px;font-weight:600}
+.scen small{display:block;font-size:13px;line-height:1.45;color:var(--s-muted);margin-top:3px}
+.ctrl{display:flex;flex-direction:column;gap:12px}
+.tg{display:flex;justify-content:space-between;align-items:center;font-size:14.5px;color:var(--s-text);gap:12px}
+.switch{width:38px;height:22px;border-radius:11px;background:var(--s-line);position:relative;transition:background .2s;flex:none}
+.switch::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:var(--s-muted);transition:transform .2s var(--ease-out),background .2s}
+.switch[aria-checked="true"]{background:var(--s-accent)}
+.switch[aria-checked="true"]::after{transform:translateX(16px);background:var(--s-accent-ink)}
+.ctrl select{appearance:none;-webkit-appearance:none;width:100%;padding:10px 40px 10px 14px;border-radius:999px;border:1px solid var(--s-line);font-size:14px;color:var(--s-text);background:var(--s-surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%23A6BEB4' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 14px center/16px no-repeat;cursor:pointer}
+.ctrl select option{background:var(--s-surface)}
+.restart{padding:10px 14px;border-radius:999px;border:1px solid var(--s-line);font-size:14px;font-weight:600}
+.restart:hover{border-color:var(--s-accent);color:var(--s-accent)}
+.links{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.links a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-radius:14px;border:1px solid var(--s-line);font-size:14.5px;font-weight:600;text-decoration:none;transition:border-color .15s,color .15s}
+.links a:hover{border-color:var(--s-accent);color:var(--s-accent)}
+.links a span{font-weight:400;color:var(--s-soft);font-size:12.5px}
+:focus-visible{outline:2px solid var(--s-accent);outline-offset:3px}
+
+/* phone */
+.stagewrap{display:flex;justify-content:center}
+.device{width:399px;padding:12px;border-radius:58px;background:#050505;box-shadow:0 0 0 1px #2a2a2a,0 40px 90px rgba(0,0,0,.55);position:relative}
+.screen{width:375px;height:812px;border-radius:46px;overflow:hidden;position:relative;background:var(--bg-canvas);isolation:isolate}
+.island{position:absolute;top:11px;left:50%;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000;z-index:80;pointer-events:none}
+.homebar{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:99px;background:#fff;z-index:85;pointer-events:none}
+.tap{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(255,255,255,.22);border:2px solid rgba(255,255,255,.5);pointer-events:none;z-index:95;animation:tap .55s var(--ease-out) forwards}
+@keyframes tap{from{transform:scale(.4);opacity:1}to{transform:scale(1.25);opacity:0}}
+@media (max-width:1100px){
+  .page{grid-template-columns:1fr;max-width:640px}
+  .col.left{order:3;align-items:stretch}.col.right{order:4}
+  .stagewrap{order:2}
+  .panel{max-width:none}
+}
+@media (max-width:600px){.top{padding:12px 12px 0}.top .me span{display:none}.page{padding:16px 12px 40px;gap:18px}.intro p{font-size:15px}}
+body.rec{overflow:hidden}
+body.rec .top,body.rec .intro,body.rec .col{display:none}
+body.rec .page{display:flex;min-height:100vh;min-height:100dvh;justify-content:center;align-items:center;padding:16px;max-width:none}
+
+/* ============ Mabrook app (375 × 812) ============ */
+.app{position:absolute;inset:0;font-family:var(--font);color:var(--text-primary);font-size:14px;line-height:20px;background:var(--bg-canvas);overflow:hidden}
+.ic{display:inline-block;flex:none;width:24px;height:24px;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat}
+.view{position:absolute;inset:0;background:var(--bg-canvas);display:flex;flex-direction:column;will-change:transform}
+.view.in{animation:vIn .38s var(--ease-out)}
+.view.back-in{animation:vBackIn .32s var(--ease-out)}
+@keyframes vIn{from{transform:translateX(100%)}}
+@keyframes vBackIn{from{transform:translateX(-24%);opacity:.6}}
+.sb{height:47px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 40px;font:600 17px/22px -apple-system,"SF Pro Text",system-ui,sans-serif;letter-spacing:-.4px;color:#fff;position:relative;z-index:5}
+.sb img{width:77px;height:13px}
+.nav{height:54px;flex:none;display:flex;align-items:center;padding:0 8px;gap:4px;position:relative;z-index:5}
+.nav .t{flex:1;text-align:center;font-weight:600;font-size:16px;line-height:22px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.nav .t small{display:block;font-weight:400;font-size:12px;line-height:16px;color:var(--text-secondary)}
+.ib{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;flex:none}
+.ib:active{background:rgba(255,255,255,.08)}
+.body{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;overscroll-behavior:contain}
+.body::-webkit-scrollbar{display:none}
+.foot{flex:none;padding:12px 16px 42px;border-top:1px solid var(--border-subtle);background:var(--bg-canvas)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:48px;border-radius:12px;background:var(--brand-gradient);color:var(--text-on-brand);font-weight:600;font-size:16px;transition:filter .15s,transform .1s}
+.btn:active{transform:scale(.985);filter:brightness(.95)}
+.btn.s{height:40px;font-size:14px}
+.btn.out{background:none;border:1px solid var(--brand);color:var(--brand)}
+.btn.ghost{background:var(--bg-surface);color:#fff}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn .spin{width:18px;height:18px;border-radius:50%;border:2px solid rgba(20,20,20,.3);border-top-color:#141414;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.pad{padding:0 16px}
+.h1{font-weight:600;font-size:18px;line-height:26px}
+.h2{font-weight:600;font-size:16px;line-height:22px}
+.c2{color:var(--text-secondary)}.c3{color:var(--text-tertiary)}.cb{color:var(--brand-text)}
+.cap{font-size:12px;line-height:16px}
+.up{font-size:10px;line-height:14px;text-transform:uppercase;letter-spacing:.2px;color:var(--text-tertiary)}
+.hr{height:1px;background:var(--border-subtle);margin:0 16px}
+.row{display:flex;align-items:center}
+.g4{gap:4px}.g8{gap:8px}.g12{gap:12px}.g16{gap:16px}
+.f1{flex:1;min-width:0}
+
+/* feed */
+.feed{background:#000}
+.feed .bg{position:absolute;inset:0;background:url(img/pool.webp) -887px 0/auto 100% no-repeat}
+.feed .sc1{position:absolute;left:0;right:0;top:0;height:180px;background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,0))}
+.feed .sc2{position:absolute;left:0;right:0;bottom:0;height:440px;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.85))}
+.feed .sc3{position:absolute;top:0;bottom:0;right:0;width:160px;background:linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,.4))}
+.fnav{height:54px;display:flex;align-items:center;position:relative;z-index:5}
+.fnav .logo{width:35px;height:24px;margin:0 9px 0 16px;flex:none}
+.tabs{flex:1;display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;padding:0 4px 0 8px;scroll-snap-type:x proximity;mask:linear-gradient(90deg,transparent 0,#000 18px)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{font-weight:600;font-size:18px;line-height:26px;color:var(--text-secondary);white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:4px;text-shadow:0 0 4px rgba(0,0,0,.2);padding-top:8px}
+.tab::after{content:"";width:16px;height:4px;border-radius:8px;background:transparent}
+.tab.on{color:#fff}.tab.on::after{background:#fff}
+.side{position:absolute;right:16px;top:254px;width:40px;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:5}
+.side .av{width:40px;height:40px;border-radius:40px;border:1px solid var(--text-tertiary);background:#cfcfcf url(img/avatar.webp) center/cover}
+.side .avb{width:24px;height:24px;border-radius:16px;background:var(--brand-gradient);display:grid;place-items:center;margin-top:-10px;color:#141414}
+.act{display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:600;font-size:12px;line-height:16px;text-shadow:0 0 3px rgba(0,0,0,.6)}
+.act .ic{width:28px;height:28px;filter:drop-shadow(0 0 2px rgba(0,0,0,.4))}
+.act.on .ic{color:var(--brand)}
+.act.pop .ic{animation:pop .35s var(--ease-out)}
+@keyframes pop{40%{transform:scale(1.25)}}
+.pinfo{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;flex-direction:column;gap:16px}
+.pinfo .w{padding:0 72px 0 16px;display:flex;flex-direction:column;gap:12px}
+.booknow{height:40px;border-radius:12px;background:var(--brand-gradient);color:#141414;display:flex;align-items:center;padding:0 16px;font-weight:600;font-size:16px;gap:8px;box-shadow:0 0 4px rgba(0,0,0,.15);width:100%}
+.booknow span{flex:1;text-align:left}
+.ellip{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.tabbar{background:var(--bg-canvas)}
+.progress{height:3px;background:var(--grey-500);position:relative}
+.progress i{position:absolute;left:0;top:0;bottom:0;width:98px;background:#d9d9d9;border-radius:0 100px 100px 0}
+.tbar{display:flex;border-top:1px solid var(--border-subtle);height:56px}
+.tbar button{flex:1;display:grid;place-items:center;color:#fff}
+.tbar button.on{color:var(--brand)}
+.tbar .ai{width:40px;height:40px;border-radius:50%;background:url(img/ai.webp) center/cover}
+.tabbar .hi{height:34px}
+
+/* detail */
+.gal{position:relative;height:370px;flex:none;background:#1f1f1f}
+.gal .track{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.gal .track::-webkit-scrollbar{display:none}
+.gal .slide{flex:0 0 100%;scroll-snap-align:start;background:#1f1f1f center/cover no-repeat;position:relative}
+.dots{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;gap:6px;pointer-events:none}
+.dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);transition:background .2s,width .2s}
+.dots i.on{background:#fff}
+.loader{width:42px;height:42px;border-radius:50%;border:3px solid rgba(244,134,47,.25);border-top-color:var(--brand);animation:sp .8s linear infinite}
+.center{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.failbox{display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 32px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:8px;background:var(--bg-surface);font-size:14px;color:#fff;white-space:nowrap}
+.chip .ic{width:18px;height:18px}
+.stay{border:1px solid var(--brand);border-radius:12px;padding:12px;margin:12px 16px 0;text-align:left;width:calc(100% - 32px);display:block;transition:background .15s}
+.stay:active{background:rgba(244,134,47,.06)}
+.stay .two{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border-subtle);padding-bottom:12px;margin-bottom:12px}
+.stay .two > div + div{border-left:1px solid var(--border-subtle);padding-left:12px}
+.stay .v{color:var(--brand-text);font-size:16px;line-height:24px;margin-top:4px}
+.mapw{margin:12px 16px 0;height:136px;border-radius:12px;overflow:hidden;position:relative;background:#e9e6df url(img/map.webp) center/cover}
+.mapw .center{background:#1f1f1f}
+.lrow{display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 16px;border-bottom:1px solid var(--border-subtle);text-align:left;width:100%;font-size:16px;line-height:22px}
+.lrow .ic{color:var(--brand);width:24px;height:24px}
+.stars{display:flex;gap:2px;color:var(--brand)}
+.stars .ic{width:14px;height:14px}
+
+/* sheets */
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:40;animation:fIn .22s var(--ease-out)}
+.dim.out{animation:fOut .2s var(--ease-in) forwards}
+@keyframes fIn{from{opacity:0}} @keyframes fOut{to{opacity:0}}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:41;background:var(--bg-canvas);border-radius:16px 16px 0 0;display:flex;flex-direction:column;max-height:calc(100% - 52px);animation:shIn .36s var(--ease-out)}
+.sheet.out{animation:shOut .24s var(--ease-in) forwards}
+.sheet.tall{height:calc(100% - 52px)}
+@keyframes shIn{from{transform:translateY(100%)}} @keyframes shOut{to{transform:translateY(100%)}}
+.grab{width:36px;height:5px;border-radius:5px;background:#5f5f5f;margin:8px auto 0;flex:none}
+.shead{height:52px;display:flex;align-items:center;padding:0 8px 0 56px;flex:none}
+.shead .t{flex:1;text-align:center;font-weight:600;font-size:16px}
+.seg{display:flex;margin:4px 16px 12px;border:1px solid var(--border-subtle);border-radius:12px;padding:3px;gap:3px;flex:none}
+.seg button{flex:1;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;color:var(--text-secondary)}
+.seg button.on{background:var(--bg-surface);color:#fff}
+.seg .ic{width:18px;height:18px}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);padding:0 8px;font-size:12px;color:var(--text-secondary);text-align:center;flex:none}
+.cal{flex:1;overflow-y:auto;padding:0 8px 12px;scrollbar-width:none}
+.cal::-webkit-scrollbar{display:none}
+.mon{font-weight:600;font-size:16px;padding:20px 8px 12px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);row-gap:4px}
+.day{height:40px;display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;z-index:0}
+.day[disabled]{color:#555;cursor:default}
+.day.rng::before{content:"";position:absolute;inset:2px 0;background:rgba(228,101,0,.35);z-index:-1}
+.day.ds::before,.day.de::before{content:"";position:absolute;inset:2px 0;z-index:-1;background:rgba(228,101,0,.35)}
+.day.ds::before{left:50%}.day.de::before{right:50%}
+.day.ds.de::before{display:none}
+.day span{width:36px;height:36px;margin:0 auto;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative}
+.day.ds span,.day.de span{background:var(--orange-500)}
+.day.today{text-decoration:underline;text-underline-offset:4px}
+.sfoot{flex:none;display:flex;gap:12px;padding:12px 16px 42px;border-top:1px solid var(--border-subtle)}
+.stp{display:flex;align-items:center;justify-content:space-between;min-height:56px;padding:0 16px;border-bottom:1px solid var(--border-subtle);font-size:16px}
+.stp small{display:block;font-size:12px;color:var(--text-secondary)}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper button{width:28px;height:28px;border-radius:8px;background:var(--bg-surface);display:grid;place-items:center;color:var(--brand)}
+.stepper button[disabled]{color:#5f5f5f}
+.stepper .ic{width:16px;height:16px}
+.stepper span{width:40px;height:28px;border-radius:8px;background:var(--bg-surface);display:grid;place-items:center;font-size:14px}
+.toggle{width:51px;height:31px;border-radius:16px;background:#3a3a3a;position:relative;transition:background .2s}
+.toggle::after{content:"";position:absolute;left:2px;top:2px;width:27px;height:27px;border-radius:50%;background:#fff;transition:transform .2s var(--ease-out);box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.toggle[aria-checked="true"]{background:var(--orange-500)}
+.toggle[aria-checked="true"]::after{transform:translateX(20px)}
+.sel{appearance:none;-webkit-appearance:none;height:36px;border-radius:8px;background:var(--bg-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%23F4862F' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 10px center/14px no-repeat;border:0;padding:0 32px 0 12px;font-size:14px;color:#fff}
+.expand{animation:exIn .3s var(--ease-out)}
+@keyframes exIn{from{opacity:0;transform:translateY(-6px)}}
+
+/* rooms */
+.room{padding:0 16px 24px;border-bottom:8px solid #0c0c0c}
+.room .gal{height:200px;border-radius:8px;overflow:hidden;margin:12px 0}
+.feat{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.feat div{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:20px}
+.feat .ic{width:20px;height:20px;color:var(--brand)}
+.more{display:flex;align-items:center;justify-content:center;gap:6px;height:32px;border-radius:8px;background:var(--bg-surface);width:100%;margin-top:14px;font-size:14px;font-weight:600}
+.more .ic{width:16px;height:16px;transition:transform .2s}
+.more.on .ic{transform:rotate(180deg)}
+.plans{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:14px -16px 0;padding:0 16px;scrollbar-width:none}
+.plans::-webkit-scrollbar{display:none}
+.plan{flex:0 0 314px;scroll-snap-align:start;border:1px solid var(--border-subtle);border-radius:12px;padding:12px;display:flex;flex-direction:column}
+.plan ul{list-style:none;margin:8px 0 12px;display:flex;flex-direction:column;gap:6px}
+.plan li{padding-left:14px;position:relative;font-size:14px}
+.plan li::before{content:"•";position:absolute;left:2px}
+.plan li.ok{color:#8fe094}
+.plan .price{font-size:16px;line-height:22px;color:var(--brand-text);font-weight:400;margin-top:6px}
+.plan .sp{flex:1;min-height:16px}
+.rleft{color:#ff5a4f;font-weight:600;font-size:14px;text-align:center;margin-top:14px}
+
+/* confirm */
+.banner{margin:12px 16px 0;border-radius:6px;padding:8px 10px;background:var(--green-900);border:1px solid var(--green-800);font-size:14px;line-height:20px;color:#fff}
+.banner.neutral{background:var(--bg-surface);border-color:#3a3a3a}
+.card{border:1px solid var(--border-subtle);border-radius:8px;padding:12px;margin:12px 16px 0}
+.card .sec{border-top:1px solid var(--border-subtle);padding-top:12px;margin-top:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.feat2{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;margin-top:8px;font-size:12px;line-height:16px}
+.feat2 div{display:flex;gap:6px;align-items:center}
+.feat2 .ic{width:16px;height:16px;color:var(--brand)}
+.st{font-weight:600;font-size:18px;line-height:26px;padding:20px 16px 4px}
+.fld{padding:0 16px;margin-top:12px}
+.fld label{display:block;font-size:10px;line-height:14px;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:6px;letter-spacing:.2px}
+.inp{width:100%;height:46px;border-radius:8px;border:1px solid #3a3a3a;background:var(--bg-surface);padding:0 12px;font-size:16px;color:#fff;font-family:var(--font);transition:border-color .15s}
+.inp:focus{outline:none;border-color:var(--brand)}
+.fld.bad .inp{border-color:var(--red)}
+.err{display:flex;gap:6px;align-items:center;font-size:12px;color:#ff6b61;margin-top:6px}
+.err .ic{width:14px;height:14px}
+.phone{display:flex;align-items:center;gap:8px;height:46px;border-radius:8px;border:1px solid #3a3a3a;background:var(--bg-surface);padding:0 12px}
+.phone img{width:27px;height:14px;border-radius:2px}
+.phone input{flex:1;min-width:0;background:none;border:0;height:100%;font-size:16px;color:#fff;font-family:var(--font)}
+.phone input:focus{outline:none}
+.phone:focus-within{border-color:var(--brand)}
+.saved{display:flex;gap:12px;align-items:center;margin:12px 16px 0;padding:12px;border-radius:8px;background:var(--bg-surface)}
+.saved .ic{width:20px;height:20px;color:var(--green-400)}
+.radio{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 16px;text-align:left;width:100%}
+.radio .o{width:20px;height:20px;border-radius:50%;border:1.5px solid #fff;display:grid;place-items:center;flex:none;transition:border-color .15s}
+.radio .o::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--orange-500);transform:scale(0);transition:transform .2s var(--ease-out)}
+.radio[aria-checked="true"] .o{border-color:var(--orange-500)}
+.radio[aria-checked="true"] .o::after{transform:scale(1)}
+.radio[disabled]{opacity:.4}
+.bk{display:flex;justify-content:space-between;padding:6px 16px;font-size:12px;line-height:18px;text-transform:uppercase;color:var(--text-secondary)}
+.bk b{color:#fff;font-weight:600}
+.bk.tot{font-size:14px;color:#fff}
+.alertc{position:absolute;left:12px;right:12px;top:52px;z-index:60;border-radius:8px;border:1px solid #5f5f5f;background:#1c1c1c;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:20px;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:alIn .35s var(--ease-out)}
+.alertc .ic{width:20px;height:20px;color:var(--red);margin-top:0}
+.alertc.out{animation:fOut .25s var(--ease-in) forwards}
+@keyframes alIn{from{opacity:0;transform:translateY(-12px)}}
+.toast{position:absolute;left:50%;bottom:112px;transform:translateX(-50%);z-index:70;background:#2d2d2d;color:#fff;border-radius:10px;padding:10px 14px;font-size:13px;line-height:18px;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.45);animation:tIn .25s var(--ease-out)}
+.toast.out{animation:fOut .2s forwards}
+@keyframes tIn{from{opacity:0;transform:translate(-50%,8px)}}
+
+/* stripe-like payment sheet (light, as in the Figma screen 07) */
+.psheet{background:#fff;color:#30313d;font-family:-apple-system,"SF Pro Text",system-ui,sans-serif}
+.psheet .grab{background:#d5d5d8}
+.psheet .phead{display:flex;align-items:center;gap:8px;padding:6px 12px 0}
+.psheet .phead .ib{color:#6d6e78}
+.pbody{padding:4px 20px 20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+.apay{height:48px;border-radius:8px;background:#000;color:#fff;font-size:20px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:2px;letter-spacing:-.3px}
+.or{display:flex;align-items:center;gap:10px;font-size:13px;color:#6d6e78}
+.or::before,.or::after{content:"";flex:1;height:1px;background:#e6e6e6}
+.pm{display:flex;align-items:center;gap:12px;height:48px;border:1px solid #e6e6e6;border-radius:8px;padding:0 12px;font-size:15px;text-align:left;width:100%}
+.pm .ic{color:#30313d;width:20px;height:20px}
+.pt{font-size:22px;font-weight:700;color:#30313d;margin-top:4px}
+.pl{font-size:13px;color:#30313d;display:flex;justify-content:space-between;align-items:center}
+.pl .scan{color:#0570de;font-weight:500}
+.pgroup{border:1px solid #e6e6e6;border-radius:8px;overflow:hidden}
+.pgroup input,.pgroup select{width:100%;height:44px;border:0;padding:0 12px;font-size:15px;color:#30313d;background:#fff;font-family:inherit}
+.pgroup input::placeholder{color:#a3a3ab}
+.pgroup input:focus,.pgroup select:focus{outline:none;box-shadow:inset 0 0 0 2px rgba(5,112,222,.35)}
+.pgroup .r{display:flex;border-top:1px solid #e6e6e6}
+.pgroup .r > * + *{border-left:1px solid #e6e6e6}
+.pgroup.bad{border-color:#df1b41}
+.perr{font-size:13px;color:#df1b41;margin-top:-4px}
+.brands{display:flex;gap:3px;padding-right:10px;align-items:center}
+.brands i{width:22px;height:14px;border-radius:2px;display:block}
+.pcheck{display:flex;gap:8px;align-items:center;font-size:13px;color:#30313d}
+.pcheck span{width:16px;height:16px;border-radius:4px;background:#0570de;display:grid;place-items:center;color:#fff}
+.pcheck span .ic{width:12px;height:12px}
+.pcheck.off span{background:#fff;border:1px solid #c4c4c9}
+.pcheck.off span .ic{display:none}
+.paybtn{height:48px;border-radius:8px;background:#0570de;color:#fff;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:4px}
+.paybtn .ic{width:14px;height:14px}
+.paybtn .spin{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:sp .7s linear infinite}
+.pnote{font-size:12px;color:#6d6e78;text-align:center}
+/* Apple Pay sheet */
+.asheet{background:#1c1c1e;color:#fff;font-family:-apple-system,"SF Pro Text",system-ui,sans-serif;border-radius:16px 16px 0 0}
+.asheet .ah{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px;font-size:22px;font-weight:600}
+.asheet .ah .ib{background:#3a3a3c;border-radius:50%;width:30px;height:30px}
+.asheet .ah .ib .ic{width:14px;height:14px}
+.arow{margin:8px 16px 0;background:#2c2c2e;border-radius:12px;display:flex;align-items:center;gap:12px;padding:12px;font-size:15px}
+.arow .cardart{width:40px;height:26px;border-radius:4px;background:linear-gradient(135deg,#6d5ce8,#d14d72)}
+.atot{padding:16px 16px 4px;font-size:13px;color:#8e8e93}
+.atot b{display:block;font-size:28px;line-height:34px;color:#fff;font-weight:600}
+.aside{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 16px 40px;font-size:13px;color:#fff}
+.dbl{width:56px;height:56px;border-radius:50%;border:2px solid #0a84ff;display:grid;place-items:center;color:#0a84ff;font-size:12px;font-weight:600;animation:pulse 1.4s ease-in-out infinite}
+.dbl.ok{border-color:#30d158;color:#30d158;animation:none}
+.dbl.bad{border-color:#ff453a;color:#ff453a;animation:none}
+@keyframes pulse{50%{transform:scale(1.08)}}
+
+/* done */
+.done{padding:24px 16px 0;text-align:center}
+.done .h{font-weight:600;font-size:24px;line-height:32px;margin-top:12px}
+.done p{font-size:18px;line-height:26px;color:var(--text-secondary);margin-top:6px}
+.badge{width:64px;height:64px;border-radius:50%;margin:0 auto;display:grid;place-items:center;background:rgba(244,134,47,.12);color:var(--brand)}
+.badge .ic{width:30px;height:30px}
+.badge.ok{background:rgba(69,189,75,.14);color:var(--green-400)}
+.timer{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:6px 12px;border-radius:99px;background:var(--bg-surface);font-variant-numeric:tabular-nums;font-weight:600}
+.timer i{width:8px;height:8px;border-radius:50%;background:var(--brand);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.view.in,.view.back-in,.sheet,.dim,.toast,.alertc{animation-duration:.01s!important}}
+</style>
+</head>
+<body>
+<script>if(/[?&]rec\b/.test(location.search))document.body.classList.add('rec');</script>
+<header class="top">
+  <a class="me" href="https://illiavostrikov.com/" aria-label="Illia Vostrikov, home"><svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1C4A3A"/><text x="32" y="43" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="29" letter-spacing="-1" fill="#52E0A1">IV</text></svg><span>Illia Vostrikov</span></a>
+  <a class="pill" href="https://illiavostrikov.com/work/mabrook/">← Mabrook case</a>
+</header>
+<div class="page">
+  <header class="intro">
+    <div>
+      <span class="kicker"><i></i>Live prototype · Mabrook</span>
+      <h1>From a hotel in the feed to a booked room</h1>
+      <p>Mabrook is a Dubai super app: video, shopping, food and hotels behind one login. This is the stay flow in one path: the feed, the hotel, dates and guests, room options, checkout, and what happens when a payment fails or the guest needs a few more minutes.</p>
+    </div>
+    <div class="by">Sample data, no real payments</div>
+  </header>
+
+  <div class="col left">
+    <div class="panel">
+      <h2>Scenario</h2>
+      <div class="scen" id="scen">
+        <button data-s="happy"><b>Happy path</b><small>Pay now with a card. Traveller details are filled in.</small></button>
+        <button data-s="hold"><b>Hold the room</b><small>Hold &amp; resume: the room is kept for 15 minutes while the guest finishes paying.</small></button>
+        <button data-s="fail"><b>Payment fails</b><small>The first card is declined, then the guest tries again without losing anything.</small></button>
+        <button data-s="slow"><b>Slow connection</b><small>Gallery and map load slowly, and one photo fails with a retry.</small></button>
+      </div>
+    </div>
+    <div class="panel ctrl">
+      <h2>Controls</h2>
+      <select id="jump" aria-label="Jump to a screen">
+        <option value="">Jump to a screen</option>
+        <option value="feed">1 · Hotels in the feed</option>
+        <option value="detail">2 · Hotel detail</option>
+        <option value="dates">3 · Dates</option>
+        <option value="guests">4 · Rooms and guests</option>
+        <option value="rooms">5 · Room options</option>
+        <option value="confirm">6 · Confirm and book</option>
+        <option value="pay">7 · Payment</option>
+        <option value="held">8 · Held for 15 minutes</option>
+      </select>
+      <div class="tg">Show taps <button class="switch" id="taps" role="switch" aria-checked="true" aria-label="Show taps"></button></div>
+      <button class="restart" id="restart">Restart scenario</button>
+    </div>
+  </div>
+
+  <div class="stagewrap">
+    <div class="device" id="device"><div class="screen" id="screen">
+      <div class="app" id="app"></div>
+      <div class="island"></div>
+      <div class="homebar"></div>
+    </div></div>
+  </div>
+
+  <div class="col right">
+    <div class="panel">
+      <h2>Things to try</h2>
+      <ul>
+        <li><b>Tap Book now</b> on the resort in the feed: stays sit in the same full-screen feed as video, food and shop.</li>
+        <li><b>Change the dates</b>: tap a start and an end day. Nights and every price after it update.</li>
+        <li><b>Add a child</b> in Rooms and guests: an age row opens only when it’s needed.</li>
+        <li><b>Swipe the price plans</b> under a room: flexible or saver, and the checkout follows your choice.</li>
+        <li><b>Leave the name empty</b> and complete the booking: the field says what’s missing.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h2>Design decisions</h2>
+      <ul>
+        <li><b>One detail template</b> for stays, food and goods: gallery, rating, dates and guests at the top, then facilities.</li>
+        <li><b>A sheet, not a new page</b>, for dates and guests, so the hotel stays in view.</li>
+        <li><b>Steppers instead of dropdowns.</b> Children and pets open their own rows only when needed.</li>
+        <li><b>The deadline first.</b> The free-cancellation date leads the checkout, before any form.</li>
+        <li><b>Hold &amp; resume</b> keeps the room for 15 minutes, so it isn’t lost mid-checkout.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h2>How it’s built</h2>
+      <p>Screens 1–8 follow the Figma Flow 1, with photos, icons and colours taken from the file. The loading, error and declined-payment states come from its Under the hood page. The booked confirmation was designed in code from the same components.</p>
+      <div class="links">
+        <a href="https://www.figma.com/design/QKpef6ehSSqtRmjkMj3llq/Illia-Vostrikov-%C2%B7-Mabrook-App?node-id=40002003-20899" target="_blank" rel="noopener">Figma file · Flows <span>opens Figma ↗</span></a>
+        <a href="https://illiavostrikov.com/work/mabrook/">Read the Mabrook case <span>illiavostrikov.com</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+{
+const $ = (s, r=document) => r.querySelector(s);
+const app = $('#app'), screen = $('#screen');
+const Q = new URLSearchParams(location.search);
+const ic = (n, st='') => `<i class="ic" style="--i:url(img/i/${n}.svg);${st}" aria-hidden="true"></i>`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const usd = n => 'US$' + n.toLocaleString('en-US',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});
+const usd2 = n => '$' + n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+/* ---------- sample data ---------- */
+const HOTEL = 'InterContinental Fiji Golf Resort & Spa by IHG';
+const TAX = 300.27/3940;                  // taxes & fees, as in the Figma breakdown
+const ROOMS = {
+  twin:{name:'Twin room with garden view', imgs:['twin-1','twin-2','detail-1','detail-2'], left:3,
+    feats:[['bed','2 full beds'],['expand','Room size: 63 m²'],['crib','1 free crib available upon request'],['bath','Attached bathroom'],['wifi','Free WiFi']],
+    more:[['ac','Air conditioning'],['restaurant','Breakfast for 4 included']], short:[['bed','2 full beds'],['wifi','Free WiFi'],['ac','Air conditioning']],
+    night:{flex:3940/7, saver:3620/7}},
+  suite:{name:'Two-Bedroom Suite · Club Lounge Access', imgs:['suite-1','suite-2','detail-3','detail-1'], left:0,
+    feats:[['bed','Bedroom 1: 1 king bed<br>Bedroom 2: 2 single beds'],['expand','Room size: 156 m²'],['bath','Attached bathroom'],['wifi','Free WiFi'],['ac','Air conditioning']],
+    more:[['restaurant','Club Lounge breakfast and evening drinks']], short:[['bed','1 king, 2 single beds'],['wifi','Free WiFi'],['ac','Air conditioning']],
+    night:{flex:5636/7, saver:5180/7}}
+};
+const PLANS = {
+  flex:{name:'Flexible', bullets:[['Free stay for both children'],['Breakfast included'],['Free cancellation until {fc}','ok'],['Pay now, later or at the property']]},
+  saver:{name:'Saver', bullets:[['Free stay for both children'],['Breakfast included'],['Non-refundable'],['Pay now']]}
+};
+const MON = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MON3 = MON.map(m=>m.slice(0,3));
+const WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const D = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const fmtDay = s => { const d = D(s); return `${WD[d.getDay()]}, ${MON3[d.getMonth()]} ${d.getDate()}`; };
+const fmtShort = s => { const d = D(s); return `${MON3[d.getMonth()]} ${d.getDate()}`; };
+const TODAY = '2025-11-03';
+
+/* ---------- state ---------- */
+const SEEDS = {
+  happy:{first:'Sarah', last:'Connor', method:'now', fail:0, slow:false},
+  hold:{first:'Sarah', last:'Connor', method:'hold', fail:0, slow:false},
+  fail:{first:'Sarah', last:'Connor', method:'now', fail:1, slow:false},
+  slow:{first:'', last:'', method:'now', fail:0, slow:true}
+};
+let S;
+function fresh(sc){
+  const sd = SEEDS[sc];
+  return {scenario:sc, stack:['feed'], ci:'2025-11-11', co:'2025-11-18', rooms:1, adults:2, children:2, ages:[1,5], pets:false,
+    room:'twin', plan:'flex', first:sd.first, last:sd.last, email:'sarah.connor@gmail.com', phone:'', travelerSaved:false, tried:false,
+    points:'', pointsUsed:0, method:sd.method, failLeft:sd.fail, slow:sd.slow, liked:false, likes:500, saved:false,
+    more:{}, gal:{}, failedImg:sd.slow, payOpen:false, paying:false, placed:null, holdUntil:0, sheet:null, draft:null};
+}
+const nights = () => Math.round((D(S.co)-D(S.ci))/864e5);
+function price(room=S.room, plan=S.plan){
+  const base = Math.round(ROOMS[room].night[plan]*nights()*S.rooms*100)/100;  // 7 nights of the twin, flexible = $3,940, as in the Figma
+  const tax = Math.round(base*TAX*100)/100;
+  return {night:ROOMS[room].night[plan], base, tax, total:Math.round((base+tax)*100)/100};
+}
+function due(){ const p = price(); return Math.round((p.total - S.pointsUsed)*100)/100; }
+const fcDate = () => fmtShort(iso(addDays(D(S.ci),-7)));
+const guestsText = () => `${S.rooms} room${S.rooms>1?'s':''}  •  ${S.adults} adult${S.adults>1?'s':''}${S.children?`  •  ${S.children} child${S.children>1?'ren':''}`:''}`;
+const whoText = () => `${S.adults} Adult${S.adults>1?'s':''}${S.children?`, ${S.children} Child${S.children>1?'ren':''}`:''}`;
+const priceFor = () => `Price for ${S.adults} adult${S.adults>1?'s':''}${S.children?`, ${S.children} child${S.children>1?'ren':''} (${S.ages.slice(0,S.children).join(' and ')} years old)`:''}`;
+
+/* ---------- pieces ---------- */
+const statusBar = () => `<div class="sb"><span>9:41</span><img src="img/status.svg" alt=""></div>`;
+const navBar = (title, sub='', right='') => `<div class="nav"><button class="ib" data-act="back" aria-label="Back">${ic('back','width:12px;height:20px')}</button><div class="t">${esc(title)}${sub?`<small>${esc(sub)}</small>`:''}</div>${right||'<span class="ib"></span>'}</div>`;
+function gallery(key, imgs, h){
+  const i = S.gal[key]||0;
+  return `<div class="gal" ${h?`style="height:${h}px"`:''} data-gal="${key}"><div class="track">${imgs.map((m,n)=>`<div class="slide" data-n="${n}" style="background-image:url(img/${m}.webp)">${S.slow && key==='hotel' && n===1 && S.failedImg ? `<div class="center" style="background:#262626"><div class="failbox"><b class="h2">Image didn’t load.</b><span class="c2">Check your connection and try again!</span><button class="btn s out" style="width:auto;padding:0 20px;margin-top:8px" data-act="retryimg">Retry</button></div></div>`:''}</div>`).join('')}</div><div class="dots">${imgs.map((_,n)=>`<i class="${n===i?'on':''}"></i>`).join('')}</div>${S.slow && key==='hotel' && !S.galLoaded ? `<div class="center" style="background:#1a1a1a" data-loading="gal"><div class="loader"></div></div>`:''}</div>`;
+}
+function stayCard(cls=''){
+  return `<button class="stay ${cls}" data-act="sheet" data-v="dates" aria-label="Edit dates and guests"><div class="two"><div><div class="up">Check-in</div><div class="v">${fmtDay(S.ci)}</div></div><div><div class="up">Check-out</div><div class="v">${fmtDay(S.co)}</div></div></div><div class="up">Book</div><div class="v" data-act="sheet" data-v="guests">${guestsText()}</div></button>`;
+}
+function bookingCard(){
+  const R = ROOMS[S.room], p = price();
+  const fc = S.plan==='flex';
+  return `<div class="card">
+    <div class="h2">${esc(HOTEL)}</div><div class="c3" style="margin-top:8px">Fiji</div>
+    <div class="row g8" style="margin-top:8px">${fc?ic('check','width:16px;height:16px;color:var(--brand)')+' Fully refundable':ic('info','width:16px;height:16px;color:var(--text-tertiary)')+' Non-refundable'}</div>
+    <div class="sec two"><div><div class="up">Check-in</div><div style="margin-top:4px">${fmtDay(S.ci)}</div></div><div style="border-left:1px solid var(--border-subtle);padding-left:12px"><div class="up">Check-out</div><div style="margin-top:4px">${fmtDay(S.co)}</div></div></div>
+    <div class="sec"><div class="h2" style="font-size:14px">${esc(R.name)}</div><div class="feat2">${R.short.slice(0,1).map(([i,t])=>`<div>${ic(i)}${t}</div>`).join('')}<div>${ic('users')}${whoText()}</div>${R.short.slice(1).map(([i,t])=>`<div>${ic(i)}${t}</div>`).join('')}</div></div>
+    <div class="sec"><div class="h2" style="font-size:14px">${fc?`Free cancellation until ${fcDate()}`:'Non-refundable'}</div><p class="c2" style="margin-top:6px">${fc?`Cancellations or changes made after ${fcDate()}, 2025, 12:00 PM Fiji Time are subject to a fee of one night, ${usd2(p.night*S.rooms)}. After ${fmtShort(iso(addDays(D(S.ci),-2)))}, the fee is the full stay, ${usd2(p.base)}.`:`This rate is cheaper because it can’t be changed or cancelled after booking.`}</p></div>
+  </div>`;
+}
+
+/* ---------- screens ---------- */
+function vFeed(){
+  return `<div class="feed view-c" style="position:absolute;inset:0">
+    <div class="bg"></div><div class="sc1"></div><div class="sc2"></div><div class="sc3"></div>
+    ${statusBar()}
+    <div class="fnav"><img class="logo" src="img/logo.svg" alt="Mabrook"><div class="tabs" id="tabs">${['For you','Friends','Games','Lives','Shop','Food ordering','Hotel booking'].map(t=>`<button class="tab ${t==='Hotel booking'?'on':''}" data-act="tab" data-v="${t}">${t}</button>`).join('')}</div><button class="ib" data-act="toast" data-v="Search across verticals is Flow 2 in the Figma file." aria-label="Search" style="margin-right:6px">${ic('search')}</button></div>
+    <div class="side">
+      <div style="display:flex;flex-direction:column;align-items:center"><div class="av"></div><span class="avb">${ic('minus','width:16px;height:16px')}</span></div>
+      <button class="act" data-act="toast" data-v="1.2k people watched this">${ic('eye')}1.2k</button>
+      <button class="act ${S.liked?'on':''}" data-act="like">${ic('like')}${S.likes}</button>
+      <button class="act" data-act="toast" data-v="Comments are out of this prototype’s scope">${ic('comment')}125</button>
+      <button class="act ${S.saved?'on':''}" data-act="save">${ic('bookmark')}${125+(S.saved?1:0)}</button>
+      <button class="act" data-act="toast" data-v="Link copied">${ic('share')}112</button>
+    </div>
+    <div class="pinfo">
+      <div class="w">
+        <button class="booknow" data-act="go" data-v="detail"><span>Book now</span>${ic('arrow-right','width:16px;height:16px')}</button>
+        <div style="display:flex;flex-direction:column;gap:8px;filter:drop-shadow(0 0 2px rgba(0,0,0,.2))">
+          <div class="h2 ellip" style="font-size:16px">${esc(HOTEL)}</div>
+          <div class="row g4 cap">${ic('music','width:14px;height:14px')}InteriorInnovator</div>
+          <div class="ellip">Experience world-class service at ${esc(HOTEL)}</div>
+        </div>
+      </div>
+      <div class="tabbar"><div class="progress"><i></i></div><div class="tbar"><button class="on" aria-label="Home">${ic('home','width:28px;height:28px')}</button><button aria-label="Trending" data-act="toast" data-v="Only the feed is in this prototype">${ic('trend','width:28px;height:28px')}</button><button aria-label="AI assistant" data-act="toast" data-v="Only the feed is in this prototype"><span class="ai"></span></button><button aria-label="Create" data-act="toast" data-v="Only the feed is in this prototype">${ic('plus','width:24px;height:24px')}</button><button aria-label="Profile" data-act="toast" data-v="Only the feed is in this prototype">${ic('user','width:26px;height:26px')}</button></div><div class="hi"></div></div>
+    </div>
+  </div>`;
+}
+function vDetail(){
+  return `${statusBar()}${navBar('Detail','',`<div class="row"><button class="ib" data-act="save" aria-label="Save">${ic('bookmark',S.saved?'color:var(--brand)':'')}</button><button class="ib" data-act="toast" data-v="Link copied" aria-label="Share">${ic('share')}</button></div>`)}
+  <div class="body">
+    ${gallery('hotel',['pool','detail-1','twin-1','suite-1'])}
+    <div class="pad" style="padding-top:16px"><h1 class="h1">${esc(HOTEL)}</h1>
+      <div class="row" style="margin-top:8px;justify-content:space-between"><span class="chip">${ic('leaf','color:var(--green-400)')}Sustainability certification</span><span class="row g4">${ic('star','width:16px;height:16px;color:var(--brand)')}<span style="font-size:16px">5.0</span></span></div></div>
+    ${stayCard()}
+    <div class="mapw" data-act="toast" data-v="Opens in Maps">${S.slow && !S.mapLoaded?`<div class="center" data-loading="map"><div class="loader"></div></div>`:''}</div>
+    <div class="row g4 c3 cap pad" style="margin-top:8px">${ic('pin','width:14px;height:14px;color:var(--brand)')}Maro Road, Natadola, Fiji</div>
+    <div style="margin-top:12px;border-top:1px solid var(--border-subtle)">
+      <button class="lrow" data-act="info" data-v="about"><span class="f1">About hotel</span>${ic('chevron-right','width:10px;height:18px')}</button>
+      <button class="lrow" data-act="info" data-v="facilities" style="align-items:flex-start"><div class="f1"><div>Facilities</div><div class="row" style="flex-wrap:wrap;gap:8px;margin-top:8px">${[['pool','3 swimming pools'],['beach','Beachfront'],['restaurant','3 restaurants']].map(([i,t])=>`<span class="chip">${ic(i)}${t}</span>`).join('')}<span class="chip">explore more…</span></div></div>${ic('chevron-right','width:10px;height:18px;margin-top:14px')}</button>
+      <button class="lrow" data-act="info" data-v="reviews"><span>Guest reviews</span><span class="stars">${ic('star')}${ic('star')}${ic('star')}${ic('star')}${ic('star')}</span><span class="f1 cap">5.0</span>${ic('chevron-right','width:10px;height:18px')}</button>
+      <button class="lrow" data-act="info" data-v="policies"><span class="f1">Property policies</span>${ic('chevron-right','width:10px;height:18px')}</button>
+      <button class="lrow" data-act="info" data-v="sustain"><span class="f1">Sustainability certification</span>${ic('chevron-right','width:10px;height:18px')}</button>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+  <div class="foot"><button class="btn" data-act="go" data-v="rooms">See room options</button></div>`;
+}
+function vRooms(){
+  const fc = fcDate();
+  return `${statusBar()}${navBar(HOTEL, `${fmtShort(S.ci)} - ${fmtShort(S.co)} · ${nights()} night${nights()>1?'s':''}`)}
+  <div class="body">${Object.entries(ROOMS).map(([k,R])=>`
+    <section class="room">
+      ${gallery(k, R.imgs, 200)}
+      <div class="row g8"><h2 class="h1 f1">${esc(R.name)}</h2>${ic('chevron-right','width:10px;height:18px;color:var(--brand)')}</div>
+      <div class="feat">${R.feats.map(([i,t])=>`<div>${ic(i)}<span>${t}</span></div>`).join('')}${S.more[k]?R.more.map(([i,t])=>`<div class="expand">${ic(i)}<span>${t}</span></div>`).join(''):''}</div>
+      <button class="more ${S.more[k]?'on':''}" data-act="more" data-v="${k}">${S.more[k]?'Show less':'Show more'} ${ic('chevron-down')}</button>
+      <div class="plans">${Object.entries(PLANS).map(([pk,P])=>{ const p = price(k,pk); return `
+        <div class="plan"><div class="h2">${priceFor()}</div>
+          <ul>${P.bullets.map(([b,c])=>`<li class="${c||''}">${b.replace('{fc}',fc)}</li>`).join('')}</ul>
+          <div class="hr" style="margin:0 -12px 0"></div>
+          <div class="h2" style="margin-top:12px;font-size:14px">Price for ${nights()} night${nights()>1?'s':''} (${fmtShort(S.ci)} - ${fmtShort(S.co)})${S.rooms>1?` · ${S.rooms} rooms`:''}</div>
+          <div class="price">${usd(p.base)} <span class="cap c3">+ ${usd(p.tax)} taxes and fees</span></div>
+          <div class="cap c3">${P.name} rate · ${usd2(p.night)} a night</div>
+          <div class="sp"></div>
+          <button class="btn s" data-act="choose" data-room="${k}" data-plan="${pk}">Continue</button>
+        </div>`; }).join('')}</div>
+      ${R.left?`<div class="rleft">Just ${R.left} left!</div>`:''}
+    </section>`).join('')}
+    <div style="height:34px"></div>
+  </div>`;
+}
+function vConfirm(){
+  const p = price(), fc = S.plan==='flex';
+  const showErr = k => S.tried && !S[k].trim();
+  const fld = (k,label,attrs='') => `<div class="fld ${showErr(k)?'bad':''}"><label for="f-${k}">${label}</label><input class="inp" id="f-${k}" data-f="${k}" value="${esc(S[k])}" ${attrs}>${showErr(k)?`<div class="err">${ic('alert')}Enter your ${label.toLowerCase()} as on your ID</div>`:''}</div>`;
+  const cta = S.method==='hold' ? 'Hold for 15 minutes' : S.method==='prop' ? 'Book, pay at the property' : 'Complete booking';
+  return `${statusBar()}${navBar('Confirm and book')}
+  <div class="body">
+    ${fc?`<div class="banner">No worries! Cancel for free until ${fcDate()}.</div>`:`<div class="banner neutral">Saver rate: this booking can’t be changed or cancelled.</div>`}
+    <div class="hr" style="margin-top:20px"></div>
+    <div class="st">Booking details</div>
+    ${bookingCard()}
+    <div class="hr" style="margin-top:24px"></div>
+    <div class="st">Personal information</div>
+    ${S.travelerSaved ? `<div class="saved">${ic('check')}<div class="f1"><div class="h2" style="font-size:14px">${esc(S.first)} ${esc(S.last)}</div><div class="cap c2">${esc(S.email)}${S.phone?' · +1 '+esc(S.phone):''}</div></div><button class="cb" style="font-weight:600" data-act="edittrav">Edit</button></div>` : `
+      ${fld('first','First name','autocomplete="given-name"')}
+      ${fld('last','Last name','autocomplete="family-name"')}
+      ${fld('email','Email','type="email" autocomplete="email"')}
+      <div class="fld"><label for="f-phone">Phone number</label><div class="phone"><img src="img/flag-us.webp" alt="United States">+1 ${ic('chevron-down','width:12px;height:12px;color:var(--brand)')}<input id="f-phone" data-f="phone" value="${esc(S.phone)}" inputmode="tel" autocomplete="tel-national" placeholder="(555) 010-2030"></div></div>
+      <div class="pad" style="margin-top:16px"><button class="btn" data-act="savetrav">Save traveler</button></div>`}
+    <div class="hr" style="margin-top:24px"></div>
+    <div class="fld" style="margin-top:20px"><label for="f-points">Use loyalty points · 1,200 available</label><div class="row g12"><input class="inp f1" id="f-points" data-f="points" value="${esc(S.points)}" inputmode="numeric" placeholder="1,200 points = US$12"><button class="btn s" style="width:88px;${S.points?'':'opacity:.4'}" data-act="points">${S.pointsUsed?'Remove':'Apply'}</button></div>${S.pointsUsed?`<div class="err" style="color:var(--green-400)">${ic('check')}${usd2(S.pointsUsed)} off with ${Math.round(S.pointsUsed*100).toLocaleString('en-US')} points</div>`:''}</div>
+    <div class="hr" style="margin-top:20px"></div>
+    <div class="st">Payment method</div>
+    ${[['prop','Pay at the property',''],['now','Pay now',''],['hold','Hold & resume','We’ll hold your booking for 15 minutes']].map(([k,t,s])=>`<button class="radio" role="radio" aria-checked="${S.method===k}" data-act="method" data-v="${k}" ${k==='prop'&&!fc?'disabled':''}><span class="f1" style="font-size:16px">${t}${s?`<small class="cap c2" style="display:block;margin-top:2px">${s}</small>`:''}${k==='prop'&&!fc?`<small class="cap c2" style="display:block;margin-top:2px">Not available on the Saver rate</small>`:''}</span><span class="o"></span></button>`).join('')}
+    <div class="hr" style="margin-top:8px"></div>
+    <div class="st">Payment breakdown</div>
+    <div class="bk tot"><span>Total</span><b>${usd2(due())}</b></div>
+    <div class="bk"><span>Hotel price (${usd2(p.night)} x ${nights()} nights${S.rooms>1?` x ${S.rooms} rooms`:''})</span><b>${usd2(p.base)}</b></div>
+    <div class="bk"><span>Taxes &amp; fees</span><b>${usd2(p.tax)}</b></div>
+    ${S.pointsUsed?`<div class="bk"><span>Loyalty points</span><b style="color:var(--green-400)">−${usd2(S.pointsUsed)}</b></div>`:''}
+    <div class="hr" style="margin-top:12px"></div>
+    <p class="pad c2" style="padding-top:16px;padding-bottom:20px">By clicking “${cta}”, you acknowledge that you have read and are bound by Mabrook Terms of use and Booking terms of use.</p>
+  </div>
+  <div class="foot"><button class="btn" data-act="complete">${cta}</button></div>`;
+}
+function vDone(){
+  const held = S.placed.type==='hold';
+  return `${statusBar()}
+  <div class="body"><div class="done">
+    <div class="badge ${held?'':'ok'}">${ic(held?'lock':'check')}</div>
+    <div class="h">${held?'Done!':'You’re booked!'}</div>
+    <p id="holdmsg">${held?'Your booking’s locked in for the next 15 minutes.':S.placed.type==='prop'?`Pay ${usd2(S.placed.amount)} at the property. Confirmation <span style="white-space:nowrap">${S.placed.no}</span>.`:`${usd2(S.placed.amount)} paid. Confirmation <span style="white-space:nowrap">${S.placed.no}</span>.`}</p>
+    ${held?`<div class="timer"><i></i><span id="timer">15:00</span> left to pay</div>`:`<p class="cap" style="font-size:14px;margin-top:10px">We sent the details to ${esc(S.email)}.</p>`}
+  </div>
+  ${bookingCard()}
+  <div style="height:24px"></div></div>
+  <div class="foot">${held?`<button class="btn" data-act="paynow">Continue with payment</button>`:`<button class="btn" data-act="restart">Back to the feed</button>`}</div>`;
+}
+const VIEWS = {feed:vFeed, detail:vDetail, rooms:vRooms, confirm:vConfirm, done:vDone};
+
+/* ---------- sheets ---------- */
+function sheetHTML(){
+  const sh = S.sheet; if(!sh) return '';
+  if(sh==='dates'||sh==='guests') return editSheet(sh);
+  if(sh==='pay') return paySheet();
+  if(sh==='apple') return appleSheet();
+  return infoSheet(sh);
+}
+function editSheet(tab){
+  const d = S.draft;
+  const head = `<div class="grab"></div><div class="shead"><div class="t">Edit details</div><button class="ib" data-act="close" aria-label="Close">${ic('x','width:16px;height:16px')}</button></div>
+    <div class="seg"><button class="${tab==='dates'?'on':''}" data-act="tabsheet" data-v="dates">${ic('calendar')}${d.ci?fmtShort(d.ci):'Check-in'} → ${d.co?fmtShort(d.co):'Check-out'}</button><button class="${tab==='guests'?'on':''}" data-act="tabsheet" data-v="guests">${ic('bed')}${d.rooms} ${ic('users')}${d.adults+d.children}</button></div>`;
+  let body;
+  if(tab==='dates'){
+    const months = [[2025,10],[2025,11],[2026,0]];
+    body = `<div class="wk">${['MON','TUE','WED','THU','FRI','SAT','SUN'].map(w=>`<span>${w}</span>`).join('')}</div>
+    <div class="cal" id="cal">${months.map(([y,m])=>{
+      const first = new Date(y,m,1), lead = (first.getDay()+6)%7, len = new Date(y,m+1,0).getDate();
+      let cells = '<span></span>'.repeat(lead);
+      for(let i=1;i<=len;i++){ const s = iso(new Date(y,m,i)); const past = s < TODAY;
+        const st = s===d.ci, en = s===d.co || (st && !d.co), rng = d.ci && d.co && s>d.ci && s<d.co;
+        cells += `<button class="day ${st?'ds':''} ${en&&d.co?'de':''} ${st&&!d.co?'de':''} ${rng?'rng':''} ${s===TODAY?'today':''}" data-act="day" data-v="${s}" ${past?'disabled':''} aria-label="${fmtDay(s)}"><span>${i}</span></button>`; }
+      return `<div class="mon">${MON[m]} ${y}</div><div class="days">${cells}</div>`;
+    }).join('')}</div>
+    <div class="pad cap c2" style="padding-top:8px;padding-bottom:4px;flex:none">${d.ci&&d.co?`${Math.round((D(d.co)-D(d.ci))/864e5)} nights · ${fmtDay(d.ci)} → ${fmtDay(d.co)}`:'Tap a check-out day'}</div>`;
+  } else {
+    const stp = (k,label,min,max,sub='') => `<div class="stp"><span>${label}${sub?`<small>${sub}</small>`:''}</span><div class="stepper"><button data-act="step" data-k="${k}" data-v="-1" ${d[k]<=min?'disabled':''} aria-label="Fewer ${label.toLowerCase()}">${ic('minus')}</button><span>${d[k]}</span><button data-act="step" data-k="${k}" data-v="1" ${d[k]>=max?'disabled':''} aria-label="More ${label.toLowerCase()}">${ic('plus')}</button></div></div>`;
+    body = `<div class="body" style="flex:1">${stp('rooms','Rooms',1,4)}${stp('adults','Adults',1,8)}${stp('children','Children',0,4,'Ages 0–17')}
+      ${Array.from({length:d.children},(_,i)=>`<div class="stp expand" style="padding-left:32px"><span class="c2" style="font-size:14px">Child ${i+1} age</span><select class="sel" data-age="${i}" aria-label="Child ${i+1} age">${Array.from({length:18},(_,a)=>`<option ${a===d.ages[i]?'selected':''} value="${a}">${a} year${a===1?'':'s'}</option>`).join('')}</select></div>`).join('')}
+      <div class="stp"><span>Traveling with pets</span><button class="toggle" role="switch" aria-checked="${d.pets}" data-act="pets" aria-label="Traveling with pets"></button></div>
+      ${d.pets?`<div class="stp expand" style="padding-left:32px;border-bottom:0"><span class="c2" style="font-size:14px">We’ll show pet-friendly rooms and tell the property you’re bringing a pet.</span></div>`:''}
+    </div>`;
+  }
+  return `<div class="dim" data-act="close"></div><div class="sheet tall" role="dialog" aria-label="Edit details">${head}${body}<div class="sfoot"><button class="btn out" data-act="reset">Reset</button><button class="btn" data-act="apply" ${tab==='dates'&&!(d.ci&&d.co)?'disabled':''}>Apply</button></div></div>`;
+}
+function infoSheet(k){
+  const T = {
+    about:['About hotel','A beachfront resort on Natadola Bay. Rooms open to gardens or the lagoon, with pools, restaurants and a spa.'],
+    facilities:['Facilities','3 swimming pools · Beachfront · 3 restaurants · Spa · Golf course · Kids’ club · Free WiFi · Airport shuttle'],
+    reviews:['Guest reviews','Rated 5.0. Reviews are grouped by cleanliness, comfort and facilities, with the newest first.'],
+    policies:['Property policies','Check-in from 3:00 PM, check-out until 11:00 AM. Children of all ages are welcome. Small pets on request.'],
+    sustain:['Sustainability certification','The badge on the hotel page links here: what the certification covers and who issued it.']
+  }[k];
+  return `<div class="dim" data-act="close"></div><div class="sheet" role="dialog" aria-label="${T[0]}"><div class="grab"></div><div class="shead"><div class="t">${T[0]}</div><button class="ib" data-act="close" aria-label="Close">${ic('x','width:16px;height:16px')}</button></div><p class="pad c2" style="font-size:16px;line-height:24px">${T[1]}</p><p class="pad cap c3" style="padding-top:12px;padding-bottom:48px">Sample content for the prototype.</p></div>`;
+}
+function paySheet(){
+  const P = S.pay;
+  const brands = `<div class="brands"><i style="background:#1a1f71"></i><i style="background:linear-gradient(90deg,#eb001b 50%,#f79e1b 50%)"></i><i style="background:#2e77bc"></i></div>`;
+  const amount = usd2(S.placed && S.placed.type==='hold' ? S.placed.amount : due());
+  return `<div class="dim" data-act="close"></div><div class="sheet psheet" role="dialog" aria-label="Payment"><div class="grab"></div>
+    <div class="phead">${P.step==='card'?`<button class="ib" data-act="paystep" data-v="choose" aria-label="Back">${ic('back','width:10px;height:16px')}</button>`:'<span class="ib"></span>'}<span class="f1"></span><button class="ib" data-act="close" aria-label="Close">${ic('x','width:14px;height:14px')}</button></div>
+    <div class="pbody">
+    ${P.step==='choose'?`
+      <button class="apay" data-act="apple" aria-label="Pay with Apple Pay"><svg width="16" height="19" viewBox="0 0 17 20" aria-hidden="true"><path fill="#fff" d="M14.1 10.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9C3.6 4.8 2 5.8 1.1 7.4c-1.9 3.2-.5 8 1.3 10.6.9 1.3 1.9 2.7 3.3 2.6 1.3-.1 1.8-.9 3.4-.9 1.6 0 2 .9 3.4.8 1.4 0 2.3-1.3 3.2-2.6 1-1.5 1.4-2.9 1.4-3-.1 0-2.9-1.1-3-4.3zM11.5 3c.7-.9 1.2-2 1-3.2-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.2.1 2.3-.6 3.1-1.5z"/></svg>Pay</button>
+      <div class="or">Or pay using</div>
+      <button class="pm" data-act="paystep" data-v="card">${ic('card')}<span class="f1">Card</span>${brands}</button>
+      <p class="pnote">Sample: nothing is charged in this prototype.</p>`:`
+      <div class="pt">Add card</div>
+      <div class="pl"><span>Card information</span><button class="scan" data-act="toast" data-v="The camera isn’t part of this prototype">Scan card</button></div>
+      <div class="pgroup ${P.err?'bad':''}"><div class="row"><input data-p="num" value="${esc(P.num)}" placeholder="Card number" inputmode="numeric" autocomplete="cc-number" aria-label="Card number">${brands}</div><div class="r"><input data-p="exp" value="${esc(P.exp)}" placeholder="MM / YY" inputmode="numeric" aria-label="Expiry"><input data-p="cvc" value="${esc(P.cvc)}" placeholder="CVC" inputmode="numeric" aria-label="CVC"></div></div>
+      ${P.err?`<div class="perr">${P.err}</div>`:''}
+      <div class="pl" style="margin-top:4px">Billing address</div>
+      <div class="pgroup"><select aria-label="Country or region"><option>United States</option><option>United Arab Emirates</option><option>Fiji</option></select><div class="r"><input data-p="zip" value="${esc(P.zip)}" placeholder="ZIP" inputmode="numeric" aria-label="ZIP"></div></div>
+      <button class="pcheck ${P.save?'':'off'}" data-act="savecard"><span>${ic('check')}</span>Save this card for future Mabrook payments</button>
+      <button class="paybtn" data-act="pay">${S.paying?'<span class="spin"></span>Processing…':`Pay ${amount} ${ic('lock')}`}</button>
+      <p class="pnote">Sample card is filled in. Nothing is charged.</p>`}
+    </div><div style="height:30px;flex:none"></div></div>`;
+}
+function appleSheet(){
+  const A = S.apple;
+  return `<div class="dim"></div><div class="sheet asheet" role="dialog" aria-label="Apple Pay">
+    <div class="ah"><span><svg width="16" height="19" viewBox="0 0 17 20" aria-hidden="true" style="vertical-align:-2px"><path fill="#fff" d="M14.1 10.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9C3.6 4.8 2 5.8 1.1 7.4c-1.9 3.2-.5 8 1.3 10.6.9 1.3 1.9 2.7 3.3 2.6 1.3-.1 1.8-.9 3.4-.9 1.6 0 2 .9 3.4.8 1.4 0 2.3-1.3 3.2-2.6 1-1.5 1.4-2.9 1.4-3-.1 0-2.9-1.1-3-4.3zM11.5 3c.7-.9 1.2-2 1-3.2-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.2.1 2.3-.6 3.1-1.5z"/></svg> Pay</span><button class="ib" data-act="close" aria-label="Cancel">${ic('x')}</button></div>
+    <div class="arow"><span class="cardart"></span><span class="f1">Revolut Visa</span><span style="color:#8e8e93">•••• 1234</span></div>
+    <div class="arow" style="color:#8e8e93">Change payment method</div>
+    <div class="atot">Pay Mabrook · ${esc(HOTEL.split(' by')[0])}<b>${usd2(S.placed && S.placed.type==='hold' ? S.placed.amount : due())}</b></div>
+    <div class="aside">${A==='wait'?`<button class="dbl" data-act="applego" aria-label="Confirm with side button">Tap</button>Double-click to pay (tap the circle)`:A==='proc'?`<span class="dbl" style="animation:sp .9s linear infinite;border-right-color:transparent"></span>Processing…`:A==='ok'?`<span class="dbl ok">✓</span>Done`:`<span class="dbl bad">!</span><span>Payment not completed</span><button class="btn s" style="width:auto;padding:0 18px;background:#3a3a3c;color:#fff" data-act="paystep" data-v="card">Update card information</button>`}</div>
+  </div>`;
+}
+
+/* ---------- render ---------- */
+let anim = '';
+function render(keepScroll=true){
+  const cur = S.stack[S.stack.length-1];
+  const prevBody = app.querySelector('.view .body');
+  const st = keepScroll && prevBody ? prevBody.scrollTop : 0;
+  const ae = document.activeElement, fid = ae && app.contains(ae) ? ae.id || (ae.dataset.p && 'p-'+ae.dataset.p) : null;
+  const sel = fid && ae.selectionStart!=null ? [ae.selectionStart, ae.selectionEnd] : null;
+  app.innerHTML = `<div class="view ${anim}">${VIEWS[cur]()}</div>${sheetHTML()}`;
+  if(S.sheetStill) app.querySelectorAll('.dim,.sheet').forEach(n=>n.style.animation='none');
+  anim = '';
+  const b = app.querySelector('.view .body'); if(b && keepScroll) b.scrollTop = st;
+  app.querySelectorAll('.gal').forEach(g=>{ const k=g.dataset.gal, t=g.querySelector('.track'); if(S.gal[k]) t.scrollLeft = S.gal[k]*t.clientWidth;
+    t.addEventListener('scroll',()=>{ const n=Math.round(t.scrollLeft/t.clientWidth); if(n!==(S.gal[k]||0)){ S.gal[k]=n; g.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===n)); } },{passive:true}); });
+  const tabs = $('#tabs'); if(tabs) tabs.scrollLeft = tabs.scrollWidth;
+  const cal = $('#cal'); if(cal && S.calScroll!=null) cal.scrollTop = S.calScroll;
+  if(fid){ const n = fid.startsWith('p-') ? app.querySelector(`[data-p="${fid.slice(2)}"]`) : document.getElementById(fid); if(n){ n.focus({preventScroll:true}); if(sel) try{ n.setSelectionRange(sel[0],sel[1]); }catch(e){} } }
+  if(cur==='done' && S.placed && S.placed.type==='hold') tickTimer();
+  S.sheetStill = false;
+}
+function go(v){ S.stack.push(v); anim='in'; closeSheet(true); render(false); slowLoads(); }
+function back(){ if(S.stack.length>1){ S.stack.pop(); anim='back-in'; render(false); } }
+function openSheet(k){ S.sheet = k; if(k==='dates'||k==='guests'){ S.draft = {ci:S.ci, co:S.co, rooms:S.rooms, adults:S.adults, children:S.children, ages:S.ages.slice(), pets:S.pets}; S.calScroll = null; } render(); }
+function closeSheet(silent){
+  if(!S.sheet) return;
+  if(silent){ S.sheet=null; return; }
+  app.querySelectorAll('.dim,.sheet').forEach(n=>n.classList.add('out'));
+  setTimeout(()=>{ S.sheet=null; render(); }, 220);
+}
+function stillRender(){ S.sheetStill = true; const c=$('#cal'); S.calScroll = c ? c.scrollTop : null; render(); }
+let toastT;
+function toast(msg){ clearTimeout(toastT); app.querySelectorAll('.toast').forEach(t=>t.remove()); const t=document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); t.textContent=msg; app.appendChild(t); toastT=setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(),200); },2200); }
+function alertTop(msg){ const a=document.createElement('div'); a.className='alertc'; a.setAttribute('role','alert'); a.innerHTML=`${ic('alert')}<span>${msg}</span>`; app.appendChild(a); setTimeout(()=>{ a.classList.add('out'); setTimeout(()=>a.remove(),260); },4200); }
+function slowLoads(){
+  if(!S.slow) return;
+  const cur = S.stack[S.stack.length-1];
+  if(cur==='detail'){
+    if(!S.galLoaded) setTimeout(()=>{ S.galLoaded=true; if(S.stack[S.stack.length-1]==='detail'){ const l=app.querySelector('[data-loading="gal"]'); if(l) l.remove(); } },1600);
+    if(!S.mapLoaded) setTimeout(()=>{ S.mapLoaded=true; const l=app.querySelector('[data-loading="map"]'); if(l) l.remove(); },2600);
+  }
+}
+let timerT;
+function tickTimer(){
+  clearInterval(timerT);
+  const el = () => document.getElementById('timer');
+  const f = () => { const left = Math.max(0, S.holdUntil - Date.now()), m = Math.floor(left/60000), s = Math.floor(left%60000/1000); const n = el(); if(!n){ clearInterval(timerT); return; }
+    if(left<=0){ clearInterval(timerT); n.parentElement.innerHTML = 'Pay now to check if the room is still free.'; const h=document.getElementById('holdmsg'); if(h) h.textContent='The 15-minute hold has ended.'; return; }
+    n.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
+  f(); timerT = setInterval(f, 1000);
+}
+
+/* ---------- payments ---------- */
+const newPay = () => ({step:'choose', num:'4242 4242 4242 4242', exp:'08 / 28', cvc:'123', zip:'10001', save:true, err:''});
+function openPay(){ S.pay = newPay(); S.paying=false; openSheet('pay'); }
+function payCard(){
+  const P = S.pay, d = P.num.replace(/\D/g,'');
+  if(d.length!==16){ P.err='Your card number is incomplete.'; stillRender(); return; }
+  if(!/^\d{2}\s*\/\s*\d{2}$/.test(P.exp)){ P.err='Your card’s expiration date is incomplete.'; stillRender(); return; }
+  if(!/^\d{3,4}$/.test(P.cvc)){ P.err='Your card’s security code is incomplete.'; stillRender(); return; }
+  P.err=''; S.paying=true; stillRender();
+  setTimeout(()=>{
+    S.paying=false;
+    if(S.failLeft>0){ S.failLeft--; closeSheet(); setTimeout(()=>alertTop('Payment failed. Want to give it another go? Nothing was charged, and your details are kept.'),260); return; }
+    finish('paid');
+  },1500);
+}
+function finish(type){
+  const amount = S.placed && S.placed.type==='hold' ? S.placed.amount : due();
+  S.placed = {type, amount, no:'MBK-' + (482100 + Math.floor(Math.random()*900))};
+  clearInterval(timerT);
+  S.sheet=null; S.stack=['feed','detail','rooms','confirm','done']; anim='in'; render(false);
+}
+function complete(){
+  S.tried = true;
+  if(!S.first.trim() || !S.last.trim()){ render(); const f=app.querySelector('.fld.bad .inp'); if(f){ f.scrollIntoView({block:'center',behavior:'smooth'}); f.focus({preventScroll:true}); } return; }
+  if(S.method==='now') return openPay();
+  if(S.method==='hold'){ S.placed={type:'hold', amount:due(), no:''}; S.holdUntil = Date.now()+15*60000; S.stack.push('done'); anim='in'; render(false); return; }
+  finish('prop');
+}
+
+/* ---------- events ---------- */
+app.addEventListener('click', e=>{
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const a = b.dataset.act, v = b.dataset.v;
+  if(a!=='close' && b.classList.contains('dim')) return;
+  switch(a){
+    case 'go': go(v); break;
+    case 'back': back(); break;
+    case 'tab': if(v!=='Hotel booking') toast(`${v} is another vertical. This prototype follows Hotel booking.`); break;
+    case 'toast': toast(v); break;
+    case 'like': S.liked=!S.liked; S.likes+=S.liked?1:-1; render(); { const n=app.querySelector('[data-act="like"]'); if(n) n.classList.add('pop'); } break;
+    case 'save': S.saved=!S.saved; render(); toast(S.saved?'Saved to your collection':'Removed from saved'); break;
+    case 'sheet': e.stopPropagation(); openSheet(v); break;
+    case 'tabsheet': S.sheet=v; stillRender(); break;
+    case 'close': closeSheet(); break;
+    case 'info': openSheet(v); break;
+    case 'day': { const d=S.draft; if(!d.ci || d.co || v<=d.ci){ d.ci=v; d.co=''; } else d.co=v; stillRender(); } break;
+    case 'step': { const d=S.draft, k=b.dataset.k; d[k]=Math.max(0,d[k]+(+v)); if(k==='children'){ while(d.ages.length<d.children) d.ages.push(4); } stillRender(); } break;
+    case 'pets': S.draft.pets=!S.draft.pets; stillRender(); break;
+    case 'reset': S.draft={ci:'2025-11-11', co:'2025-11-18', rooms:1, adults:2, children:2, ages:[1,5], pets:false}; stillRender(); break;
+    case 'apply': { const d=S.draft; Object.assign(S,{ci:d.ci,co:d.co,rooms:d.rooms,adults:d.adults,children:d.children,ages:d.ages,pets:d.pets}); S.pointsUsed=0; closeSheet(); setTimeout(()=>toast(`${nights()} nights · ${guestsText().replace(/\s+•\s+/g,' · ')}`),260); } break;
+    case 'more': S.more[v]=!S.more[v]; render(); break;
+    case 'choose': S.room=b.dataset.room; S.plan=b.dataset.plan; if(S.plan==='saver' && S.method==='prop') S.method='now'; S.pointsUsed=0; S.tried=false; go('confirm'); break;
+    case 'savetrav': S.tried=true; if(!S.first.trim()||!S.last.trim()){ render(); return; } S.travelerSaved=true; render(); toast('Traveler saved for next time'); break;
+    case 'edittrav': S.travelerSaved=false; render(); break;
+    case 'points': if(S.pointsUsed){ S.pointsUsed=0; S.points=''; } else if(S.points){ S.pointsUsed = Math.min(1200, +S.points.replace(/\D/g,'')||0)/100; } render(); break;
+    case 'method': S.method=v; render(); break;
+    case 'complete': complete(); break;
+    case 'paynow': openPay(); break;
+    case 'paystep': S.pay = S.pay || newPay(); S.pay.step=v; S.sheet='pay'; stillRender(); break;
+    case 'savecard': S.pay.save=!S.pay.save; stillRender(); break;
+    case 'pay': if(!S.paying) payCard(); break;
+    case 'apple': S.apple='wait'; S.sheet='apple'; stillRender(); break;
+    case 'applego': S.apple='proc'; stillRender(); setTimeout(()=>{ if(S.failLeft>0){ S.failLeft--; S.apple='bad'; stillRender(); } else { S.apple='ok'; stillRender(); setTimeout(()=>finish('paid'),700); } },1100); break;
+    case 'retryimg': S.failedImg=false; { const s=b.closest('.center'); s.innerHTML='<div class="loader"></div>'; setTimeout(()=>render(),900); } break;
+    case 'restart': setScenario(S.scenario); break;
+  }
+});
+app.addEventListener('input', e=>{
+  const n = e.target;
+  if(n.dataset.f){ S[n.dataset.f] = n.value; if(S.tried && (n.dataset.f==='first'||n.dataset.f==='last')){ const f=n.closest('.fld'); const bad=!n.value.trim(); if(f.classList.contains('bad')!==bad) render(); } if(n.dataset.f==='points'){ const btn=app.querySelector('[data-act="points"]'); if(btn) btn.style.opacity = n.value?'1':'.4'; } }
+  if(n.dataset.p){ let v=n.value; if(n.dataset.p==='num'){ v=v.replace(/\D/g,'').slice(0,16).replace(/(\d{4})(?=\d)/g,'$1 '); } if(n.dataset.p==='exp'){ const d=v.replace(/\D/g,'').slice(0,4); v=d.length>2?d.slice(0,2)+' / '+d.slice(2):d; } if(n.dataset.p==='cvc') v=v.replace(/\D/g,'').slice(0,4); S.pay[n.dataset.p]=v; if(v!==n.value) n.value=v; if(S.pay.err){ S.pay.err=''; stillRender(); } }
+});
+app.addEventListener('change', e=>{ const n=e.target; if(n.dataset.age!=null){ S.draft.ages[+n.dataset.age]=+n.value; } });
+app.addEventListener('keydown', e=>{ if(e.key==='Escape' && S.sheet) closeSheet(); });
+
+/* taps */
+let SHOW_TAPS = !Q.has('notaps');
+const tapsBtn = $('#taps'); tapsBtn.setAttribute('aria-checked', SHOW_TAPS);
+tapsBtn.onclick = () => { SHOW_TAPS=!SHOW_TAPS; tapsBtn.setAttribute('aria-checked', SHOW_TAPS); };
+screen.addEventListener('pointerdown', e=>{
+  if(!SHOW_TAPS) return;
+  const r = screen.getBoundingClientRect(), z = r.width/375;
+  const t = document.createElement('span'); t.className='tap'; t.style.left=((e.clientX-r.left)/z)+'px'; t.style.top=((e.clientY-r.top)/z)+'px';
+  screen.appendChild(t); setTimeout(()=>t.remove(),600);
+}, true);
+
+/* scenario + jump */
+function setScenario(s){
+  S = fresh(s); clearInterval(timerT);
+  document.querySelectorAll('#scen button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.s===s));
+  render(false);
+}
+$('#scen').addEventListener('click', e=>{ const b=e.target.closest('button'); if(b) setScenario(b.dataset.s); });
+$('#restart').onclick = () => setScenario(S.scenario);
+$('#jump').addEventListener('change', e=>{
+  const v = e.target.value; e.target.value=''; if(!v) return;
+  const sc = S.scenario; S = fresh(sc); clearInterval(timerT);
+  const path = {feed:['feed'], detail:['feed','detail'], dates:['feed','detail'], guests:['feed','detail'], rooms:['feed','detail','rooms'], confirm:['feed','detail','rooms','confirm'], pay:['feed','detail','rooms','confirm'], held:['feed','detail','rooms','confirm']}[v];
+  S.stack = path.slice(); anim='in';
+  if(v==='dates'||v==='guests'){ render(false); openSheet(v); return; }
+  if(v==='pay'||v==='held'){ S.first=S.first||'Sarah'; S.last=S.last||'Connor'; }
+  if(v==='pay'){ render(false); openPay(); S.pay.step='card'; stillRender(); return; }
+  if(v==='held'){ S.method='hold'; render(false); complete(); return; }
+  render(false); slowLoads();
+});
+
+/* fit the phone on small screens */
+const device = $('#device');
+function fit(){
+  const rec = document.body.classList.contains('rec');
+  const availW = innerWidth - 24, availH = innerHeight - 32;
+  let z = rec ? Math.min(1, availH/836, availW/399) : Math.min(1, availW/399);
+  device.style.zoom = z < 1 ? z : '';
+}
+addEventListener('resize', fit); fit();
+
+Object.defineProperty(window,'__S',{get:()=>S});   // read-only hook for automated checks
+const start = SEEDS[Q.get('s')] ? Q.get('s') : 'happy';
+setScenario(start);
+addEventListener('pageshow', e=>{ if(e.persisted) location.reload(); });
+}
+</script>
+</body>
+</html>
