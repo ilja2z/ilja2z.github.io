@@ -1,0 +1,14 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="8" height="13" viewBox="0 0 8 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="battery">
+<mask id="mask0_0_357" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="8" height="13">
+<path id="battery mask" d="M7 1H6V0H2V1H1C0.4 1 0 1.4 0 2V12C0 12.6 0.4 13 1 13H7C7.6 13 8 12.6 8 12V2C8 1.4 7.6 1 7 1V1Z" fill-rule="evenodd" clip-rule="evenodd" fill="white"/>
+</mask>
+<g mask="url(#mask0_0_357)">
+<path id="Rectangle-path" d="M0 10V13H8V10H0Z" fill-rule="evenodd" clip-rule="evenodd" fill="white"/>
+<path id="Rectangle-path_2" d="M0 7V10H8V7H0Z" fill-rule="evenodd" clip-rule="evenodd" fill="white"/>
+<path id="Rectangle-path_3" d="M0 4V7H8V4H0Z" fill-rule="evenodd" clip-rule="evenodd" fill="white"/>
+<path id="Rectangle-path_4" d="M0 1V4H8V1H0Z" fill-rule="evenodd" clip-rule="evenodd" fill="white"/>
+<path id="Rectangle-path_5" d="M2 0V1H6V0H2Z" fill-rule="evenodd" clip-rule="evenodd" fill="white"/>
+</g>
+</g>
+</svg>

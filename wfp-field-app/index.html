@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logistics Cluster field app · prototype · Illia Vostrikov</title>
+<meta name="description" content="A clickable prototype of the UN WFP Logistics Cluster field app: the first launch that downloads offline data while a tour runs, and a road-constraint report sent from an old Android with no signal. Sample data only.">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Instrument+Sans:wght@400;500;600&family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Roboto:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ============ Page shell: illiavostrikov.com style (the field app inside the phone keeps its own look) ============ */
+:root{
+  --s-bg:#0A1A14; --s-surface:#10251D; --s-surface-2:#163228; --s-line:#25473B; --s-emerald:#1C4A3A;
+  --s-accent:#52E0A1; --s-accent-hover:#7BEBBA; --s-accent-ink:#06130E;
+  --s-text:#EDF5F1; --s-muted:#A6BEB4; --s-soft:#7F988E;
+  --s-display:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif;
+  --s-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+
+  /* Logistics Cluster tokens (from the Figma file) */
+  --brand:#C03A2B; --brand-deep:#581B14; --brand-subtle:#FFEEEC;
+  --bg-canvas:#FFFFFF; --bg-subtle:#F6F6F6;
+  --text-primary:#303030; --text-secondary:#6B6B6B; --text-on-brand:#FFFFFF; --navy:#01203E;
+  --warning:#E68C05; --info:#2A77EA; --info-text:#1A5FB4; --success:#27AE60;
+  --success-subtle:#CBFFE1; --success-text:#1E7B34; --warning-subtle:#FEE7AB; --warning-text:#8A5200; --error-subtle:#FDB1A9;
+  --teal:#25A599; --teal-text:#01665D; --android-bar:#303030;
+  --font:"Open Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --ease-out:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{min-height:100%}
+body{font-family:var(--s-body);background:var(--s-bg);color:var(--s-text);-webkit-font-smoothing:antialiased;color-scheme:dark}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+.top{max-width:1400px;margin:0 auto;padding:14px 32px 0;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.me{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:600;font-size:15px}
+.me svg{display:block;border-radius:12px}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--s-line);font-weight:600;font-size:14.5px;text-decoration:none;color:var(--s-text);transition:border-color .15s,color .15s;white-space:nowrap}
+.pill:hover{border-color:var(--s-accent);color:var(--s-accent)}
+.page{max-width:1400px;margin:0 auto;padding:24px 32px 64px;display:grid;grid-template-columns:minmax(0,1fr) 416px minmax(0,1fr);gap:36px;align-items:start}
+.intro{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--s-muted);margin-bottom:12px}
+.kicker i{width:8px;height:8px;border-radius:50%;background:var(--s-accent);box-shadow:0 0 0 4px rgba(82,224,161,.15)}
+.intro h1{font-family:var(--s-display);font-size:clamp(30px,3.4vw,46px);line-height:1.05;font-weight:700;letter-spacing:-.02em;text-wrap:balance}
+.intro p{font-size:17px;line-height:1.6;color:var(--s-muted);max-width:780px;margin-top:12px}
+.intro .by{font-size:14px;color:var(--s-soft)}
+.col{display:flex;flex-direction:column;gap:16px}
+.col.left{align-items:flex-start}
+.col.right{align-items:flex-end}
+.panel{background:var(--s-surface);border:1px solid var(--s-line);border-radius:20px;padding:22px;width:100%;max-width:360px}
+.panel h2{font-family:var(--s-display);font-size:20px;line-height:1.15;letter-spacing:-.01em;font-weight:700;margin-bottom:14px}
+.panel ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+.panel li{font-size:14.5px;line-height:1.5;color:var(--s-muted);padding-left:16px;position:relative}
+.panel li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--s-accent)}
+.panel li b{color:var(--s-text);font-weight:600}
+.panel p{font-size:14.5px;line-height:1.55;color:var(--s-muted)}
+.scen{display:flex;flex-direction:column;gap:8px}
+.scen button{text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--s-line);transition:border-color .15s,background .15s}
+.scen button:hover{border-color:var(--s-accent)}
+.scen button[aria-pressed="true"]{border-color:var(--s-accent);background:var(--s-surface-2)}
+.scen b{display:block;font-size:15px;font-weight:600}
+.scen small{display:block;font-size:13px;line-height:1.45;color:var(--s-muted);margin-top:3px}
+.scen .grp{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--s-soft);font-weight:600;margin:6px 2px 0}
+.scen .grp:first-child{margin-top:0}
+.ctrl{display:flex;flex-direction:column;gap:12px}
+.tg{display:flex;justify-content:space-between;align-items:center;font-size:14.5px;color:var(--s-text);gap:12px}
+.tg small{display:block;font-size:12.5px;color:var(--s-soft);margin-top:2px}
+.switch{width:38px;height:22px;border-radius:11px;background:var(--s-line);position:relative;transition:background .2s;flex:none}
+.switch::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:var(--s-muted);transition:transform .2s var(--ease-out),background .2s}
+.switch[aria-checked="true"]{background:var(--s-accent)}
+.switch[aria-checked="true"]::after{transform:translateX(16px);background:var(--s-accent-ink)}
+.ctrl select{appearance:none;-webkit-appearance:none;width:100%;padding:10px 40px 10px 14px;border-radius:999px;border:1px solid var(--s-line);font-size:14px;color:var(--s-text);background:var(--s-surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%23A6BEB4' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 14px center/16px no-repeat;cursor:pointer}
+.ctrl select option{background:var(--s-surface)}
+.restart{padding:10px 14px;border-radius:999px;border:1px solid var(--s-line);font-size:14px;font-weight:600}
+.restart:hover{border-color:var(--s-accent);color:var(--s-accent)}
+.links{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.links a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-radius:14px;border:1px solid var(--s-line);font-size:14.5px;font-weight:600;text-decoration:none;transition:border-color .15s,color .15s}
+.links a:hover{border-color:var(--s-accent);color:var(--s-accent)}
+.links a span{font-weight:400;color:var(--s-soft);font-size:12.5px}
+.top :focus-visible,.col :focus-visible{outline:2px solid var(--s-accent);outline-offset:3px}
+
+/* phones: an iPhone for the Full tier, an old Android for Lite */
+.stagewrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.devlabel{font-size:13px;color:var(--s-soft);text-align:center}
+.devlabel b{color:var(--s-muted);font-weight:600}
+.device{position:relative;background:#050505;box-shadow:0 0 0 1px #2a2a2a,0 40px 90px rgba(0,0,0,.55)}
+.device.ios{width:414px;padding:12px;border-radius:56px}
+.device.droid{width:384px;padding:34px 12px 46px;border-radius:30px;background:#121212}
+.device.droid::before{content:"";position:absolute;top:15px;left:50%;width:56px;height:5px;margin-left:-28px;border-radius:9px;background:#2a2a2a}
+.device.droid::after{content:"";position:absolute;bottom:14px;left:50%;width:18px;height:18px;margin-left:-9px;border-radius:50%;border:2px solid #2a2a2a}
+.screen{position:relative;overflow:hidden;background:#fff;isolation:isolate}
+.device.ios .screen{width:390px;height:844px;border-radius:44px}
+.device.droid .screen{width:360px;height:640px;border-radius:3px}
+.tap{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(48,48,48,.18);border:2px solid rgba(48,48,48,.38);pointer-events:none;z-index:95;animation:tap .55s var(--ease-out) forwards}
+@keyframes tap{from{transform:scale(.4);opacity:1}to{transform:scale(1.25);opacity:0}}
+@media (max-width:1100px){
+  .page{grid-template-columns:1fr;max-width:640px}
+  .col.left{order:3;align-items:stretch}.col.right{order:4}
+  .stagewrap{order:2}
+  .panel{max-width:none}
+}
+@media (max-width:600px){.top{padding:12px 12px 0}.top .me span{display:none}.page{padding:16px 12px 40px;gap:18px}.intro p{font-size:15px}}
+body.rec{overflow:hidden}
+body.rec .top,body.rec .intro,body.rec .col,body.rec .devlabel{display:none}
+body.rec .page{display:flex;min-height:100vh;min-height:100dvh;justify-content:center;align-items:center;padding:16px;max-width:none}
+
+/* ============ Field app. Classes start with "w-" ============ */
+.app{position:absolute;inset:0;font-family:var(--font);color:var(--text-primary);font-size:14px;line-height:20px;overflow:hidden}
+.ic{display:inline-block;flex:none;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat}
+.w-view{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg-subtle)}
+.w-view.in{animation:vin .32s var(--ease-out)}
+.w-view.back{animation:vback .32s var(--ease-out)}
+@keyframes vin{from{transform:translateX(28px);opacity:0}to{transform:none;opacity:1}}
+@keyframes vback{from{transform:translateX(-28px);opacity:0}to{transform:none;opacity:1}}
+.w-body{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-width:none}
+.w-body::-webkit-scrollbar{display:none}
+
+/* system bars */
+.w-sb{flex:none;position:relative;color:#fff;font-family:Roboto,var(--font);font-size:13px}
+.w-sb.ios{height:32px;background:var(--brand-deep)}
+.w-sb.ios .t{position:absolute;left:48px;top:9px;line-height:15px}
+.w-sb.ios img{position:absolute;right:32px;top:11px;width:68px;height:12px}
+.w-sb.droid{height:24px;background:var(--android-bar);display:flex;align-items:center;justify-content:flex-end;gap:10px;padding-right:8px}
+.w-sb.droid .t{opacity:.9;margin-left:4px}
+.w-sb.droid img{display:block}
+.w-sb.clear{background:transparent;position:absolute;top:0;left:0;right:0;z-index:5}
+/* header */
+.w-hd{flex:none;height:40px;background:var(--brand);color:#fff;display:flex;align-items:center;position:relative}
+.w-hd .hb{position:absolute;top:8px;width:24px;height:24px;display:grid;place-items:center}
+.w-hd .hb.l{left:16px}
+.w-hd .hb.r1{right:16px}
+.w-hd .hb.r2{right:52px}
+.w-hd .ttl{position:absolute;left:56px;top:7px;font-weight:600;font-size:16px;line-height:26px;white-space:nowrap}
+.w-hd .dot{position:absolute;right:16px;top:8px;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px var(--brand)}
+.w-hd img{display:block}
+.w-hd .flip{transform:scaleX(-1)}
+/* banners */
+.w-ban{flex:none;height:24px;display:flex;align-items:center;justify-content:center;gap:8px;color:#fff;font-size:14px;line-height:20px}
+.w-ban.off{background:var(--warning)}
+.w-ban.em{background:var(--info)}
+.w-ban.on{background:var(--success)}
+.w-ban img{width:24px;height:24px}
+/* buttons */
+.w-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;padding:9px 16px;border-radius:8px;font-weight:600;font-size:16px;line-height:26px;transition:opacity .15s,background .15s,transform .1s}
+.w-btn:active{transform:scale(.985)}
+.w-btn.pri{background:var(--brand);color:#fff}
+.w-btn.sec{background:#fff;color:var(--brand);border:1px solid var(--brand)}
+.w-btn.wht{background:#fff;color:var(--brand)}
+.w-btn[aria-disabled="true"]{opacity:.5}
+/* tab bar */
+.w-tabs{flex:none;display:flex;background:#fff;border-radius:16px 16px 0 0;filter:drop-shadow(0 -2px 2px rgba(146,146,146,.25));position:relative;z-index:3}
+.w-tab{flex:1;height:60px;display:grid;place-items:center;color:var(--text-secondary);border-radius:16px;border:2px solid transparent}
+.w-tab.on{background:var(--brand-subtle);border-color:var(--brand);color:var(--brand)}
+.w-tab .ic{width:28px;height:28px}
+.w-tab .ic.sm{width:22px;height:22px}
+.w-homebar{flex:none;height:22px;background:#fff;position:relative;z-index:3}
+.w-homebar::after{content:"";position:absolute;left:50%;top:9px;width:134px;height:5px;margin-left:-67px;border-radius:99px;background:#111}
+
+/* ---- Flow 1: welcome + tour (red) ---- */
+.w-red{position:absolute;inset:0;background:var(--brand);color:#fff;display:flex;flex-direction:column;align-items:center}
+.w-red .logo{width:74px;height:40px;margin-top:56px;flex:none}
+.w-wel h1{margin-top:32px;font-weight:800;font-size:20px;line-height:27px;text-transform:uppercase}
+.w-wel .sub{font-size:16px;line-height:26px;margin-top:4px}
+.w-wel .card{width:358px;margin-top:38px;background:#fff;border-radius:16px;padding:16px 22px 40px;color:var(--brand);font-size:14px;line-height:20px;position:relative}
+.w-wel .card img{width:35px;height:32px;margin:0 0 8px -4px;display:block}
+.w-wel .card p+p{margin-top:24px}
+.w-check{align-self:stretch;margin:32px 16px 0;display:flex;align-items:center;gap:8px;font-size:14px;line-height:20px;text-align:left}
+.w-check .box{width:24px;height:24px;border-radius:4px;background:#fff;display:grid;place-items:center;flex:none;transition:box-shadow .15s}
+.w-check .box svg{opacity:0;transition:opacity .12s}
+.w-check[aria-checked="true"] .box svg{opacity:1}
+.w-check.nudge .box{animation:nudge .4s;box-shadow:0 0 0 3px rgba(255,255,255,.55)}
+@keyframes nudge{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.w-hint{align-self:stretch;margin:10px 16px 0 48px;font-size:12px;line-height:16px;color:#FFE3DF;min-height:16px}
+.w-wel .foot{position:absolute;left:16px;right:16px;bottom:40px}
+.w-tour .stage{position:relative;width:358px;height:360px;margin-top:16px;touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
+.w-tour .stage:active{cursor:grabbing}
+.w-tour .stage img{position:absolute;inset:0;width:358px;height:360px;border-radius:16px 16px 0 0;display:block;pointer-events:none;transition:transform .3s var(--ease-out),opacity .3s}
+.w-tour .txt{margin-top:39px;height:60px;text-align:center;font-size:14px;line-height:20px;padding:0 16px}
+.w-tour .txt b{font-weight:700}
+.w-dots{display:flex;gap:8px;margin-top:48px}
+.w-dots button{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.45);padding:0;position:relative}
+.w-dots button::after{content:"";position:absolute;inset:-8px}
+.w-dots button[aria-current="true"]{background:#fff}
+.w-pp{margin-top:63px;font-size:16px;line-height:26px;color:#fff}
+.w-load{position:absolute;left:40px;bottom:40px;display:flex;align-items:center;gap:12px;font-weight:600;font-size:16px;line-height:26px}
+.w-load .spin{width:48px;height:48px;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.w-load .ok{width:48px;height:48px;border-radius:50%;border:2.5px solid #fff;display:grid;place-items:center}
+.w-load small{display:block;font-weight:400;font-size:12px;line-height:16px;opacity:.85}
+.w-load button{font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.w-start{position:absolute;left:0;right:0;bottom:0;height:57px;background:#fff;border-radius:16px 16px 0 0;color:var(--brand);font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;gap:10px;animation:rise .35s var(--ease-out)}
+.w-start svg{display:block}
+@keyframes rise{from{transform:translateY(100%)}to{transform:none}}
+
+/* ---- Flow 1: customisation ---- */
+.w-step{display:flex;gap:18px;padding:24px 16px 24px;align-items:flex-start}
+.w-ring{width:64px;height:64px;position:relative;flex:none}
+.w-ring img{width:64px;height:64px;display:block}
+.w-ring span{position:absolute;inset:0;display:grid;place-items:center;font-weight:600;font-size:14px;color:var(--navy)}
+.w-step h2{font-weight:600;font-size:16px;line-height:26px;color:var(--navy);margin-top:0}
+.w-step p{font-size:12px;line-height:16px;color:var(--text-secondary);margin-top:4px;max-width:240px}
+.w-white{background:#fff}
+.w-focus{height:278px;display:grid;place-items:center}
+.w-focusbtn{position:relative;width:162px;height:96px;display:grid;place-items:center;border-radius:10px}
+.w-focusbtn .fr{position:absolute;inset:0;width:100%;height:100%}
+.w-focusbtn .lbl{position:relative;text-align:center;font-size:12px;line-height:16px;color:var(--text-secondary)}
+.w-focusbtn .lbl b{display:block;color:var(--brand);font-weight:600}
+.w-focusbtn.sel{width:156px;height:92px}
+.w-focusbtn.sel .ph{position:absolute;inset:0;border-radius:8px;overflow:hidden}
+.w-focusbtn.sel .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.w-focusbtn.sel .fr{inset:-3px;width:auto;height:auto}
+.w-chiplbl{position:relative;background:var(--bg-subtle);border-radius:4px;padding:2px 4px;font-weight:600;font-size:12px;line-height:16px;color:var(--text-primary)}
+.w-change{display:block;margin-top:10px;font-size:12px;font-weight:600;color:var(--brand)}
+.w-radios{padding:40px 16px 0;display:flex;flex-direction:column;gap:16px}
+.w-radio{display:flex;align-items:center;gap:8px;text-align:left;font-size:14px;line-height:20px}
+.w-radio .rd{width:24px;height:24px;flex:none;border-radius:50%;border:1px solid var(--text-secondary);background:#fff;display:grid;place-items:center;transform:scale(.917)}
+.w-radio[aria-checked="true"] .rd{border-color:var(--success)}
+.w-radio[aria-checked="true"] .rd::after{content:"";width:15px;height:15px;border-radius:50%;background:var(--success)}
+.w-actions{padding:56px 16px 0;display:flex;flex-direction:column;gap:24px}
+.w-later{text-align:center;font-style:italic;font-size:12px;line-height:16px;margin:32px 0 32px}
+.w-input{display:flex;align-items:center;gap:8px;height:42px;border:1px solid var(--text-secondary);border-radius:8px;padding:0 16px;background:#fff}
+.w-input input{flex:1;min-width:0;border:0;outline:0;background:none;font-size:16px;line-height:26px;color:var(--text-primary)}
+.w-input input::placeholder{color:var(--text-secondary)}
+.w-input:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(192,58,43,.14)}
+.w-input img{width:20px;height:20px}
+.w-chips{display:flex;flex-wrap:wrap;gap:12px 10px;padding:24px 16px 0}
+.w-chip{padding:7px 8px;border:1px solid var(--text-secondary);border-radius:32px;background:#fff;font-size:14px;line-height:20px;color:var(--text-primary);transition:background .12s,border-color .12s}
+.w-chip[aria-pressed="true"]{background:var(--brand-subtle);border-color:var(--brand)}
+.w-more{display:block;margin:16px auto 0;padding:4px 8px;font-size:14px;color:var(--brand)}
+.w-none{padding:20px 16px 0;font-size:14px;color:var(--text-secondary)}
+.w-none button{color:var(--brand);font-weight:600}
+
+/* ---- Flow 1: home ---- */
+.w-banner{position:relative;height:125px;flex:none;overflow:hidden;color:#fff}
+.w-banner img{position:absolute;left:-1.25%;top:-69.5%;width:101.8%;height:195.4%;object-fit:cover;filter:grayscale(1)}
+.w-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.5) 57.7%)}
+.w-banner h1{position:absolute;left:17px;top:44px;z-index:1;font-weight:800;font-size:20px;line-height:27px;text-transform:uppercase}
+.w-banner p{position:absolute;left:21px;top:79px;z-index:1;font-size:16px;line-height:26px}
+.w-home{padding:32px 16px 24px}
+.w-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px}
+.w-tile{position:relative;height:92px;border-radius:8px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:12px;line-height:16px;text-align:center}
+.w-tile.tall{height:101px}
+.w-tile img.i{width:40px;height:40px}
+.w-tile .cnt{position:absolute;top:4px;right:4px;min-width:22px;padding:0 4px;border-radius:8px;color:#fff;font-size:12px;line-height:16px}
+.w-tile.upd{border:1px solid var(--info);color:var(--info-text)}
+.w-tile.upd .cnt{background:var(--info);border-radius:50%;width:16px;min-width:16px;height:16px;padding:0;line-height:16px;font-size:11px}
+.w-tile.focus{padding:0;overflow:visible}
+.w-tile.focus .ph{position:absolute;inset:0;border-radius:8px;overflow:hidden}
+.w-tile.focus .ph img{width:100%;height:100%;object-fit:cover}
+.w-tile.focus .fr{position:absolute;inset:4px;width:calc(100% - 8px);height:calc(100% - 8px)}
+.w-tile.focus .w-chiplbl{position:relative;z-index:1}
+.w-tile.empty .fr{inset:8px 12px;width:calc(100% - 24px);height:calc(100% - 16px)}
+.w-tile.empty .lbl{position:relative;color:var(--text-secondary)}
+.w-tile.empty .lbl b{display:block;color:var(--brand);font-weight:600}
+.w-tile.ops{color:var(--brand)}.w-tile.ops .cnt{background:var(--brand)}
+.w-tile.prep{color:var(--teal-text)}.w-tile.prep .cnt{background:var(--teal-text)}
+.w-tile.trn{color:var(--teal-text)}.w-tile.trn .cnt{background:var(--teal)}
+.w-tile.com{color:var(--navy);font-size:14px;line-height:20px}
+.w-follow{margin-top:16px;font-size:12px;line-height:16px;color:var(--text-secondary)}
+.w-follow b{color:var(--text-primary);font-weight:600}
+
+/* ---- Flow 2: report ---- */
+.w-map{position:relative;flex:1;background:#E9E9E6 url(img/map.webp) center/cover no-repeat;overflow:hidden}
+.w-map .float{position:absolute;left:16px;right:16px;bottom:16px}
+.w-tiles4{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:24px 16px}
+.w-rtile{height:156px;background:#fff;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:0 12px;font-size:14px;line-height:20px;text-align:center;color:var(--text-primary);transition:box-shadow .15s}
+.w-rtile img{width:40px;height:40px}
+.w-rtile:active{box-shadow:inset 0 0 0 1px var(--brand)}
+.w-list{display:flex;flex-direction:column;gap:16px;padding:24px 16px}
+.w-q{padding:40px 16px 0;font-size:16px;line-height:26px;color:var(--text-primary)}
+.w-q+.w-list{padding-top:24px}
+.w-row{display:flex;align-items:center;gap:8px;padding:6px 12px;background:#fff;border-radius:8px;border:1px solid transparent;text-align:left;color:var(--navy);font-size:16px;line-height:26px;transition:border-color .12s}
+.w-row[aria-pressed="true"]{border-color:var(--brand)}
+.w-row .iw{width:40px;height:40px;display:grid;place-items:center;flex:none}
+.w-row .iw img{max-width:40px;max-height:40px;display:block}
+.w-row .t{flex:1}
+.w-row .arr{width:24px;height:24px;display:grid;place-items:center}
+.w-row .arr img{width:18px;height:18px}
+.w-photo2{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:24px 16px 0}
+.w-pcard{height:120px;background:#fff;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-size:16px;line-height:26px;color:var(--text-primary);border:1px solid transparent}
+.w-pcard img{width:40px;height:40px}
+.w-attached{margin:16px 16px 0;padding:10px 12px;background:#fff;border-radius:8px;display:flex;align-items:center;gap:12px;animation:vin .25s var(--ease-out)}
+.w-attached .th{width:56px;height:56px;border-radius:6px;flex:none;background:linear-gradient(160deg,#8b7b63,#5f553f 55%,#a3926f);position:relative;overflow:hidden}
+.w-attached .th::after{content:"";position:absolute;left:-10%;right:-10%;bottom:8px;height:20px;background:#6d6048;transform:rotate(-12deg);opacity:.7}
+.w-attached .tx{flex:1;font-size:12px;line-height:16px;color:var(--text-secondary)}
+.w-attached .tx b{display:block;font-size:14px;line-height:20px;color:var(--text-primary);font-weight:600}
+.w-attached button{color:var(--brand);font-size:14px;font-weight:600}
+.w-fill{flex:1}
+.w-bottom{padding:16px}
+.w-inline{margin:0 16px;padding:10px 12px;border-radius:8px;background:var(--warning-subtle);color:var(--warning-text);font-size:13px;line-height:18px}
+.w-inline.ok{background:var(--success-subtle);color:var(--success-text)}
+.w-pin{position:absolute;width:40px;height:40px;margin:-38px 0 0 -20px;transition:left .25s var(--ease-out),top .25s var(--ease-out);filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+.w-pin::after{content:"";position:absolute;left:50%;bottom:-3px;width:10px;height:4px;margin-left:-5px;border-radius:50%;background:rgba(0,0,0,.25)}
+.w-loccard{position:absolute;left:16px;right:16px;bottom:16px;background:#fff;border-radius:8px;padding:12px;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.w-loccard p{font-size:12px;line-height:16px;color:var(--text-secondary);margin-bottom:10px}
+.w-loccard p b{display:block;font-size:14px;line-height:20px;color:var(--navy);font-weight:600}
+.w-desc{margin:24px 16px 0;flex:1;min-height:160px;background:#fff;border-radius:8px;border:1px solid transparent;padding:12px;font-size:14px;line-height:20px;color:var(--text-primary);resize:none;outline:0;width:calc(100% - 32px)}
+.w-desc:focus{border-color:var(--brand)}
+.w-desc::placeholder{color:var(--text-secondary)}
+.w-cnt{margin:6px 16px 0;text-align:right;font-size:12px;color:var(--text-secondary)}
+.w-rep{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:#fff;border-radius:8px}
+.w-rep.fresh{animation:fresh 1.6s var(--ease-out)}
+@keyframes fresh{from{box-shadow:0 0 0 2px var(--brand)}to{box-shadow:0 0 0 0 rgba(192,58,43,0)}}
+.w-rep .l{display:flex;align-items:center;gap:8px;min-width:0}
+.w-rep .l .iw{width:72px;height:72px;flex:none;display:grid;place-items:center}
+.w-rep .l .iw img{width:72px;height:72px}
+.w-rep .l b{display:block;color:var(--brand);font-weight:600;font-size:16px;line-height:26px;white-space:nowrap}
+.w-rep .l span{display:block;font-size:12px;line-height:16px;color:var(--navy)}
+.w-rep .l span i{font-style:normal;color:var(--text-secondary)}
+.w-rep .r{display:flex;flex-direction:column;align-items:flex-end;gap:16px;flex:none}
+.w-rep .acts{display:flex;gap:8px}
+.w-rep .acts button{width:24px;height:24px}
+.w-rep .acts img{width:24px;height:24px;display:block}
+.w-st{padding:6px 12px;border-radius:32px;font-size:14px;line-height:20px;white-space:nowrap}
+.w-st.sent{background:var(--success-subtle);color:var(--success-text)}
+.w-st.draft,.w-st.unsent{background:var(--warning-subtle);color:var(--warning-text)}
+.w-st.error{background:var(--error-subtle);color:var(--brand-deep)}
+.w-st.sending{background:var(--bg-subtle);color:var(--text-secondary)}
+.w-st.sending::before{content:"";display:inline-block;width:10px;height:10px;margin-right:6px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;vertical-align:-1px;animation:spin .8s linear infinite}
+
+/* sheets, toast */
+.w-dim{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:20;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.w-sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;background:#fff;border-radius:16px 16px 0 0;padding:8px 16px 24px;animation:sheet .3s var(--ease-out);max-height:82%;display:flex;flex-direction:column}
+@keyframes sheet{from{transform:translateY(100%)}to{transform:none}}
+.w-sheet .grab{width:40px;height:4px;border-radius:4px;background:#D8D8D8;margin:0 auto 14px;flex:none}
+.w-sheet h3{font-weight:600;font-size:16px;line-height:26px;color:var(--navy)}
+.w-sheet .sp{font-size:12px;line-height:16px;color:var(--text-secondary);margin:2px 0 14px}
+.w-sheet .scroll{overflow-y:auto;margin:0 -16px;padding:0 16px}
+.w-crow{display:flex;align-items:center;gap:12px;width:100%;padding:8px 0;text-align:left;border-bottom:1px solid #EFEFEF;font-size:16px;line-height:26px;color:var(--text-primary)}
+.w-crow img{width:72px;height:44px;border-radius:6px;object-fit:cover;flex:none}
+.w-crow .tx{flex:1}
+.w-crow .tx small{display:block;font-size:12px;line-height:16px;color:var(--text-secondary)}
+.w-crow .tick{width:22px;height:22px;border-radius:50%;border:1px solid var(--text-secondary);flex:none;display:grid;place-items:center}
+.w-crow[aria-checked="true"] .tick{border-color:var(--success);background:var(--success)}
+.w-crow[aria-checked="true"] .tick::after{content:"";width:6px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.w-sheet .btns{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+.w-sheet .body{font-size:14px;line-height:20px;color:var(--text-primary)}
+.w-sheet .body p+p{margin-top:10px}
+.w-toast{position:absolute;left:16px;right:16px;z-index:30;background:#303030;color:#fff;border-radius:8px;padding:10px 14px;font-size:14px;line-height:20px;box-shadow:0 6px 20px rgba(0,0,0,.25);animation:toast .25s var(--ease-out);display:flex;gap:10px;align-items:center}
+.w-toast b{font-weight:600}
+.w-toast .ok{width:20px;height:20px;border-radius:50%;background:var(--success);flex:none;display:grid;place-items:center}
+.w-toast .ok::after{content:"";width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.w-toast .wa{width:20px;height:20px;border-radius:50%;background:var(--warning);flex:none;display:grid;place-items:center;font-weight:700;font-size:13px}
+@keyframes toast{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){.w-view.in,.w-view.back,.w-sheet,.w-dim,.w-toast,.w-start,.w-load .spin{animation-duration:.01s!important}}
+.app :focus-visible{outline:2px solid var(--info);outline-offset:2px}
+</style>
+</head>
+<body>
+<script>if(/[?&]rec\b/.test(location.search))document.body.classList.add('rec');</script>
+<header class="top">
+  <a class="me" href="https://illiavostrikov.com/" aria-label="Illia Vostrikov, home"><svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1C4A3A"/><text x="32" y="43" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="29" letter-spacing="-1" fill="#52E0A1">IV</text></svg><span>Illia Vostrikov</span></a>
+  <a class="pill" href="https://illiavostrikov.com/work/wfp/">← WFP Logistics Cluster case</a>
+</header>
+<div class="page">
+  <header class="intro">
+    <div>
+      <span class="kicker"><i></i>Live prototype · UN WFP Logistics Cluster</span>
+      <h1>A field app that works before, and without, the signal</h1>
+      <p>Two flows from the Logistics Cluster mobile app. The first launch downloads offline data while a short tour runs, then sets a country in focus. A local partner reports a blocked road from an old Android with no signal, and the report waits on the phone until the network returns.</p>
+    </div>
+    <div class="by">Sample data, nothing is sent</div>
+  </header>
+
+  <div class="col left">
+    <div class="panel">
+      <h2>Scenario</h2>
+      <div class="scen" id="scen">
+        <div class="grp">Flow 1 · Full tier · iPhone</div>
+        <button data-s="f1"><b>First launch</b><small>The tour runs while offline data loads. Then focus a country and pick activities.</small></button>
+        <button data-s="f1slow"><b>Weak field connection</b><small>The download takes longer and drops once. The last card waits for it.</small></button>
+        <div class="grp">Flow 2 · Lite tier · Android 8, 360 px</div>
+        <button data-s="f2"><b>Report with no signal</b><small>Seven taps from the map to a queued report, about 38 KB.</small></button>
+        <button data-s="f2back"><b>Signal comes back</b><small>Same report. The network returns a few seconds after it is queued.</small></button>
+      </div>
+    </div>
+    <div class="panel ctrl">
+      <h2>Controls</h2>
+      <select id="jump" aria-label="Jump to a screen">
+        <option value="">Jump to a screen</option>
+        <optgroup label="Flow 1 · First launch">
+          <option value="welcome">01 · Welcome</option>
+          <option value="tour">02 · Tour while data loads</option>
+          <option value="tourlast">08 · Last card, start the app</option>
+          <option value="focus">09 · Focus on your country</option>
+          <option value="follow">12 · Follow more activities</option>
+          <option value="home">14 · Home</option>
+        </optgroup>
+        <optgroup label="Flow 2 · Report with no signal">
+          <option value="map">15 · Start from the map</option>
+          <option value="constraint">17 · Name the constraint</option>
+          <option value="photo">18 · Add a photo</option>
+          <option value="location">19 · Confirm the location</option>
+          <option value="reports">22 · Sent, or waiting</option>
+        </optgroup>
+      </select>
+      <div class="tg"><span>Network signal<small id="netnote">Off: reports wait on the phone</small></span><button class="switch" id="net" role="switch" aria-checked="false" aria-label="Network signal"></button></div>
+      <div class="tg">Show taps <button class="switch" id="taps" role="switch" aria-checked="true" aria-label="Show taps"></button></div>
+      <button class="restart" id="restart">Restart scenario</button>
+    </div>
+  </div>
+
+  <div class="stagewrap">
+    <div class="device ios" id="device"><div class="screen" id="screen">
+      <div class="app" id="app"></div>
+    </div></div>
+    <div class="devlabel" id="devlabel"><b>Full tier</b> · 390 px</div>
+  </div>
+
+  <div class="col right">
+    <div class="panel">
+      <h2>Things to try</h2>
+      <ul>
+        <li><b>Tick the Privacy Policy and continue.</b> The download starts there, and the tour runs while it loads. Drag the card or tap the dots.</li>
+        <li><b>Pick a country to focus on.</b> Next step only turns on once there is a focus, and skipping is always one tap away.</li>
+        <li><b>Follow a few activities</b> and search the list. Home opens already tailored.</li>
+        <li><b>Submit a report with the signal off.</b> It is saved as Unsent. Turn the signal on and send all unsent.</li>
+        <li><b>Close a report halfway</b> with the cross: it offers a draft instead of losing the work.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h2>Design decisions</h2>
+      <ul>
+        <li><b>The wait teaches the app.</b> The first download can take minutes on a field connection, so the tour runs on top of it.</li>
+        <li><b>Optional, but useful.</b> Focus and follow are two short steps that can be skipped and changed later.</li>
+        <li><b>Taps, not typing.</b> Big tiles and icon lists work with gloves, in any language, on a 360 px screen.</li>
+        <li><b>Offline is a normal state.</b> The app says it is offline, compresses the report and queues it with a clear status.</li>
+        <li><b>One flow, two tiers.</b> Lite and Full share the report flow and the queue. Try Submit report on Home.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h2>How it’s built</h2>
+      <p>Screens 01–22 follow Flow 1 and Flow 2 in the Figma file, with the icons, photos and colours taken from it. The tour cards are exported from the file. The country picker, the photo preview, the location card, the draft prompt and the sending states were designed in code from the same components.</p>
+      <div class="links">
+        <a href="https://www.figma.com/design/hvUGWpX4r9tGFEpAOrEqzr/Illia-Vostrikov-%C2%B7-UN-WFP-Logistics-Cluster?node-id=4358-6880" target="_blank" rel="noopener">Figma file · Flows <span>opens Figma ↗</span></a>
+        <a href="https://illiavostrikov.com/work/wfp/">Read the case <span>illiavostrikov.com</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+{
+const $ = (s, r=document) => r.querySelector(s);
+const app = $('#app'), screen = $('#screen'), device = $('#device');
+const Q = new URLSearchParams(location.search);
+const IC = n => `img/ic/${n}.svg`;
+const mic = (n, cls='') => `<i class="ic ${cls}" style="--i:url(${IC(n)})" aria-hidden="true"></i>`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function ptrack(name, p={}){ try{ if(typeof window.track==='function') window.track(name, Object.assign({proto:'wfp-field-app', scenario:S.scenario}, p)); }catch(e){} }
+
+/* ---------- sample content ---------- */
+const TOUR = [
+  {img:'tour2', txt:'<b>Navigate</b> your surroundings<br><b>Explore</b> main services around you<br><b>Find</b> relevant information'},
+  {img:'tour3', txt:'<b>Share</b> quick updates with the community.<br><b>Record</b> data rapidly, even when offline.<br><b>Export</b> your reports as Word or PDF.'},
+  {img:'tour4', txt:'<b>Discover</b> and stay updated<br>with developments across the logistics cluster,<br>and access its resources on the go'},
+  {img:'tour5', txt:'Receive tailored mission related updates<br>from your country of interest using<br><b>Emergency Mode</b>'},
+  {img:'tour6', txt:'<b>Focus</b> on a country<br><b>Receive</b> all updates on it<br><b>Download</b> latest data to work offline'},
+  {img:'tour7', txt:'<b>Discover</b> events in your areas of interest<br><b>Receive</b> updates about trainings available<br><b>Plan</b> your participation in advance'},
+  {img:'tour8', txt:'<b>Find</b> the key contacts of each operation.<br><b>Call</b> or <b>email</b> them in one tap.<br><b>Save</b> them to your phone.'}
+];
+const COUNTRIES = [
+  {k:'Algeria', img:'algeria', note:'Sahrawi refugee operation'},
+  {k:'Burkina Faso', img:'bf', note:'Central Sahel response'},
+  {k:'South Sudan', img:'ss', note:'Emergency mode active'},
+  {k:'Somalia', img:'so', note:'Drought response'}
+];
+const ACTIVITIES = ['Afghanistan','Botswana','Burkina Faso','Côte d\'Ivoire','Central African Republic','Congo (Congo-Brazzaville)','Djibouti','Eritrea','Global meetings','Green logistic'];
+const MORE = ['Haiti','Libya','Mozambique','Myanmar','Nigeria','Preparedness','Somalia','South Sudan','Sudan','Training','Ukraine','Yemen'];
+const RTYPES = [
+  {k:'access', t:'Physical Access Constraint', i:'rt-access'},
+  {k:'storage', t:'Partner Storage Mapping', i:'rt-storage'},
+  {k:'capacity', t:'Rapid Logistics Capacity', i:'rt-capacity'},
+  {k:'assess', t:'Assessment', i:'rt-assessment'}
+];
+const CONSTRAINTS = [
+  {k:'landslide', t:'Landslide'},{k:'flood', t:'Flood'},{k:'fire', t:'Fire'},{k:'road-damage', t:'Road damage'},
+  {k:'blocking', t:'Blocking object'},{k:'accident', t:'Accident'},{k:'stuck', t:'Stuck vehicle'},{k:'other', t:'Other'}
+];
+const PASS = [
+  {k:'unknown', t:'Unknown', i:'question'},{k:'none', t:'Non passable', i:'block'},{k:'bike', t:'Non-motorized', i:'bike'},
+  {k:'moto', t:'Motorbike / small vehicle', i:'motorbike'},{k:'4wd', t:'4WD < 3.5MT', i:'car'},
+  {k:'light', t:'Light truck < 10MT', i:'truck'},{k:'heavy', t:'Heavy truck < 20MT', i:'trailer'}
+];
+const OLD_REPORTS = [
+  {id:'r1', c:'landslide', date:'2023-01-31', time:'16:01', st:'sent'},
+  {id:'r2', c:'landslide', date:'2023-01-31', time:'19:01', st:'draft'},
+  {id:'r3', c:'landslide', date:'2023-01-31', time:'19:01', st:'unsent'},
+  {id:'r4', c:'landslide', date:'2023-01-31', time:'19:01', st:'error'}
+];
+const ST_LABEL = {sent:'Sent', draft:'Draft', unsent:'Unsent', error:'Error', sending:'Sending'};
+
+/* ---------- state ---------- */
+const SEEDS = {
+  f1:{tier:'full', screen:'welcome', loadMs:16000},
+  f1slow:{tier:'full', screen:'welcome', loadMs:42000, drop:true},
+  f2:{tier:'lite', screen:'map'},
+  f2back:{tier:'lite', screen:'map', autoBack:true}
+};
+let S, anim = 'in', loadT = null, toastT = null, backT = null;
+function fresh(sc){
+  const seed = SEEDS[sc];
+  return { scenario:sc, tier:seed.tier, screen:seed.screen, hist:[], loadMs:seed.loadMs||16000, drop:!!seed.drop, autoBack:!!seed.autoBack,
+    agreed:false, nudge:false, loading:false, pct:0, done:false, paused:false, tour:0,
+    country:null, n1:'files', follow:new Set(), more:false, q:'', n2:'sync', setupDone:false,
+    online:false, rep:newRep(), photo:false, pin:{x:50,y:46}, desc:'', reports:OLD_REPORTS.map(r=>({...r})), notice:null, sheet:null };
+}
+const newRep = () => ({type:null, c:null, pass:null});
+
+/* ---------- small renderers ---------- */
+function sb(){
+  if(S.tier==='full') return `<div class="w-sb ios"><span class="t">12:30</span><img src="${IC('sb-right')}" alt=""></div>`;
+  return `<div class="w-sb droid"><img src="${IC('sb-wifi')}" alt="" width="16" height="12"><img src="${IC('sb-rec')}" alt="" width="12" height="12"><img src="${IC('sb-bat')}" alt="" width="8" height="13"><span class="t">12:30</span></div>`;
+}
+function hd(title, opt={}){
+  const left = opt.back ? `<button class="hb l" data-act="back" aria-label="Back"><img class="flip" src="${IC('caret')}" alt="" width="24" height="24"></button>`
+    : opt.menu ? `<button class="hb l" data-act="noop" data-note="The side menu" aria-label="Menu"><img src="${IC('menu')}" alt="" width="24" height="24"></button>` : '';
+  const right = opt.close ? `<button class="hb r1" data-act="cancel" aria-label="Close the report"><img src="${IC('close')}" alt="" width="24" height="24"></button>`
+    : opt.bell ? `<button class="hb r2" data-act="noop" data-note="Sending a warning" aria-label="Send a warning"><img src="${IC('send-warning')}" alt="" width="24" height="24"></button><button class="hb r1" data-act="noop" data-note="Notifications" aria-label="Notifications"><img src="${IC('bell')}" alt="" width="24" height="24"></button><span class="dot"></span>` : '';
+  return `<header class="w-hd">${left}<span class="ttl">${title}</span>${right}</header>`;
+}
+function tabs(active){
+  const T = [['pin','tab-pin','Map'],['globe','tab-globe','Discover'],['home','tab-home','Home'],['tools','tab-tools','Toolbox'],['cal','tab-cal','Events']];
+  return `<nav class="w-tabs" aria-label="Main">${T.map(([k,i,l]) => `<button class="w-tab ${active===k?'on':''}" data-act="tab" data-v="${k}" aria-label="${l}" ${active===k?'aria-current="page"':''}>${mic(i, k==='tools'?'sm':'')}</button>`).join('')}</nav>` + (S.tier==='full' ? '<div class="w-homebar"></div>' : '');
+}
+const offBanners = (em=true) => (S.online ? '' : `<div class="w-ban off"><img src="${IC('offline')}" alt="">No internet connection</div>`) + (em ? `<div class="w-ban em"><img src="${IC('target')}" alt="">Emergency mode</div>` : '');
+const countryImg = c => ({algeria:'img/algeria.webp', bf:'img/bf.webp', ss:'img/ss.webp', so:'img/so.webp'})[c.img];
+
+/* ---------- Flow 1 screens ---------- */
+function vWelcome(){
+  return `<div class="w-red w-wel">
+    <img class="logo" src="${IC('logo')}" alt="Logistics Cluster">
+    <h1>Welcome</h1><p class="sub">to the Logistics Cluster Mobile Application</p>
+    <div class="card"><img src="${IC('info')}" alt="">
+      <p>To get started, an initial download of current information is required.</p>
+      <p>Depending on your internet connection, this could take several minutes.</p>
+      <p>Please do not close the app during this process.</p></div>
+    <button class="w-check ${S.nudge?'nudge':''}" role="checkbox" aria-checked="${S.agreed}" data-act="agree"><span class="box"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3.5 8.5l3 3 6-7" stroke="#C03A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>I have read and agree to the <b data-act="privacy" role="link" tabindex="0" style="font-weight:700">Privacy Policy</b></span></button>
+    <p class="w-hint" aria-live="polite">${S.nudge ? 'Agree to the Privacy Policy to start the download.' : ''}</p>
+    <div class="foot"><button class="w-btn wht" data-act="continue" aria-disabled="${!S.agreed}">Continue</button></div>
+  </div>`;
+}
+function loaderHtml(){
+  if(S.done) return `<div class="w-load" id="ld"><span class="ok"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Offline data ready<small><button data-act="start">Start the app now</button></small></span></div>`;
+  return `<div class="w-load" id="ld"><img class="spin" src="${IC('loader')}" alt=""><span><span id="ldt">${S.paused ? 'Weak signal, retrying…' : 'Loading data...'}</span><small id="ldp">${Math.floor(S.pct)}% · ${S.paused ? 'the download resumes on its own' : 'you can keep reading'}</small></span></div>`;
+}
+function vTour(){
+  const last = S.tour === TOUR.length-1, c = TOUR[S.tour];
+  return `<div class="w-red w-tour">
+    <img class="logo" src="${IC('logo')}" alt="Logistics Cluster">
+    <div class="stage" id="stage" aria-roledescription="carousel" aria-label="App tour, card ${S.tour+1} of ${TOUR.length}"><img src="img/${c.img}.webp" alt="" width="358" height="360"></div>
+    <p class="txt">${c.txt}</p>
+    <div class="w-dots" role="tablist">${TOUR.map((_,i)=>`<button role="tab" data-act="dot" data-v="${i}" aria-current="${i===S.tour}" aria-label="Card ${i+1}"></button>`).join('')}</div>
+    <button class="w-pp" data-act="privacy">Privacy Policy</button>
+    ${last && S.done ? `<button class="w-start" data-act="start">Ready. Start The APP <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="#C03A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : loaderHtml()}
+  </div>`;
+}
+function stepHead(n, title, text){
+  return `<div class="w-step"><span class="w-ring"><img src="${IC(n===1?'ring1':'ring2')}" alt=""><span>${n} of 2</span></span><div><h2>${title}</h2><p>${text}</p></div></div>`;
+}
+function vFocus(){
+  const c = S.country && COUNTRIES.find(x=>x.k===S.country);
+  return `<div class="w-view ${anim}">${sb()}${hd('Customisation')}
+    <div class="w-body">
+      ${stepHead(1,'Focus on your country','You are based in a specific country or Emergency? Choose it here and receive all updates as you go.')}
+      <div class="w-white w-focus">${c
+        ? `<div style="text-align:center"><button class="w-focusbtn sel" data-act="pick" aria-label="${c.k} is in focus. Change"><span class="ph"><img src="${countryImg(c)}" alt=""></span><img class="fr" src="${IC('focus-frame')}" alt=""><span class="w-chiplbl">${c.k}</span></button><button class="w-change" data-act="pick">Change country</button></div>`
+        : `<button class="w-focusbtn" data-act="pick"><img class="fr" src="${IC('focus-empty')}" alt=""><span class="lbl">Nothing is in focus<b>Pick a country</b></span></button>`}</div>
+      <div class="w-radios" role="radiogroup" aria-label="What to receive">
+        <button class="w-radio" role="radio" aria-checked="${S.n1==='notify'}" data-act="n1" data-v="notify"><span class="rd"></span>Only notify on updates</button>
+        <button class="w-radio" role="radio" aria-checked="${S.n1==='files'}" data-act="n1" data-v="files"><span class="rd"></span>Notify &amp; download latest files</button>
+      </div>
+      <div class="w-actions">
+        <button class="w-btn pri" data-act="next1" aria-disabled="${!c}">Next step</button>
+        <button class="w-btn sec" data-act="skip1">No focus country, skip this step</button>
+      </div>
+      <p class="w-later">You can always customise the app later</p>
+    </div></div>`;
+}
+function vFollow(){
+  const q = S.q.trim().toLowerCase();
+  const pool = S.more || q ? ACTIVITIES.concat(MORE) : ACTIVITIES;
+  const list = pool.filter(a => !q || a.toLowerCase().includes(q));
+  return `<div class="w-view ${anim}">${sb()}${hd('Customization',{back:true})}
+    <div class="w-body">
+      ${stepHead(2,'Follow more activities','Stay up to date by following your activities of interest.')}
+      <div class="w-white" style="padding:24px 0 24px">
+        <div style="padding:0 16px"><label class="w-input"><input id="fq" type="search" placeholder="Find an activity to follow" value="${esc(S.q)}" autocomplete="off" aria-label="Find an activity to follow"><img src="${IC('search')}" alt=""></label></div>
+        ${list.length ? `<div class="w-chips">${list.map(a => `<button class="w-chip" data-act="chip" data-v="${esc(a)}" aria-pressed="${S.follow.has(a)}">${esc(a)}</button>`).join('')}</div>`
+          : `<p class="w-none">No activity called “${esc(S.q.trim())}”. <button data-act="clearq">Show all</button></p>`}
+        ${!q && !S.more ? `<button class="w-more" data-act="more">Show more</button>` : ''}
+      </div>
+      <div class="w-radios" style="padding-top:40px" role="radiogroup" aria-label="What to receive">
+        <button class="w-radio" role="radio" aria-checked="${S.n2==='notify'}" data-act="n2" data-v="notify"><span class="rd"></span>Only notify on updates</button>
+        <button class="w-radio" role="radio" aria-checked="${S.n2==='sync'}" data-act="n2" data-v="sync"><span class="rd"></span>Notify &amp; synchronise latest documents</button>
+      </div>
+      <div class="w-actions">
+        <button class="w-btn pri" data-act="finish">${S.follow.size ? `Finish · follow ${S.follow.size}` : 'Finish'}</button>
+        <button class="w-btn sec" data-act="skip2">Skip this step and start the app</button>
+      </div>
+      <p class="w-later">You can always customise the app later</p>
+    </div></div>`;
+}
+function vHome(){
+  const c = S.country && COUNTRIES.find(x=>x.k===S.country);
+  const n = S.follow.size;
+  return `<div class="w-view ${anim}">${sb()}${hd('Home',{menu:true,bell:true})}
+    <div class="w-body">
+      <div class="w-banner"><img src="img/heli.webp" alt=""><h1>Welcome to</h1><p>The Global Logistics Cluster</p></div>
+      <div class="w-home">
+        <label class="w-input" style="height:40px"><input type="search" placeholder="Find a Document, activity or etc." aria-label="Search" data-act="noopfocus"><img src="${IC('search')}" alt=""></label>
+        <div class="w-grid">
+          <button class="w-tile tall upd" data-act="noop" data-note="Latest updates"><span class="cnt">9</span><img class="i" src="${IC('notification')}" alt="">Latest updates<br>since last use</button>
+          ${c ? `<button class="w-tile tall focus" data-act="pick" aria-label="${c.k} is in focus. Change"><span class="ph"><img src="${countryImg(c)}" alt=""></span><img class="fr" src="${IC('focus-frame')}" alt=""><span class="w-chiplbl">${c.k}</span></button>`
+              : `<button class="w-tile tall empty" data-act="pick"><img class="fr" style="position:absolute" src="${IC('focus-empty')}" alt=""><span class="lbl">Nothing is in focus<b>Pick a country</b></span></button>`}
+          <button class="w-tile ops" data-act="noop" data-note="Operations"><span class="cnt">12</span><img class="i" src="${IC('operation')}" alt="">Operations</button>
+          <button class="w-tile prep" data-act="noop" data-note="Preparedness projects"><span class="cnt">10</span><img class="i" src="${IC('preparedness')}" alt="">Preparedness Projects</button>
+          <button class="w-tile com" data-act="noop" data-note="Community"><img class="i" src="${IC('group')}" alt="">Community</button>
+          <button class="w-tile trn" data-act="noop" data-note="Trainings"><span class="cnt">123</span><img class="i" src="${IC('trainings')}" alt="">Upcoming trainings</button>
+        </div>
+        ${n ? `<p class="w-follow">Following <b>${n}</b> ${n===1?'activity':'activities'}: ${esc([...S.follow].slice(0,3).join(', '))}${n>3?` and ${n-3} more`:''}</p>` : ''}
+        <div style="margin-top:${n?24:56}px"><button class="w-btn pri" data-act="report">Submit report</button></div>
+      </div>
+    </div>${tabs('home')}</div>`;
+}
+
+/* ---------- Flow 2 screens ---------- */
+function vMap(){
+  return `<div class="w-view ${anim}">${sb()}${hd('Current map',{menu:true,bell:true})}${offBanners()}
+    <div class="w-map" role="img" aria-label="Offline map with road constraints"><div class="float"><button class="w-btn pri" data-act="report">Submit report</button></div></div>${tabs('pin')}</div>`;
+}
+function vType(){
+  return `<div class="w-view ${anim}">${sb()}${hd('Reports',{back:true,close:true})}
+    <div class="w-body"><div class="w-tiles4">${RTYPES.map(r => `<button class="w-rtile" data-act="rtype" data-v="${r.k}"><img src="${IC(r.i)}" alt="">${r.t}</button>`).join('')}</div></div>${tabs('pin')}</div>`;
+}
+function vConstraint(){
+  return `<div class="w-view ${anim}">${sb()}${hd('Type of constraint',{back:true,close:true})}
+    <div class="w-body"><div class="w-list">${CONSTRAINTS.map(c => `<button class="w-row" data-act="constraint" data-v="${c.k}" aria-pressed="${S.rep.c===c.k}"><span class="iw"><img src="${IC(c.k)}" alt=""></span><span class="t">${c.t}</span><span class="arr"><img src="${IC('arrow-right')}" alt=""></span></button>`).join('')}</div></div>${tabs('pin')}</div>`;
+}
+function vPhoto(){
+  return `<div class="w-view ${anim}">${sb()}${hd('Photo',{back:true,close:true})}
+    <div class="w-body" style="display:flex;flex-direction:column">
+      <div class="w-photo2"><button class="w-pcard" data-act="photo" data-v="take"><img src="${IC('photo')}" alt="">Take a photo</button><button class="w-pcard" data-act="photo" data-v="pick"><img src="${IC('gallery')}" alt="">Pick a photo</button></div>
+      ${S.photo ? `<div class="w-attached"><span class="th" aria-hidden="true"></span><span class="tx"><b>Photo added</b>2.4 MB → 34 KB, compressed for 2G</span><button data-act="rmphoto">Remove</button></div>` : ''}
+      <div class="w-fill"></div>
+      ${S.notice==='photo' ? `<p class="w-inline" role="alert">Add a photo first. It helps dispatch see how bad the road is.</p>` : ''}
+      <div class="w-bottom"><button class="w-btn pri" data-act="next" data-v="photo" aria-disabled="${!S.photo}">Next step</button></div>
+    </div>${tabs('pin')}</div>`;
+}
+function vLocation(){
+  return `<div class="w-view ${anim}">${sb()}${hd('Location',{back:true,close:true})}
+    <div class="w-map" id="map" data-act="drop" aria-label="Offline map. Tap to move the pin"><img class="w-pin" src="${IC('pin')}" alt="" style="left:${S.pin.x}%;top:${S.pin.y}%">
+      <div class="w-loccard"><p><b>${(18.62 - (S.pin.y-46)*0.012).toFixed(3)}° N, ${(72.29 + (S.pin.x-50)*0.011).toFixed(3)}° W</b>GPS ±12 m · offline map tiles, 250 MB cached. Tap the map to move the pin.</p><button class="w-btn pri" data-act="next" data-v="location">Confirm location</button></div>
+    </div>${tabs('pin')}</div>`;
+}
+function vPass(){
+  return `<div class="w-view ${anim}">${sb()}${hd('Passable state',{back:true,close:true})}
+    <div class="w-body"><p class="w-q">What type of vehicle can cross the road?</p>
+      <div class="w-list">${PASS.map(p => `<button class="w-row" data-act="pass" data-v="${p.k}" aria-pressed="${S.rep.pass===p.k}"><span class="iw"><img src="${IC(p.i)}" alt=""></span><span class="t">${esc(p.t)}</span><span class="arr"><img src="${IC('arrow-right')}" alt=""></span></button>`).join('')}</div></div>${tabs('pin')}</div>`;
+}
+function vDesc(){
+  return `<div class="w-view ${anim}">${sb()}${hd('Description',{back:true,close:true})}
+    <div class="w-body" style="display:flex;flex-direction:column">
+      <textarea class="w-desc" id="desc" placeholder="Add description here..." maxlength="280" aria-label="Description, optional">${esc(S.desc)}</textarea>
+      <p class="w-cnt"><span id="dc">${S.desc.length}</span>/280 · optional</p>
+      <div class="w-bottom"><button class="w-btn pri" data-act="submit">Next step</button></div>
+    </div>${tabs('pin')}</div>`;
+}
+function vReports(){
+  const queued = S.reports.filter(r => r.st==='unsent' || r.st==='error').length;
+  return `<div class="w-view ${anim}">${sb()}${hd('Reports',{back:true})}${S.online ? '' : `<div class="w-ban off"><img src="${IC('offline')}" alt="">No internet connection</div>`}
+    <div class="w-body" style="display:flex;flex-direction:column">
+      <div class="w-list" style="gap:16px">${S.reports.map(r => { const c = CONSTRAINTS.find(x=>x.k===r.c); return `<div class="w-rep ${r.fresh?'fresh':''}">
+        <div class="l"><span class="iw"><img src="${IC(r.c)}" alt=""></span><span><b>${c.t}</b><span>${r.date} <i>|</i> ${r.time}</span></span></div>
+        <div class="r"><span class="acts"><button data-act="noop" data-note="Editing a report" aria-label="Edit"><img src="${IC('edit')}" alt=""></button><button data-act="noop" data-note="Exporting as Word or PDF" aria-label="Share"><img src="${IC('share')}" alt=""></button></span><span class="w-st ${r.st}">${ST_LABEL[r.st]}</span></div></div>`; }).join('')}</div>
+      <div class="w-fill"></div>
+      ${S.notice==='nosig' ? `<p class="w-inline" role="alert">Still no signal. ${queued} ${queued===1?'report stays':'reports stay'} on the phone and ${queued===1?'goes':'go'} out when the network returns.</p>` : ''}
+      ${S.notice==='sent' ? `<p class="w-inline ok" role="status">All queued reports are sent.</p>` : ''}
+      <div class="w-bottom"><button class="w-btn pri" data-act="sendall" ${queued?'':'aria-disabled="true"'}>Send all unsent${queued?` (${queued})`:''}</button></div>
+    </div>${tabs('pin')}</div>`;
+}
+
+/* ---------- sheets ---------- */
+function sheetHtml(){
+  if(!S.sheet) return '';
+  let inner = '';
+  if(S.sheet==='country') inner = `<h3>Pick a country</h3><p class="sp">Updates and offline files for this country come first. Sample list.</p>
+    <div class="scroll" role="radiogroup" aria-label="Country">${COUNTRIES.map(c => `<button class="w-crow" role="radio" aria-checked="${S.country===c.k}" data-act="country" data-v="${c.k}"><img src="${countryImg(c)}" alt=""><span class="tx">${c.k}<small>${c.note}</small></span><span class="tick"></span></button>`).join('')}</div>`;
+  if(S.sheet==='privacy') inner = `<h3>Privacy Policy</h3><p class="sp">Sample text for the prototype</p><div class="body"><p>The app stores the data you download and the reports you create on this phone, so they work offline.</p><p>Reports are sent to the Logistics Cluster only when you submit them and the phone has a connection.</p></div><div class="btns"><button class="w-btn pri" data-act="closesheet">Got it</button></div>`;
+  if(S.sheet==='cancel') inner = `<h3>Leave this report?</h3><p class="sp">Nothing is lost if you save it as a draft. You can finish it later from Reports.</p><div class="btns"><button class="w-btn pri" data-act="savedraft">Save as draft</button><button class="w-btn sec" data-act="discard">Discard report</button><button class="w-btn" style="color:var(--text-secondary)" data-act="closesheet">Keep editing</button></div>`;
+  return `<div class="w-dim" data-act="closesheet"></div><div class="w-sheet" role="dialog" aria-modal="true"><span class="grab"></span>${inner}</div>`;
+}
+
+/* ---------- render ---------- */
+const VIEWS = {welcome:vWelcome, tour:vTour, focus:vFocus, follow:vFollow, home:vHome, map:vMap, rtype:vType, constraint:vConstraint, photo:vPhoto, location:vLocation, pass:vPass, desc:vDesc, reports:vReports};
+function render(a){
+  if(a !== undefined) anim = a;
+  const ae = document.activeElement, keep = ae && ae.id && app.contains(ae) ? ae.id : null, pos = keep && ae.selectionStart;
+  app.innerHTML = VIEWS[S.screen]() + sheetHtml() + (S.toast ? `<div class="w-toast" style="bottom:${hasTabs() ? (S.tier==='full'?98:76) : 24}px" role="status"><span class="${S.toast.warn?'wa':'ok'}">${S.toast.warn?'!':''}</span><span>${S.toast.text}</span></div>` : '');
+  anim = '';
+  if(keep){ const el = document.getElementById(keep); if(el){ el.focus({preventScroll:true}); try{ el.setSelectionRange(pos,pos); }catch(e){} } }
+  device.className = 'device ' + (S.tier==='full' ? 'ios' : 'droid');
+  $('#devlabel').innerHTML = S.tier==='full' ? '<b>Full tier</b> · iPhone · 390 px' : '<b>Lite tier</b> · Android 8, 1 GB RAM, 2G · 360 px';
+  bindStage(); fit();
+}
+const hasTabs = () => ['home','map','rtype','constraint','photo','location','pass','desc','reports'].includes(S.screen);
+function go(s){ S.hist.push(S.screen); S.screen = s; S.notice = null; S.toast = null; render('in'); ptrack('screen', {screen:s}); }
+function back(){ const p = S.hist.pop(); if(!p) return; S.screen = p; S.notice = null; S.toast = null; render('back'); }
+function toast(text, warn=false, ms=3200){ S.toast = {text, warn}; render(); clearTimeout(toastT); toastT = setTimeout(()=>{ S.toast = null; const t = app.querySelector('.w-toast'); if(t) t.remove(); }, ms); }
+function setNet(on, silent){
+  S.online = on; const sw = $('#net'); sw.setAttribute('aria-checked', on);
+  $('#netnote').textContent = on ? 'On: reports go out right away' : 'Off: reports wait on the phone';
+  if(!silent){ S.notice = null; render(); }
+}
+
+/* ---------- loading (Flow 1) ---------- */
+function startLoad(){
+  if(S.loading) return; S.loading = true;
+  const t0 = performance.now(); let paused = 0, pauseAt = null;
+  clearInterval(loadT);
+  loadT = setInterval(()=>{
+    const now = performance.now();
+    if(S.drop && !pauseAt && S.pct >= 58){ pauseAt = now; S.paused = true; updLoader(); }
+    if(pauseAt && now - pauseAt < 4200){ return; }
+    if(pauseAt && S.paused){ S.paused = false; paused = now - pauseAt; updLoader(); }
+    S.pct = Math.min(100, (now - t0 - paused) / S.loadMs * 100);
+    if(S.pct >= 100){ clearInterval(loadT); S.done = true; ptrack('offline_data_ready'); if(S.screen==='tour') render(); return; }
+    updLoader();
+  }, 180);
+}
+function updLoader(){
+  const p = $('#ldp'), t = $('#ldt');
+  if(p) p.textContent = `${Math.floor(S.pct)}% · ${S.paused ? 'the download resumes on its own' : 'you can keep reading'}`;
+  if(t) t.textContent = S.paused ? 'Weak signal, retrying…' : 'Loading data...';
+}
+
+/* ---------- tour swipe ---------- */
+function bindStage(){
+  const st = $('#stage'); if(!st) return;
+  let x0 = null, dx = 0;
+  const img = st.querySelector('img');
+  st.onpointerdown = e => { x0 = e.clientX; dx = 0; st.setPointerCapture(e.pointerId); img.style.transition = 'none'; };
+  st.onpointermove = e => { if(x0===null) return; const z = screenZoom(); dx = (e.clientX - x0) / z; img.style.transform = `translateX(${dx*0.6}px)`; img.style.opacity = 1 - Math.min(.5, Math.abs(dx)/500); };
+  st.onpointerup = e => { if(x0===null) return; x0 = null; img.style.transition = ''; img.style.transform = ''; img.style.opacity = '';
+    if(dx < -40) tourTo(S.tour+1); else if(dx > 40) tourTo(S.tour-1); else if(Math.abs(dx) < 6) tourTo(S.tour+1); };
+  st.onpointercancel = () => { x0 = null; img.style.transition = ''; img.style.transform = ''; img.style.opacity = ''; };
+}
+function tourTo(i){ i = Math.max(0, Math.min(TOUR.length-1, i)); if(i===S.tour) return; const dir = i > S.tour ? 'in' : 'back'; S.tour = i; render(); const im = $('#stage img'); if(im) im.animate([{transform:`translateX(${dir==='in'?36:-36}px)`, opacity:0},{transform:'none', opacity:1}], {duration:280, easing:'cubic-bezier(.2,.8,.2,1)'}); ptrack('tour_card', {i}); }
+function screenZoom(){ const r = screen.getBoundingClientRect(); return r.width / screen.offsetWidth || 1; }
+
+/* ---------- actions ---------- */
+function submitReport(){
+  const now = new Date(); const hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
+  const r = {id:'n'+Date.now(), c:S.rep.c, date:'Today', time:`${hh}:${mm}`, st: S.online ? 'sending' : 'unsent', fresh:true};
+  S.reports.unshift(r);
+  S.hist = S.hist.filter(s => s==='home' || s==='map').slice(-1);
+  S.screen = 'reports'; S.notice = null; S.rep = newRep(); S.photo = false; S.desc = ''; S.pin = {x:50,y:46};
+  render('in'); ptrack('report_submitted', {online:S.online});
+  if(S.online){ setTimeout(()=>{ r.st='sent'; r.fresh=false; render(); toast('Report sent, <b>38 KB</b>.'); }, 1200); }
+  else{
+    toast('Saved on the phone, <b>38 KB</b>. It goes out when the network returns.', false, 4200);
+    if(S.autoBack){ clearTimeout(backT); backT = setTimeout(()=>{ setNet(true, true); S.notice = null; render(); toast('The network is back. Tap <b>Send all unsent</b>.', false, 4500); }, 4500); }
+  }
+  setTimeout(()=>{ r.fresh = false; }, 1700);
+}
+function sendAll(){
+  const q = S.reports.filter(r => r.st==='unsent' || r.st==='error');
+  if(!q.length) return;
+  if(!S.online){ S.notice = 'nosig'; render(); return; }
+  S.notice = null; q.forEach(r => r.st = 'sending'); render(); ptrack('send_all', {n:q.length});
+  q.forEach((r,i) => setTimeout(()=>{ r.st = 'sent'; if(i===q.length-1){ S.notice = 'sent'; } render(); }, 900 + i*650));
+}
+const NOT_IN = n => toast(`${n} isn’t part of this sample flow.`, true, 2400);
+
+app.addEventListener('click', e=>{
+  const b = e.target.closest('[data-act]'); if(!b || !app.contains(b)) return;
+  const v = b.dataset.v;
+  switch(b.dataset.act){
+    case 'agree': if(e.target.closest('[data-act="privacy"]')) return; S.agreed = !S.agreed; S.nudge = false; render(); break;
+    case 'privacy': e.stopPropagation(); S.sheet = 'privacy'; render(); break;
+    case 'continue':
+      if(!S.agreed){ S.nudge = true; render(); setTimeout(()=>{ const c = app.querySelector('.w-check'); if(c) c.classList.remove('nudge'); }, 450); return; }
+      startLoad(); S.tour = 0; go('tour'); break;
+    case 'dot': tourTo(+v); break;
+    case 'start': clearInterval(loadT); S.done = true; go('focus'); break;
+    case 'pick': S.sheet = 'country'; render(); break;
+    case 'country': S.country = v; S.sheet = null; render(); ptrack('focus_country', {c:v}); if(S.screen==='home') toast(`${esc(v)} is in focus.`); break;
+    case 'closesheet': S.sheet = null; render(); break;
+    case 'n1': S.n1 = v; render(); break;
+    case 'n2': S.n2 = v; render(); break;
+    case 'next1': if(!S.country){ toast('Pick a country first, or skip this step.', true, 2600); return; } go('follow'); break;
+    case 'skip1': S.country = null; go('follow'); break;
+    case 'chip': S.follow.has(v) ? S.follow.delete(v) : S.follow.add(v); render(); break;
+    case 'more': S.more = true; render(); break;
+    case 'clearq': S.q = ''; render(); break;
+    case 'finish': S.setupDone = true; S.hist = []; go('home'); S.hist = []; ptrack('setup_done', {follow:S.follow.size, country:!!S.country}); break;
+    case 'skip2': S.follow.clear(); S.setupDone = true; S.hist = []; go('home'); S.hist = []; break;
+    case 'report': go('rtype'); break;
+    case 'rtype': if(v!=='access'){ NOT_IN(RTYPES.find(r=>r.k===v).t); return; } S.rep.type = v; go('constraint'); break;
+    case 'constraint': S.rep.c = v; render(); setTimeout(()=>go('photo'), 180); break;
+    case 'photo': S.photo = true; S.notice = null; render(); break;
+    case 'rmphoto': S.photo = false; render(); break;
+    case 'next': if(v==='photo'){ if(!S.photo){ S.notice='photo'; render(); return; } go('location'); } else if(v==='location'){ go('pass'); } break;
+    case 'drop': { if(e.target.closest('.w-loccard')) return; const m = $('#map'), r = m.getBoundingClientRect(); S.pin = {x:Math.max(6,Math.min(94,(e.clientX-r.left)/r.width*100)), y:Math.max(10,Math.min(70,(e.clientY-r.top)/r.height*100))}; render(); break; }
+    case 'pass': S.rep.pass = v; render(); setTimeout(()=>go('desc'), 180); break;
+    case 'submit': submitReport(); break;
+    case 'sendall': sendAll(); break;
+    case 'cancel': S.sheet = 'cancel'; render(); break;
+    case 'savedraft': { const now = new Date(); S.reports.unshift({id:'d'+Date.now(), c:S.rep.c||'landslide', date:'Today', time:`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`, st:'draft', fresh:true}); S.sheet = null; S.rep = newRep(); S.photo = false; S.desc=''; S.hist = S.hist.filter(s => s==='home' || s==='map').slice(-1); S.screen = 'reports'; render('in'); toast('Saved as a draft.'); break; }
+    case 'discard': S.sheet = null; S.rep = newRep(); S.photo = false; S.desc=''; { const base = S.hist.find(s => s==='home' || s==='map') || (S.tier==='full'?'home':'map'); S.hist = []; S.screen = base; render('back'); } break;
+    case 'back': back(); break;
+    case 'tab': if(v==='home' && S.setupDone){ if(S.screen!=='home'){ S.hist=[]; S.screen='home'; render('back'); } return; } if(v==='pin' && S.tier==='lite' && S.screen!=='map'){ S.hist=[]; S.screen='map'; render('back'); return; } if(v==='pin' && S.screen==='map') return; NOT_IN({pin:'The map', globe:'Discover', home:'Home', tools:'The toolbox', cal:'Events'}[v]); break;
+    case 'noop': NOT_IN(b.dataset.note || 'This'); break;
+  }
+});
+app.addEventListener('input', e=>{
+  const n = e.target;
+  if(n.id==='fq'){ S.q = n.value; render(); }
+  if(n.id==='desc'){ S.desc = n.value; const c = $('#dc'); if(c) c.textContent = n.value.length; }
+});
+app.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && S.sheet){ S.sheet = null; render(); }
+  if(S.screen==='tour' && (e.key==='ArrowRight' || e.key==='ArrowLeft')){ tourTo(S.tour + (e.key==='ArrowRight'?1:-1)); }
+  if(e.key==='Enter' && e.target.dataset && e.target.dataset.act==='privacy'){ S.sheet='privacy'; render(); }
+});
+app.addEventListener('focusin', e=>{ if(e.target.dataset && e.target.dataset.act==='noopfocus'){ e.target.blur(); NOT_IN('Search'); } });
+
+/* ---------- taps ---------- */
+let SHOW_TAPS = !Q.has('notaps');
+const tapsBtn = $('#taps'); tapsBtn.setAttribute('aria-checked', SHOW_TAPS);
+tapsBtn.onclick = () => { SHOW_TAPS = !SHOW_TAPS; tapsBtn.setAttribute('aria-checked', SHOW_TAPS); };
+screen.addEventListener('pointerdown', e=>{
+  if(!SHOW_TAPS) return;
+  const r = screen.getBoundingClientRect(), z = screenZoom();
+  const t = document.createElement('span'); t.className = 'tap'; t.style.left = ((e.clientX-r.left)/z)+'px'; t.style.top = ((e.clientY-r.top)/z)+'px';
+  screen.appendChild(t); setTimeout(()=>t.remove(), 600);
+}, true);
+
+/* ---------- scenario, jump, network ---------- */
+function setScenario(sc){
+  clearInterval(loadT); clearTimeout(toastT); clearTimeout(backT);
+  S = fresh(sc); setNet(false, true);
+  document.querySelectorAll('#scen button').forEach(b => b.setAttribute('aria-pressed', b.dataset.s===sc));
+  render('in');
+}
+$('#scen').addEventListener('click', e=>{ const b = e.target.closest('button'); if(b) setScenario(b.dataset.s); });
+$('#restart').onclick = () => setScenario(S.scenario);
+$('#net').onclick = () => { setNet(!S.online); ptrack('network', {on:S.online}); };
+$('#jump').addEventListener('change', e=>{
+  const v = e.target.value; e.target.value = ''; if(!v) return;
+  const f1 = ['welcome','tour','tourlast','focus','follow','home'].includes(v);
+  const sc = f1 ? (S.scenario.startsWith('f1') ? S.scenario : 'f1') : (S.scenario.startsWith('f2') ? S.scenario : 'f2');
+  setScenario(sc);
+  if(v==='welcome') return;
+  if(v==='tour' || v==='tourlast'){ S.agreed = true; startLoad(); S.tour = v==='tour' ? 0 : TOUR.length-1; S.hist = ['welcome']; S.screen = 'tour'; render('in'); return; }
+  S.agreed = true; S.done = true; S.pct = 100;
+  if(v==='focus'){ S.screen = 'focus'; }
+  if(v==='follow'){ S.country = 'Algeria'; S.hist = ['focus']; S.screen = 'follow'; }
+  if(v==='home'){ S.country = 'Algeria'; S.follow = new Set(['Afghanistan','Central African Republic','Global meetings']); S.setupDone = true; S.screen = 'home'; }
+  if(v==='constraint'){ S.rep.type = 'access'; S.hist = ['map','rtype']; S.screen = 'constraint'; }
+  if(v==='photo'){ S.rep = {type:'access', c:'landslide', pass:null}; S.hist = ['map','rtype','constraint']; S.screen = 'photo'; }
+  if(v==='location'){ S.rep = {type:'access', c:'landslide', pass:null}; S.photo = true; S.hist = ['map','rtype','constraint','photo']; S.screen = 'location'; }
+  if(v==='reports'){ S.reports.unshift({id:'n0', c:'landslide', date:'Today', time:'12:30', st:'unsent'}); S.hist = ['map']; S.screen = 'reports'; }
+  render('in');
+});
+
+/* ---------- fit the phone on small screens ---------- */
+function fit(){
+  const rec = document.body.classList.contains('rec');
+  const full = S && S.tier==='full', w = full ? 414 : 384, h = full ? 868 : 720;
+  const availW = innerWidth - 24, availH = innerHeight - 32;
+  const z = rec ? Math.min(1, availH/h, availW/w) : Math.min(1, availW/w);
+  device.style.zoom = z < 1 ? z : '';
+}
+addEventListener('resize', fit);
+
+Object.defineProperty(window,'__S',{get:()=>S});   // read-only hook for automated checks
+setScenario(SEEDS[Q.get('s')] ? Q.get('s') : 'f1');
+addEventListener('pageshow', e=>{ if(e.persisted) location.reload(); });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="reception">
+<mask id="mask0_0_297" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="12" height="12">
+<path id="reception mask" d="M12 12V0L0 12H12Z" fill-rule="evenodd" clip-rule="evenodd" fill="white"/>
+</mask>
+<g mask="url(#mask0_0_297)">
+<path id="Rectangle-path" d="M9 0V12H12V0H9Z" fill-rule="evenodd" clip-rule="evenodd" fill="white"/>
+<path id="Rectangle-path_2" d="M6 0V12H9V0H6Z" fill-rule="evenodd" clip-rule="evenodd" fill="white"/>
+<path id="Rectangle-path_3" d="M3 0V12H6V0H3Z" fill-rule="evenodd" clip-rule="evenodd" fill="white"/>
+<path id="Rectangle-path_4" d="M0 0V12H3V0H0Z" fill-rule="evenodd" clip-rule="evenodd" fill="white"/>
+</g>
+</g>
+</svg>
