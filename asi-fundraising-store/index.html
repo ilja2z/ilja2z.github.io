@@ -351,6 +351,18 @@ button.step:hover{text-decoration:underline}
 .still{animation:none!important}
 .loadwrap{position:absolute;inset:0;background:rgba(255,255,255,.6);z-index:55;display:grid;place-items:center;animation:fadeIn .2s}
 @media (prefers-reduced-motion:reduce){.screen,.drawer,.modal,.toast,.scrim,.okmark,.plus{animation-duration:.01s!important}.pbar i{transition:none}}
+
+/* full-screen view (phones) */
+.mnote .mbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.mnote .mbtns button{margin-top:0}
+.mnote .mbtns .fsgo{background:var(--s-accent);border-color:var(--s-accent);color:var(--s-accent-ink)}
+.fsx{display:none;position:fixed;z-index:300;top:calc(env(safe-area-inset-top) + 8px);right:calc(env(safe-area-inset-right) + 8px);align-items:center;gap:6px;height:36px;padding:0 14px 0 12px;border-radius:999px;background:rgba(10,26,20,.92);border:1px solid var(--s-line);color:var(--s-text);font:600 14px/1 var(--s-body);box-shadow:0 6px 20px rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.fsx svg{display:block}
+body.fs{overflow:hidden}
+body.fs .top,body.fs .intro,body.fs .bar,body.fs .notes,body.fs .mnote{display:none}
+body.fs .page{position:fixed;inset:0;z-index:200;max-width:none;min-height:0;padding:calc(env(safe-area-inset-top) + 52px) 8px 8px;justify-content:flex-start;align-items:center;background:var(--s-bg)}
+body.fs .stage{display:flex;justify-content:center}
+body.fs .fsx{display:inline-flex}
 </style>
 </head>
 <body>
@@ -359,6 +371,7 @@ button.step:hover{text-decoration:underline}
   <a class="me" href="https://illiavostrikov.com/" aria-label="Illia Vostrikov, home"><svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1C4A3A"/><text x="32" y="43" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="29" letter-spacing="-1" fill="#52E0A1">IV</text></svg><span>Illia Vostrikov</span></a>
   <a class="pill" href="https://illiavostrikov.com/work/asi-esp/">← ASI Central case</a>
 </header>
+<button class="fsx" id="fsX" aria-label="Close full screen"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Close</button>
 <div class="page">
   <header class="intro">
     <div>
@@ -373,8 +386,8 @@ button.step:hover{text-decoration:underline}
     <span class="mic"><i class="ic" style="--i:url(img/i/info.svg)"></i></span>
     <div>
       <b>This prototype is built for a desktop screen</b>
-      <p>ESP+ stores are designed at 1440 px. On a phone you see the same page scaled down, so it works, but it’s small. Open it on a computer for the real feel.</p>
-      <button id="copyLink">Copy link to open later</button>
+      <p>ESP+ stores are designed at 1440 px. On a phone you see the same page scaled down, so it works, but it’s small. Open it full screen and turn your phone sideways, or open it on a computer for the real feel.</p>
+      <div class="mbtns"><button class="fsgo" id="fsGo">Open full screen</button><button id="copyLink">Copy link to open later</button></div>
     </div>
   </div>
 
@@ -970,7 +983,7 @@ vp.addEventListener('click', e=>{
   }
 });
 vp.addEventListener('keydown', e=>{
-  if(e.key==='Escape' && overlay){ closeOverlay(); }
+  if(e.key==='Escape' && overlay){ e.preventDefault(); closeOverlay(); }
   if((e.key===' '||e.key==='Enter') && e.target.matches('[role="checkbox"][data-act]')){ e.preventDefault(); e.target.click(); }
 });
 
@@ -1040,18 +1053,32 @@ $('#copyLink').onclick = () => { const u = location.href.split('#')[0]; const b=
 /* ---------- scale the 1440 px page into the window ---------- */
 const browser = $('#browser'), stage = $('#stage');
 function fit(){
-  const rec = document.body.classList.contains('rec');
+  const rec = document.body.classList.contains('rec') || document.body.classList.contains('fs');
   const chromeH = 44;
   const availW = rec ? innerWidth - 24 : stage.clientWidth;
   const z = Math.min(1, availW / 1440);
   browser.style.zoom = z;
   let h;
-  if(rec) h = (innerHeight - 24) / z - chromeH;
+  if(rec) h = (innerHeight - (document.body.classList.contains('fs') ? 64 : 24)) / z - chromeH;
   else if(innerWidth <= 820) h = Math.max(900, Math.min((innerHeight * 0.78) / z - chromeH, app.scrollHeight || 900));
   else h = Math.max(640, Math.min(900, (innerHeight - 32) / z - chromeH));
   vp.style.height = Math.round(h) + 'px';
 }
 addEventListener('resize', fit);
+/* ---------- full-screen view for phones: close with the button, Esc or the Back gesture ---------- */
+function setFs(on){
+  const was = document.body.classList.contains('fs');
+  if(on===was) return;
+  document.body.classList.toggle('fs', on);
+  fit(); requestAnimationFrame(fit);
+  if(!on){ const st = document.getElementById('stage'); if(st) st.scrollIntoView({block:'center'}); }
+}
+document.getElementById('fsGo').onclick = () => { history.pushState({fs:1}, ''); setFs(true); };
+document.getElementById('fsX').onclick = () => { if(history.state && history.state.fs) history.back(); else setFs(false); };
+addEventListener('popstate', () => setFs(!!(history.state && history.state.fs)));
+addEventListener('keydown', e => { if(e.key==='Escape' && !e.defaultPrevented && document.body.classList.contains('fs') && !document.querySelector('#layer > *')) document.getElementById('fsX').click(); });
+addEventListener('orientationchange', () => setTimeout(fit, 250));
+
 
 /* ---------- start ---------- */
 const startScen = SEEDS[Q.get('s')] ? Q.get('s') : 'happy';
