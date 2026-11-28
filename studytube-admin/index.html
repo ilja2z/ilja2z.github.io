@@ -332,7 +332,8 @@ select.a-inp{appearance:none;-webkit-appearance:none;padding-right:40px;cursor:p
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
 
 /* full-screen view (phones) */
-.mnote .mbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.mnote .mbtns{display:flex;flex-wrap:nowrap;gap:8px;margin-top:10px}
+.mnote .mbtns button{white-space:nowrap}
 .mnote .mbtns button{margin-top:0}
 .mnote .mbtns .fsgo{background:var(--s-accent);border-color:var(--s-accent);color:var(--s-accent-ink)}
 .fsx{display:none;position:fixed;z-index:300;top:calc(env(safe-area-inset-top) + 8px);right:calc(env(safe-area-inset-right) + 8px);align-items:center;gap:6px;height:36px;padding:0 14px 0 12px;border-radius:999px;background:rgba(10,26,20,.92);border:1px solid var(--s-line);color:var(--s-text);font:600 14px/1 var(--s-body);box-shadow:0 6px 20px rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
@@ -366,7 +367,7 @@ body.fs .fsx{display:inline-flex}
     <div>
       <b>This prototype is built for a desktop screen</b>
       <p>The Studytube admin is designed at 1440 px. On a phone you see the same page scaled down, so it works, but it’s small. Open it full screen and turn your phone sideways, or open it on a computer for the real feel.</p>
-      <div class="mbtns"><button class="fsgo" id="fsGo">Open full screen</button><button id="copyLink">Copy link to open later</button></div>
+      <div class="mbtns"><button class="fsgo" id="fsGo">Open full screen</button><button id="copyLink">Copy link</button></div>
     </div>
   </div>
 
@@ -1096,7 +1097,7 @@ vp.addEventListener('pointerdown', e=>{
   vp.appendChild(t); setTimeout(()=>t.remove(), 600);
 }, true);
 $('#copyLink').onclick = () => { const u = location.href.split('#')[0]; const b=$('#copyLink');
-  const done = () => { b.textContent='Link copied'; setTimeout(()=>b.textContent='Copy link to open later',2200); };
+  const done = () => { b.textContent='Link copied'; setTimeout(()=>b.textContent='Copy link',2200); };
   if(navigator.share){ navigator.share({title:document.title, url:u}).catch(()=>{}); return; }
   try{ navigator.clipboard.writeText(u).then(done,done); }catch(err){ done(); } };
 
